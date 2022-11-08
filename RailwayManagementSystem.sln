@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayManagementSystem.Api", "RailwayManagementSystem.Api\RailwayManagementSystem.Api.csproj", "{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayManagementSystem.Core", "RailwayManagementSystem.Core\RailwayManagementSystem.Core.csproj", "{8A649527-B2D5-4F76-9D1C-E2B6BB057A8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayManagementSystem.Infrastructure", "RailwayManagementSystem.Infrastructure\RailwayManagementSystem.Infrastructure.csproj", "{D0ECC3AA-7A4C-4478-B198-11DA79269092}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A649527-B2D5-4F76-9D1C-E2B6BB057A8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A649527-B2D5-4F76-9D1C-E2B6BB057A8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A649527-B2D5-4F76-9D1C-E2B6BB057A8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A649527-B2D5-4F76-9D1C-E2B6BB057A8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0ECC3AA-7A4C-4478-B198-11DA79269092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0ECC3AA-7A4C-4478-B198-11DA79269092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0ECC3AA-7A4C-4478-B198-11DA79269092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0ECC3AA-7A4C-4478-B198-11DA79269092}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

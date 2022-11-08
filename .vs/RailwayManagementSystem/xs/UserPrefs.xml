@@ -1,0 +1,32 @@
+﻿<Properties StartupConfiguration="{63B9A543-7FE4-4D4D-B5D0-885A02BD133F}|Default">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.RailwayManagementSystem.Api PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="RailwayManagementSystem.Core/Models/Passenger.cs">
+    <Files>
+      <File FileName="RailwayManagementSystem.Core/Models/Passenger.cs" Line="7" Column="2" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="RailwayManagementSystem" expanded="True">
+            <Node name="RailwayManagementSystem.Api" expanded="True" />
+            <Node name="RailwayManagementSystem.Core" expanded="True">
+              <Node name="Models" expanded="True">
+                <Node name="Passenger.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="RailwayManagementSystem.Infrastructure" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+</Properties>
