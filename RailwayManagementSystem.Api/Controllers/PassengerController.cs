@@ -23,7 +23,7 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.GetById(id);
 
-        if (!passenger.Success) return NotFound(passenger.Message);
+        if (passenger.Success is false) return NotFound(passenger.Message);
 
         return Ok(passenger.Data);
     }
