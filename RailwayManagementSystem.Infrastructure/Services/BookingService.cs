@@ -178,7 +178,7 @@ public class BookingService : IBookingService
     private async Task<Station> GetOrFailStation(string stationName)
     {
         var station = await _stationRepository.GetByName(stationName);
-        if (station is null) throw new Exception($"Station with name: {stationName} does not exist");
+        if (station is null) throw new Exception($"Station with name: '{stationName}' does not exist");
 
         return station;
     }

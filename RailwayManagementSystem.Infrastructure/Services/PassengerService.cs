@@ -128,7 +128,7 @@ public class PassengerService : IPassengerService
 
         var discount = await _discountRepository.GetByName(registerPassenger.DiscountName);
 
-        if (discount is null)
+        if (discount is null && string.IsNullOrWhiteSpace(registerPassenger.DiscountName) is false)
         {
             var serviceResponse = new ServiceResponse<PassengerDto>
             {
