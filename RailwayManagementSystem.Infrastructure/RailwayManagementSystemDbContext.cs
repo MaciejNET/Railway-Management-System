@@ -29,6 +29,10 @@ public class RailwayManagementSystemDbContext : DbContext
         modelBuilder.Entity<Train>()
             .HasMany(x => x.Seats)
             .WithOne(x => x.Train);
+        
+        modelBuilder.Entity<Seat>()
+            .HasMany(x => x.Ticket)
+            .WithOne(x => x.Seat);
 
         modelBuilder.Entity<Ticket>()
             .HasMany(x => x.Stations)
@@ -40,8 +44,7 @@ public class RailwayManagementSystemDbContext : DbContext
         modelBuilder.Entity<Trip>().Navigation(x => x.TripInterval).AutoInclude();
         modelBuilder.Entity<Trip>().Navigation(x => x.Schedules).AutoInclude();
         modelBuilder.Entity<Schedule>().Navigation(x => x.Station).AutoInclude();
-
-        modelBuilder.Entity<Seat>().HasMany(x => x.Ticket).WithOne(x => x.Seat);
+        
         modelBuilder.Entity<Career>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Discount>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Train>().OwnsOne(x => x.Name);

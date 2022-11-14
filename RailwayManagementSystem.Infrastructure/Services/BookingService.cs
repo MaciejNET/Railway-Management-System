@@ -39,7 +39,7 @@ public class BookingService : IBookingService
             return serviceResponse;
         }
 
-        if (!TripExtensions.IsTrainRunsOnGivenDate(trip, bookTicket.TripDate))
+        if (TripExtensions.IsTrainRunsOnGivenDate(trip, bookTicket.TripDate) is false)
         {
             var serviceResponse = new ServiceResponse<TicketDto>
             {
@@ -61,11 +61,25 @@ public class BookingService : IBookingService
             return serviceResponse;
         }
 
-        var startStation = await GetOrFailStation(bookTicket.StartStation);
-        var endStation = await GetOrFailStation(bookTicket.EndStation);
+        Station startStation, endStation;
+        try
+        {
+            startStation = await GetOrFailStation(bookTicket.StartStation);
+            endStation = await GetOrFailStation(bookTicket.EndStation);
+        }
+        catch (Exception ex)
+        {
+            var serviceResponse = new ServiceResponse<TicketDto>()
+            {
+                Success = false,
+                Message = ex.Message
+            };
+
+            return serviceResponse;
+        }
 
         var tripStations = trip.Schedules.Select(x => x.Station).ToList();
-        if (!(tripStations.Contains(startStation) && tripStations.Contains(endStation)))
+        if ((tripStations.Contains(startStation) && tripStations.Contains(endStation)) is false)
         {
             var serviceResponse = new ServiceResponse<TicketDto>
             {
@@ -157,7 +171,7 @@ public class BookingService : IBookingService
     private async Task<Station> GetOrFailStation(string stationName)
     {
         var station = await _stationRepository.GetByName(stationName);
-        if (station is null) throw new Exception("Station like that does not exist");
+        if (station is null) throw new Exception($"Station with name: {stationName} does not exist");
 
         return station;
     }
