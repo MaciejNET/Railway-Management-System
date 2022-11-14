@@ -103,11 +103,18 @@ public class BookingService : IBookingService
 
         var stations = GetStationsToBook(tripStations, startStation, endStation).ToList();
         stations.Add(endStation);
+        
+        var passengerDiscount = 0.0;
+        if (passenger.Discount is not null)
+        {
+            passengerDiscount = passenger.Discount.Percentage;
+        }
+        
         var ticket = new Ticket
         {
             Trip = trip,
             Passenger = passenger,
-            Price = trip.Price * ((100.0 - passenger.Discount.Percentage) / 100.0) *
+            Price = trip.Price * ((100.0 - passengerDiscount) / 100.0) *
                     (stations.Count / (double) tripStations.Count),
             Seat = seatsToBook.First(),
             TripDate = bookTicket.TripDate,
