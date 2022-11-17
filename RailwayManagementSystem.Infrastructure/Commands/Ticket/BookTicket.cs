@@ -11,6 +11,6 @@ public class BookTicket
     [JsonConverter(typeof(DateOnlyJsonConverter))]
     public DateOnly TripDate { get; set; }
 
-    public string StartStation { get; set; }
-    public string EndStation { get; set; }
+    public string StartStation { get; set; } = string.Empty;
+    public string EndStation { get; set; } = string.Empty;
 }
