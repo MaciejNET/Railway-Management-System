@@ -56,4 +56,56 @@ public class AuthService : IAuthService
 
         return tokenHandler.WriteToken(token);
     }
+    
+    public string CreateToken(Admin admin)
+    {
+        List<Claim> claims = new()
+        {
+            new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, admin.Name),
+            new Claim(ClaimTypes.Role, admin.Role.ToString())
+        };
+
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+        SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
+
+        SecurityTokenDescriptor tokenDescriptor = new()
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.Now.AddDays(1),
+            SigningCredentials = creds
+        };
+
+        JwtSecurityTokenHandler tokenHandler = new();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        return tokenHandler.WriteToken(token);
+    }
+    
+    public string CreateToken(RailwayEmployee railwayEmployee)
+    {
+        List<Claim> claims = new()
+        {
+            new Claim(ClaimTypes.NameIdentifier, railwayEmployee.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, railwayEmployee.Name),
+            new Claim(ClaimTypes.Role, railwayEmployee.Role.ToString())
+        };
+
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+        SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
+
+        SecurityTokenDescriptor tokenDescriptor = new()
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.Now.AddDays(1),
+            SigningCredentials = creds
+        };
+
+        JwtSecurityTokenHandler tokenHandler = new();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        return tokenHandler.WriteToken(token);
+    }
 }

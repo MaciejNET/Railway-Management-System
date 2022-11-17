@@ -12,6 +12,8 @@ public class RailwayManagementSystemDbContext : DbContext
     public DbSet<Career> Careers => Set<Career>();
     public DbSet<Discount> Discounts => Set<Discount>();
     public DbSet<Passenger> Passengers => Set<Passenger>();
+    public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<RailwayEmployee> RailwayEmployees => Set<RailwayEmployee>();
     public DbSet<Schedule> Schedules => Set<Schedule>();
     public DbSet<Seat> Seats => Set<Seat>();
     public DbSet<Station> Stations => Set<Station>();
@@ -40,6 +42,8 @@ public class RailwayManagementSystemDbContext : DbContext
             .UsingEntity(x => x.ToTable("TicketStation"));
 
         modelBuilder.Entity<Ticket>().Navigation(x => x.Stations).AutoInclude();
+        modelBuilder.Entity<Ticket>().Navigation(x => x.Trip).AutoInclude();
+        modelBuilder.Entity<Ticket>().Navigation(x => x.Seat).AutoInclude();
         modelBuilder.Entity<Trip>().Navigation(x => x.Train).AutoInclude();
         modelBuilder.Entity<Trip>().Navigation(x => x.TripInterval).AutoInclude();
         modelBuilder.Entity<Trip>().Navigation(x => x.Schedules).AutoInclude();
@@ -54,5 +58,9 @@ public class RailwayManagementSystemDbContext : DbContext
         modelBuilder.Entity<Passenger>().OwnsOne(x => x.PhoneNumber);
         modelBuilder.Entity<Station>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Station>().OwnsOne(x => x.City);
+        modelBuilder.Entity<Admin>().OwnsOne(x => x.Name);
+        modelBuilder.Entity<RailwayEmployee>().OwnsOne(x => x.Name);
+        modelBuilder.Entity<RailwayEmployee>().OwnsOne(x => x.FirstName);
+        modelBuilder.Entity<RailwayEmployee>().OwnsOne(x => x.LastName);
     }
 }

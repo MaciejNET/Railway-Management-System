@@ -62,7 +62,7 @@ public class TripController : ControllerBase
         return Ok(trips.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddTrip(CreateTrip createTrip)
     {
@@ -73,7 +73,7 @@ public class TripController : ControllerBase
         return Created($"api/trips/{trip.Data.Id}", null);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Passenger")]
     [HttpPost("book")]
     public async Task<IActionResult> BookTicket(BookTicket bookTicket)
     {
@@ -84,7 +84,7 @@ public class TripController : ControllerBase
         return Created($"api/passengers/{bookTicket.PassengerId}/tickets", ticket.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(int id)
     {

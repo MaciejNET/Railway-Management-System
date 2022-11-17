@@ -39,12 +39,22 @@ public class BookingService : IBookingService
             return serviceResponse;
         }
 
+        if (bookTicket.TripDate < DateOnly.FromDateTime(DateTime.Now))
+        {
+            var serviceResponse = new ServiceResponse<TicketDto>
+            {
+                Success = false,
+                Message = "Cannot book ticket for a past date."
+            };
+            return serviceResponse;
+        }
+        
         if (TripExtensions.IsTrainRunsOnGivenDate(trip, bookTicket.TripDate) is false)
         {
             var serviceResponse = new ServiceResponse<TicketDto>
             {
                 Success = false,
-                Message = "Cannot book ticket for this day."
+                Message = "This trip does not run on given date."
             };
             return serviceResponse;
         }
@@ -104,7 +114,7 @@ public class BookingService : IBookingService
         var stations = GetStationsToBook(tripStations, startStation, endStation).ToList();
         stations.Add(endStation);
         
-        var passengerDiscount = 0.0;
+        var passengerDiscount = 0;
         if (passenger.Discount is not null)
         {
             passengerDiscount = passenger.Discount.Percentage;
@@ -114,14 +124,15 @@ public class BookingService : IBookingService
         {
             Trip = trip,
             Passenger = passenger,
-            Price = trip.Price * ((100.0 - passengerDiscount) / 100.0) *
-                    (stations.Count / (double) tripStations.Count),
+            Price = trip.Price * (decimal) ((100 - passengerDiscount) / 100.0) * 
+                    (stations.Count / (decimal)tripStations.Count),
             Seat = seatsToBook.First(),
             TripDate = bookTicket.TripDate,
             Stations = stations
         };
 
         await _ticketRepository.Add(ticket);
+        
         var response = new ServiceResponse<TicketDto>
         {
             Data = _mapper.Map<TicketDto>(ticket)

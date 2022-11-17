@@ -1,5 +1,6 @@
 using AutoMapper;
 using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Models.Enums;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
 using RailwayManagementSystem.Infrastructure.DTOs;
@@ -91,9 +92,7 @@ public class PassengerService : IPassengerService
 
             return serviceResponse;
         }
-
-        await _passengerRepository.SaveChanges();
-
+        
         var response = new ServiceResponse<string>
         {
             Data = _authService.CreateToken(passenger)
@@ -149,7 +148,8 @@ public class PassengerService : IPassengerService
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             Age = registerPassenger.Age,
-            Discount = discount
+            Discount = discount,
+            Role = Role.Passenger
         };
 
         await _passengerRepository.Add(passenger);

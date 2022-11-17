@@ -46,7 +46,7 @@ public class TrainController : ControllerBase
         return Ok(trains.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddTrain(TrainDto trainDto)
     {
@@ -57,7 +57,7 @@ public class TrainController : ControllerBase
         return Created($"api/trains/{train.Data.Id}", null);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(int id)
     {

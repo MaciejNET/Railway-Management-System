@@ -8,5 +8,5 @@ public class RegisterPassenger
     public string PhoneNumber { get; set; }
     public string Password { get; set; }
     public int Age { get; set; }
-    public string DiscountName { get; set; }
+    public string? DiscountName { get; set; }
 }

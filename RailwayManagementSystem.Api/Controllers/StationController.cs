@@ -58,7 +58,7 @@ public class StationController : ControllerBase
         return Ok(stations.Data);
     }
     
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddStation(StationDto stationDto)
     {
@@ -69,7 +69,7 @@ public class StationController : ControllerBase
         return Created($"api/stations/{station.Data.Id}", null);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(int id)
     {

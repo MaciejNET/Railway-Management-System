@@ -1,11 +1,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace RailwayManagementSystem.Core.Models;
 
 public class Trip
 {
     public int Id { get; set; }
-    public double Price { get; set; }
+    
+    [Precision(5, 2)]
+    public decimal Price { get; set; }
 
     [ForeignKey("Train")] public int TrainId { get; set; }
 

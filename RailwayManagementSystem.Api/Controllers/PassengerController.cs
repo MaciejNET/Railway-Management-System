@@ -10,12 +10,10 @@ namespace RailwayManagementSystem.Api.Controllers;
 public class PassengerController : ControllerBase
 {
     private readonly IPassengerService _passengerService;
-    private readonly ITicketService _ticketService;
 
-    public PassengerController(IPassengerService passengerService, ITicketService ticketService)
+    public PassengerController(IPassengerService passengerService)
     {
         _passengerService = passengerService;
-        _ticketService = ticketService;
     }
 
     [HttpGet("{id}")]
@@ -38,16 +36,6 @@ public class PassengerController : ControllerBase
         return Ok(passengers.Data);
     }
 
-    [HttpGet("{id}/tickets")]
-    public async Task<IActionResult> GetPassengersTickets(int id)
-    {
-        var tickets = await _ticketService.GetByPassengerId(id);
-
-        if (tickets.Success is false) return NotFound(tickets.Message);
-
-        return Ok(tickets.Data);
-    }
-    
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterPassenger registerPassenger)
     {
@@ -68,7 +56,7 @@ public class PassengerController : ControllerBase
         return Ok(passenger.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Passenger,Admin")]
     [HttpPatch("{id}/update")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdatePassenger updatePassenger)
     {
@@ -90,7 +78,7 @@ public class PassengerController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Passenger,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

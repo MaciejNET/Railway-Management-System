@@ -36,7 +36,7 @@ public class DiscountController : ControllerBase
         return Ok(discounts.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddDiscount([FromBody] DiscountDto discountDto)
     {
@@ -47,7 +47,7 @@ public class DiscountController : ControllerBase
         return Created($"api/discounts/{discount.Data.Id}", null);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

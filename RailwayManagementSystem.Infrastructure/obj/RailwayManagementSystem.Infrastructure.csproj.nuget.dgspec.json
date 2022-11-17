@@ -58,6 +58,14 @@
               "target": "Package",
               "version": "[1.0.3, )"
             },
+            "GemBox.Pdf": {
+              "target": "Package",
+              "version": "[17.0.1224, )"
+            },
+            "IronSoftware.System.Drawing": {
+              "target": "Package",
+              "version": "[2022.11.10457, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.10, )"
@@ -78,17 +86,45 @@
               "target": "Package",
               "version": "[6.0.10, )"
             },
+            "Microsoft.Net.Http.Server": {
+              "target": "Package",
+              "version": "[1.1.4, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[6.0.7, )"
+            },
+            "QRCoder": {
+              "target": "Package",
+              "version": "[1.4.3, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.3, )"
+            },
+            "SkiaSharp.NativeAssets.macOS": {
+              "target": "Package",
+              "version": "[2.88.3, )"
             },
             "Swashbuckle.AspNetCore.Filters": {
               "target": "Package",
               "version": "[7.0.5, )"
             },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "System.IO.FileSystem": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
             "System.Linq.Async.Queryable": {
               "target": "Package",
               "version": "[6.0.1, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
@@ -171,6 +207,14 @@
               "target": "Package",
               "version": "[1.0.3, )"
             },
+            "GemBox.Pdf": {
+              "target": "Package",
+              "version": "[17.0.1224, )"
+            },
+            "IronSoftware.System.Drawing": {
+              "target": "Package",
+              "version": "[2022.11.10457, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[6.0.11, )"
@@ -199,13 +243,37 @@
               "target": "Package",
               "version": "[6.25.0, )"
             },
+            "Microsoft.Net.Http.Server": {
+              "target": "Package",
+              "version": "[1.1.4, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[6.0.7, )"
             },
+            "QRCoder": {
+              "target": "Package",
+              "version": "[1.4.3, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.3, )"
+            },
+            "SkiaSharp.NativeAssets.macOS": {
+              "target": "Package",
+              "version": "[2.88.3, )"
+            },
             "Swashbuckle.AspNetCore.Filters": {
               "target": "Package",
               "version": "[7.0.5, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "System.IO.FileSystem": {
+              "target": "Package",
+              "version": "[4.3.0, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
@@ -214,6 +282,10 @@
             "System.Linq.Async.Queryable": {
               "target": "Package",
               "version": "[6.0.1, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [

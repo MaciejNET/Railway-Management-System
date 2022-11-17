@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services;
 
@@ -22,7 +23,7 @@ public class CareerController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var career = await _careerService.GetById(id);
-
+        
         if (career.Success is false) return NotFound(career.Message);
 
         return Ok(career.Data);
@@ -58,7 +59,7 @@ public class CareerController : ControllerBase
         return Ok(careers.Data);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddCareer([FromBody] CareerDto careerDto)
     {
@@ -69,7 +70,7 @@ public class CareerController : ControllerBase
         return Created($"api/careers/{career.Data.Id}", null);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
