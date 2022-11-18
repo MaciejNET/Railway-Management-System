@@ -9,9 +9,9 @@ public class Train
     public Name Name { get; set; }
     public int SeatsAmount { get; set; }
 
-    [ForeignKey("Career")] public int CareerId { get; set; }
+    [ForeignKey("Career")] public int CarrierId { get; set; }
 
-    public virtual Career Career { get; set; }
+    public virtual Carrier Carrier { get; set; }
 
     [NotMapped] public virtual IEnumerable<Seat> Seats { get; set; }
 

@@ -12,12 +12,12 @@ public class TrainRepository : GenericRepository<Train>, ITrainRepository
 
     public new async Task<Train?> GetById(int id)
     {
-        return await _context.Trains.Include(x => x.Career).FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Trains.Include(x => x.Carrier).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public new async Task<IEnumerable<Train>> GetAll()
     {
-        return await _context.Trains.Include(x => x.Career).ToListAsync();
+        return await _context.Trains.Include(x => x.Carrier).ToListAsync();
     }
 
     public async Task<Train?> GetTrainByName(string name)
@@ -25,13 +25,8 @@ public class TrainRepository : GenericRepository<Train>, ITrainRepository
         return await _context.Trains.FirstOrDefaultAsync(x => x.Name.Value == name);
     }
 
-    public async Task<IEnumerable<Train>> GetByCareerId(int id)
+    public async Task<IEnumerable<Train>> GetByCarrierId(int id)
     {
-        return await _context.Trains.Include(x => x.Career).Where(x => x.CareerId == id).ToListAsync();
-    }
-
-    public async Task<IEnumerable<Train>> GetByCareerName(string name)
-    {
-        return await _context.Trains.Where(x => x.Career.Name.Value == name).ToListAsync();
+        return await _context.Trains.Include(x => x.Carrier).Where(x => x.CarrierId == id).ToListAsync();
     }
 }

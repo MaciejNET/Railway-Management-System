@@ -8,7 +8,7 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<Career, CareerDto>()
+        CreateMap<Carrier, CarrierDto>()
             .ForMember(dest => dest.Name, src => src.MapFrom(x => x.Name.Value));
         CreateMap<Discount, DiscountDto>()
             .ForMember(dest => dest.Name, src => src.MapFrom(x => x.Name.Value));
@@ -28,7 +28,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.StartStation, src => src.MapFrom(x => x.Stations.First().Name.Value))
             .ForMember(dest => dest.EndStation, src => src.MapFrom(x => x.Stations.Last().Name.Value));
         CreateMap<Train, TrainDto>()
-            .ForMember(dest => dest.CareerName, src => src.MapFrom(x => x.Career.Name.Value))
+            .ForMember(dest => dest.CarrierName, src => src.MapFrom(x => x.Carrier.Name.Value))
             .ForMember(dest => dest.Name, src => src.MapFrom(x => x.Name.Value));
         CreateMap<TripInterval, TripIntervalDto>();
         CreateMap<Trip, TripDto>()

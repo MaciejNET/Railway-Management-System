@@ -8,17 +8,17 @@ namespace RailwayManagementSystem.Infrastructure.Services;
 
 public class TrainService : ITrainService
 {
-    private readonly ICareerRepository _careerRepository;
+    private readonly ICarrierRepository _carrierRepository;
     private readonly IMapper _mapper;
     private readonly ISeatRepository _seatRepository;
     private readonly ITrainRepository _trainRepository;
 
     public TrainService(ITrainRepository trainRepository, ISeatRepository seatRepository,
-        ICareerRepository careerRepository, IMapper mapper)
+        ICarrierRepository carrierRepository, IMapper mapper)
     {
         _trainRepository = trainRepository;
         _seatRepository = seatRepository;
-        _careerRepository = careerRepository;
+        _carrierRepository = carrierRepository;
         _mapper = mapper;
     }
 
@@ -67,9 +67,9 @@ public class TrainService : ITrainService
         return response;
     }
 
-    public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetByCareerId(int id)
+    public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetByCarrierId(int id)
     {
-        var trains = await _trainRepository.GetByCareerId(id);
+        var trains = await _trainRepository.GetByCarrierId(id);
 
         if (trains.Any() is false)
         {
@@ -128,14 +128,14 @@ public class TrainService : ITrainService
             return serviceResponse;
         }
 
-        var career = await _careerRepository.GetByName(trainDto.CareerName);
+        var carrier = await _carrierRepository.GetByName(trainDto.CarrierName);
 
-        if (career is null)
+        if (carrier is null)
         {
             var serviceResponse = new ServiceResponse<TrainDto>
             {
                 Success = false,
-                Message = $"Cannot create train because career with name: '{trainDto.Name}' does not exists."
+                Message = $"Cannot create train because carrier with name: '{trainDto.CarrierName}' does not exists."
             };
 
             return serviceResponse;
@@ -145,7 +145,7 @@ public class TrainService : ITrainService
         {
             Name = trainDto.Name,
             SeatsAmount = trainDto.SeatsAmount,
-            Career = career
+            Carrier = carrier
         };
         await _trainRepository.Add(train);
         var seats = new List<Seat>();

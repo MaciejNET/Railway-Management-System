@@ -3,7 +3,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Core.Models;
 
-public class Career
+public class Carrier
 {
     public int Id { get; set; }
     public Name Name { get; set; }

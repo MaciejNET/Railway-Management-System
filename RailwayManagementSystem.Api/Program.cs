@@ -24,7 +24,7 @@ builder.Services.AddDbContext<RailwayManagementSystemDbContext>(opt =>
         b => b.MigrationsAssembly("RailwayManagementSystem.Api")));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<ICareerRepository, CareerRepository>();
+builder.Services.AddScoped<ICarrierRepository, CarrierRepository>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<IPassengerRepository, PassengerRepository>();
 builder.Services.AddScoped<ITrainRepository, TrainRepository>();
@@ -37,7 +37,7 @@ builder.Services.AddScoped<ITripIntervalRepository, TripIntervalRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IRailwayEmployeeRepository, RailwayEmployeeRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<ICareerService, CareerService>();
+builder.Services.AddScoped<ICarrierService, CarrierService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IPassengerService, PassengerService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();

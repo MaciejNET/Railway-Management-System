@@ -9,7 +9,7 @@ public class RailwayManagementSystemDbContext : DbContext
     {
     }
 
-    public DbSet<Career> Careers => Set<Career>();
+    public DbSet<Carrier> Carriers => Set<Carrier>();
     public DbSet<Discount> Discounts => Set<Discount>();
     public DbSet<Passenger> Passengers => Set<Passenger>();
     public DbSet<Admin> Admins => Set<Admin>();
@@ -49,7 +49,7 @@ public class RailwayManagementSystemDbContext : DbContext
         modelBuilder.Entity<Trip>().Navigation(x => x.Schedules).AutoInclude();
         modelBuilder.Entity<Schedule>().Navigation(x => x.Station).AutoInclude();
         
-        modelBuilder.Entity<Career>().OwnsOne(x => x.Name);
+        modelBuilder.Entity<Carrier>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Discount>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Train>().OwnsOne(x => x.Name);
         modelBuilder.Entity<Passenger>().OwnsOne(x => x.FirstName);
