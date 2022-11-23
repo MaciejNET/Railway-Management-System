@@ -65,13 +65,13 @@ public class TicketService : ITicketService
         return response;
     }
 
-    public async Task<ServiceResponse<string>> VerifyTicket(int id)
+    public async Task<ServiceResponse<VerifyTicketResponse>> VerifyTicket(int id)
     {
         var ticket = await _ticketRepository.GetById(id);
 
         if (ticket is null)
         {
-            var serviceResponse = new ServiceResponse<string>
+            var serviceResponse = new ServiceResponse<VerifyTicketResponse>
             {
                 Success = false,
                 Message = $"Ticket with id: '{id}' does not exists."
@@ -81,14 +81,21 @@ public class TicketService : ITicketService
         }
 
         var today = DateOnly.FromDateTime(DateTime.Now);
-        var response = new ServiceResponse<string>();
+        var response = new ServiceResponse<VerifyTicketResponse>
+        {
+            Data = new VerifyTicketResponse()
+            {
+                StartStation = ticket.Stations.First().Name.Value,
+                EndStation = ticket.Stations.Last().Name.Value
+            }
+        };
         if (today > ticket.TripDate)
         {
-            response.Data = "Invalid ticket";
+            response.Data.IsValid = true;
             return response;
         }
 
-        response.Data = "Valid ticket";
+        response.Data.IsValid = false;
         return response;
     }
 

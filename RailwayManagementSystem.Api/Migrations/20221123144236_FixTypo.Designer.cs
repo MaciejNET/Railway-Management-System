@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RailwayManagementSystem.Infrastructure;
@@ -11,9 +12,10 @@ using RailwayManagementSystem.Infrastructure;
 namespace RailwayManagementSystem.Api.Migrations
 {
     [DbContext(typeof(RailwayManagementSystemDbContext))]
-    partial class RailwayManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221123144236_FixTypo")]
+    partial class FixTypo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -47,8 +47,15 @@ public class TicketController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var id = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        var x = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
+        if (x is null)
+        {
+            return BadRequest("No user login");
+        }
+        
+        var id = int.Parse(x.Value);
+        
         var tickets = await _ticketService.GetByPassengerId(id);
         
         if (tickets.Success is false)

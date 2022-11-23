@@ -2440,10 +2440,7 @@
         },
         "runtime": {
           "bin/placeholder/RailwayManagementSystem.Core.dll": {}
-        },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        }
       },
       "RailwayManagementSystem.Infrastructure/1.0.0": {
         "type": "project",
@@ -2478,10 +2475,7 @@
         },
         "runtime": {
           "bin/placeholder/RailwayManagementSystem.Infrastructure.dll": {}
-        },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        }
       }
     }
   },

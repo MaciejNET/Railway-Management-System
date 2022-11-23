@@ -9,7 +9,7 @@ public class Train
     public Name Name { get; set; }
     public int SeatsAmount { get; set; }
 
-    [ForeignKey("Career")] public int CarrierId { get; set; }
+    [ForeignKey("Carrier")] public int CarrierId { get; set; }
 
     public virtual Carrier Carrier { get; set; }
 
