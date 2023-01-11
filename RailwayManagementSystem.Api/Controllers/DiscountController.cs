@@ -18,8 +18,8 @@ public class DiscountController : ControllerBase
         _discountService = discountService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var discount = await _discountService.GetById(id);
 
@@ -50,8 +50,8 @@ public class DiscountController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var discount = await _discountService.Delete(id);
 

@@ -20,8 +20,8 @@ public class CarrierController : ControllerBase
         _trainService = trainService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var carrier = await _carrierService.GetById(id);
         
@@ -31,7 +31,7 @@ public class CarrierController : ControllerBase
     }
 
     [HttpGet("name/{name}")]
-    public async Task<IActionResult> GetByName(string name)
+    public async Task<IActionResult> GetByName([FromRoute] string name)
     {
         var carrier = await _carrierService.GetByName(name);
 
@@ -40,8 +40,8 @@ public class CarrierController : ControllerBase
         return Ok(carrier.Data);
     }
 
-    [HttpGet("{id}/trains")]
-    public async Task<IActionResult> GetAllCarrierTrains(int id)
+    [HttpGet("{id:int}/trains")]
+    public async Task<IActionResult> GetAllCarrierTrains([FromRoute] int id)
     {
         var trains = await _trainService.GetByCarrierId(id);
 
@@ -72,8 +72,8 @@ public class CarrierController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var carrier = await _carrierService.Delete(id);
 

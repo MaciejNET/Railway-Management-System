@@ -17,8 +17,8 @@ public class PassengerController : ControllerBase
         _passengerService = passengerService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var passenger = await _passengerService.GetById(id);
 
@@ -69,8 +69,8 @@ public class PassengerController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("{id}/updateDiscount")]
-    public async Task<IActionResult> UpdateDiscount(int id, [FromBody] string? discountName)
+    [HttpPatch("{id:int}/updateDiscount")]
+    public async Task<IActionResult> UpdateDiscount([FromRoute] int id, [FromBody] string? discountName)
     {
         var passenger = await _passengerService.UpdateDiscount(id, discountName);
 
@@ -80,8 +80,8 @@ public class PassengerController : ControllerBase
     }
 
     [Authorize(Roles = "Passenger,Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var passenger = await _passengerService.Delete(id);
 

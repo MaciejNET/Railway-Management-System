@@ -17,7 +17,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateAdmin(CreateAdmin createAdmin)
+    public async Task<IActionResult> CreateAdmin([FromBody] CreateAdmin createAdmin)
     {
         var admin = await _adminService.CreateAdmin(createAdmin);
 
@@ -30,7 +30,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginAdmin loginAdmin)
+    public async Task<IActionResult> Login([FromBody] LoginAdmin loginAdmin)
     {
         var admin = await _adminService.LoginAdmin(loginAdmin);
 

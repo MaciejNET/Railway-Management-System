@@ -20,7 +20,7 @@ public class RailwayEmployeeController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
+    public async Task<IActionResult> CreateRailwayEmployee([FromBody] CreateRailwayEmployee createRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeService.CreateRailwayEmployee(createRailwayEmployee);
 
@@ -33,7 +33,7 @@ public class RailwayEmployeeController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRailwayEmployee loginRailwayEmployee)
+    public async Task<IActionResult> Login([FromBody] LoginRailwayEmployee loginRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeService.LoginRailwayEmployee(loginRailwayEmployee);
 

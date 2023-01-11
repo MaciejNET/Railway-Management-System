@@ -20,8 +20,8 @@ public class TicketController : ControllerBase
         _ticketService = ticketService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById (int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById ([FromRoute] int id)
     {
         var ticket = await _ticketService.GetById(id);
 
@@ -33,8 +33,8 @@ public class TicketController : ControllerBase
         return Ok(ticket.Data);
     }
 
-    [HttpGet("{id}/pdf")]
-    public async Task<IActionResult> GetTicketPdf(int id)
+    [HttpGet("{id:int}/pdf")]
+    public async Task<IActionResult> GetTicketPdf([FromRoute] int id)
     {
         var ticketPdf = await _ticketService.GetTicketPdf(id);
 
@@ -69,8 +69,8 @@ public class TicketController : ControllerBase
     }
     
     [Authorize(Roles = "Admin,RailwayEmployee")]
-    [HttpGet("{id}/verify")]
-    public async Task<IActionResult> VerifyTicket(int id)
+    [HttpGet("{id:int}/verify")]
+    public async Task<IActionResult> VerifyTicket([FromRoute] int id)
     {
         var ticket = await _ticketService.VerifyTicket(id);
 
@@ -82,8 +82,8 @@ public class TicketController : ControllerBase
         return Ok(ticket.Data);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> CancelTicket(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> CancelTicket([FromRoute] int id)
     {
         var ticket = await _ticketService.Cancel(id);
 

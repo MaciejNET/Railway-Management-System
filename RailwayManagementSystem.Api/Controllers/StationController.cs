@@ -20,8 +20,8 @@ public class StationController : ControllerBase
         _scheduleService = scheduleService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var station = await _stationService.GetById(id);
 
@@ -62,7 +62,7 @@ public class StationController : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddStation(CreateStation createStation)
+    public async Task<IActionResult> AddStation([FromBody] CreateStation createStation)
     {
         var station = await _stationService.AddStation(createStation);
 
@@ -72,8 +72,8 @@ public class StationController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var station = await _stationService.Delete(id);
 

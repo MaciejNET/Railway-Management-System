@@ -23,8 +23,8 @@ public class TripController : ControllerBase
         _scheduleService = scheduleService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var trip = await _tripService.GetById(id);
 
@@ -43,8 +43,8 @@ public class TripController : ControllerBase
         return Ok(trips.Data);
     }
 
-    [HttpGet("{id}/schedule")]
-    public async Task<IActionResult> GetTripSchedule(int id)
+    [HttpGet("{id:int}/schedule")]
+    public async Task<IActionResult> GetTripSchedule([FromRoute] int id)
     {
         var schedule = await _scheduleService.GetByTripId(id);
 
@@ -77,7 +77,7 @@ public class TripController : ControllerBase
 
     [Authorize(Roles = "Passenger")]
     [HttpPost("book")]
-    public async Task<IActionResult> BookTicket(BookTicket bookTicket)
+    public async Task<IActionResult> BookTicket([FromBody] BookTicket bookTicket)
     {
         var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
@@ -96,8 +96,8 @@ public class TripController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var trip = await _tripService.Delete(id);
 
