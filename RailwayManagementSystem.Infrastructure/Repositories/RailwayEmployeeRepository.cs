@@ -10,8 +10,6 @@ public class RailwayEmployeeRepository : GenericRepository<RailwayEmployee>, IRa
     {
     }
 
-    public async Task<RailwayEmployee?> GetByName(string name)
-    {
-        return await _context.RailwayEmployees.FirstOrDefaultAsync(x => x.Name.Value == name);
-    }
+    public async Task<RailwayEmployee?> GetByName(string name) 
+        => await _context.RailwayEmployees.FirstOrDefaultAsync(x => x.Name.Value == name);
 }

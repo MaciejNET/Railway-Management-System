@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Ticket;
 using RailwayManagementSystem.Infrastructure.Commands.Trip;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -77,11 +79,20 @@ public class TripController : ControllerBase
     [HttpPost("book")]
     public async Task<IActionResult> BookTicket(BookTicket bookTicket)
     {
-        var ticket = await _bookingService.BookTicket(bookTicket);
+        var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+        if (user is null)
+        {
+            return Unauthorized("No user login");
+        }
+
+        var passengerId = int.Parse(user.Value);
+        
+        var ticket = await _bookingService.BookTicket(bookTicket, passengerId);
 
         if (ticket.Success is false) return BadRequest(ticket.Message);
 
-        return Created($"api/passengers/{bookTicket.PassengerId}/tickets", ticket.Data);
+        return Created($"api/passengers/{passengerId}/tickets", ticket.Data);
     }
 
     [Authorize(Roles = "Admin")]

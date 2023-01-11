@@ -15,8 +15,6 @@ public class StationRepository : GenericRepository<Station>, IStationRepository
         return await _context.Stations.FirstOrDefaultAsync(x => x.Name.Value == name);
     }
 
-    public async Task<IEnumerable<Station>> GetByCity(string city)
-    {
-        return await _context.Stations.Where(x => x.City.Value == city).ToListAsync();
-    }
+    public async Task<IEnumerable<Station>> GetByCity(string city) 
+        => await _context.Stations.Where(x => x.City.Value == city).AsNoTracking().ToListAsync();
 }

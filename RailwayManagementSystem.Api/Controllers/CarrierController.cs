@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -61,9 +62,9 @@ public class CarrierController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddCarrier([FromBody] CarrierDto careerDto)
+    public async Task<IActionResult> AddCarrier([FromBody] string name)
     {
-        var carrier = await _carrierService.AddCarrier(careerDto);
+        var carrier = await _carrierService.AddCarrier(name);
 
         if (carrier.Success is false) return BadRequest(carrier.Message);
 

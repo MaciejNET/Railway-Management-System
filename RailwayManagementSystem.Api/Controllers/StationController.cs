@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RailwayManagementSystem.Infrastructure.Commands.Station;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -60,9 +62,9 @@ public class StationController : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddStation(StationDto stationDto)
+    public async Task<IActionResult> AddStation(CreateStation createStation)
     {
-        var station = await _stationService.AddStation(stationDto);
+        var station = await _stationService.AddStation(createStation);
 
         if (station.Success is false) return BadRequest(station.Message);
 

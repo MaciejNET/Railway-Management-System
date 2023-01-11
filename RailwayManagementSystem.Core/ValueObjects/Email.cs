@@ -15,15 +15,9 @@ public record Email
         Value = value;
     }
 
-    public string Value { get; private set; }
+    public string Value { get; }
 
-    public static implicit operator Email(string value)
-    {
-        return new Email(value);
-    }
+    public static implicit operator Email(string value) => new(value);
 
-    public static implicit operator string(Email email)
-    {
-        return email.Value;
-    }
+    public static implicit operator string(Email email) => email.Value;
 }

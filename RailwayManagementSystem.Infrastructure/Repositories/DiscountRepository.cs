@@ -11,7 +11,5 @@ public class DiscountRepository : GenericRepository<Discount>, IDiscountReposito
     }
 
     public async Task<Discount?> GetByName(string name)
-    {
-        return await _context.Discounts.FirstOrDefaultAsync(x => x.Name.Value == name);
-    }
+        => await _context.Discounts.FirstOrDefaultAsync(x => x.Name.Value == name);
 }

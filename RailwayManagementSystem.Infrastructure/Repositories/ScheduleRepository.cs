@@ -15,9 +15,7 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
         return await _context.Schedules.Include(x => x.Station).Where(x => x.TripId == id).ToListAsync();
     }
 
-    public async Task<IEnumerable<Schedule>> GetByDepartureTimeAndStationId(TimeOnly departureTime, int id)
-    {
-        return await _context.Schedules.Include(x => x.Station).Include(x => x.Trip)
+    public async Task<IEnumerable<Schedule>> GetByDepartureTimeAndStationId(TimeOnly departureTime, int id) 
+        => await _context.Schedules.Include(x => x.Station).Include(x => x.Trip)
             .Where(x => x.DepartureTime >= departureTime && x.StationId == id).ToListAsync();
-    }
 }

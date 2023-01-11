@@ -8,15 +8,9 @@ public record City
         Value = value;
     }
 
-    public string Value { get; private set; }
+    public string Value { get; }
 
-    public static implicit operator City(string value)
-    {
-        return new(value);
-    }
+    public static implicit operator City(string value) => new(value);
 
-    public static implicit operator string(City city)
-    {
-        return city.Value;
-    }
+    public static implicit operator string(City city) => city.Value;
 }

@@ -10,14 +10,17 @@ public class TicketRepository : GenericRepository<Ticket>, ITicketRepository
     {
     }
 
-    public async Task<IEnumerable<Ticket>> GetByTripId(int id)
-    {
-        return await _context.Tickets.Where(x => x.TripId == id).ToListAsync();
-    }
+    public async Task<IEnumerable<Ticket>> GetByTripId(int id) 
+        => await _context.Tickets.Where(x => x.TripId == id).AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<Ticket>> GetByPassengerId(int id)
-    {
-        return await _context.Tickets.Include(x => x.Passenger).Include(x => x.Seat).Include(x => x.Trip)
-            .ThenInclude(x => x.Train).Include(x => x.Stations).Where(x => x.PassengerId == id).ToListAsync();
-    }
+    public async Task<IEnumerable<Ticket>> GetByPassengerId(int id) 
+        => await _context.Tickets
+            .Include(x => x.Passenger)
+            .Include(x => x.Seat)
+            .Include(x => x.Trip)
+            .ThenInclude(x => x.Train)
+            .Include(x => x.Stations)
+            .Where(x => x.PassengerId == id)
+            .AsNoTracking()
+            .ToListAsync();
 }

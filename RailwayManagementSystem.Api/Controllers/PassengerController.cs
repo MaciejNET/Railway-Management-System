@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 

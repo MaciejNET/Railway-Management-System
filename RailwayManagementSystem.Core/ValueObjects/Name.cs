@@ -8,15 +8,9 @@ public record Name
         Value = value;
     }
 
-    public string Value { get; private set; }
+    public string Value { get; }
 
-    public static implicit operator Name(string value)
-    {
-        return new Name(value);
-    }
+    public static implicit operator Name(string value) => new(value);
 
-    public static implicit operator string(Name name)
-    {
-        return name.Value;
-    }
+    public static implicit operator string(Name name) => name.Value;
 }

@@ -15,18 +15,12 @@ public class PassengerRepository : GenericRepository<Passenger>, IPassengerRepos
         return await _context.Passengers.Include(x => x.Discount).FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public new async Task<IEnumerable<Passenger>> GetAll()
-    {
-        return await _context.Passengers.Include(x => x.Discount).ToListAsync();
-    }
+    public new async Task<IEnumerable<Passenger>> GetAll() 
+        => await _context.Passengers.Include(x => x.Discount).AsNoTracking().ToListAsync();
 
-    public async Task<Passenger?> GetByEmail(string email)
-    {
-        return await _context.Passengers.FirstOrDefaultAsync(x => x.Email.Value == email);
-    }
+    public async Task<Passenger?> GetByEmail(string email) 
+        => await _context.Passengers.FirstOrDefaultAsync(x => x.Email.Value == email);
 
-    public async Task<Passenger?> GetByPhoneNumber(string phoneNumber)
-    {
-        return await _context.Passengers.FirstOrDefaultAsync(x => x.PhoneNumber.Value == phoneNumber);
-    }
+    public async Task<Passenger?> GetByPhoneNumber(string phoneNumber) 
+        => await _context.Passengers.FirstOrDefaultAsync(x => x.PhoneNumber.Value == phoneNumber);
 }

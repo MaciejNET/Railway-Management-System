@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RailwayManagementSystem.Infrastructure.Commands.Discount;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -38,9 +40,9 @@ public class DiscountController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddDiscount([FromBody] DiscountDto discountDto)
+    public async Task<IActionResult> AddDiscount([FromBody] CreateDiscount createDiscount)
     {
-        var discount = await _discountService.AddDiscount(discountDto);
+        var discount = await _discountService.AddDiscount(createDiscount);
 
         if (discount.Success is false) return BadRequest(discount.Message);
 

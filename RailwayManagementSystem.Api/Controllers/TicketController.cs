@@ -5,6 +5,7 @@ using Microsoft.Net.Http.Server;
 using Org.BouncyCastle.Bcpg;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -41,20 +42,21 @@ public class TicketController : ControllerBase
         {
             return NotFound(ticketPdf.Message);
         }
+        
         return File(ticketPdf.Data, "application/pdf", "ticket.pdf");
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var x = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-        if (x is null)
+        if (user is null)
         {
-            return BadRequest("No user login");
+            return Unauthorized("No user login");
         }
         
-        var id = int.Parse(x.Value);
+        var id = int.Parse(user.Value);
         
         var tickets = await _ticketService.GetByPassengerId(id);
         
@@ -78,5 +80,18 @@ public class TicketController : ControllerBase
         }
 
         return Ok(ticket.Data);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> CancelTicket(int id)
+    {
+        var ticket = await _ticketService.Cancel(id);
+
+        if (ticket.Success is false)
+        {
+            return BadRequest(ticket.Message);
+        }
+
+        return NoContent();
     }
 }

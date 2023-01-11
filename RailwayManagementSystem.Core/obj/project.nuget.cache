@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "AYQaFgAr5YWOiD80ckA08CmVWxWTlsvIirENSBuQhhRMNfS6zyRqvE9rG30gDWWVVIHGwF/uXTlZKhdvuaue1g==",
+  "dgSpecHash": "eTfcFdxSLVt94HZnoC7W1fD/bWmjekdx2+pZvlIoHEG4LFcrUQFivVJxHRg1mxcXjg1KJONgdH6rXpfWxItaQw==",
   "success": true,
   "projectFilePath": "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
   "expectedPackageFiles": [
@@ -156,7 +156,9 @@
     "/Users/maciejnet/.nuget/packages/system.threading.timer/4.3.0/system.threading.timer.4.3.0.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/system.windows.extensions/4.7.0/system.windows.extensions.4.7.0.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/system.xml.readerwriter/4.3.0/system.xml.readerwriter.4.3.0.nupkg.sha512",
-    "/Users/maciejnet/.nuget/packages/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512"
+    "/Users/maciejnet/.nuget/packages/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512",
+    "/Users/maciejnet/.nuget/packages/microsoft.netcore.app.ref/6.0.12/microsoft.netcore.app.ref.6.0.12.nupkg.sha512",
+    "/Users/maciejnet/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.12/microsoft.aspnetcore.app.ref.6.0.12.nupkg.sha512"
   ],
   "logs": []
 }

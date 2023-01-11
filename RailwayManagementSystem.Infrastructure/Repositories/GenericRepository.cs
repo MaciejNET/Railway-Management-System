@@ -6,48 +6,30 @@ namespace RailwayManagementSystem.Infrastructure.Repositories;
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     protected readonly RailwayManagementSystemDbContext _context;
-
+    
     protected GenericRepository(RailwayManagementSystemDbContext context)
     {
         _context = context;
     }
-
+    
     public async Task<T?> GetById(int id)
-    {
-        return await _context.Set<T>().FindAsync(id);
-    }
+        => await _context.Set<T>().FindAsync(id);
 
     public async Task<IEnumerable<T>> GetAll()
-    {
-        return await _context.Set<T>().ToListAsync();
-    }
+        => await _context.Set<T>().AsNoTracking().ToListAsync();
 
     public async Task Add(T entity)
-    {
-        await _context.Set<T>().AddAsync(entity);
-        await _context.SaveChangesAsync();
-    }
+        => await _context.Set<T>().AddAsync(entity);
 
     public async Task AddRange(IEnumerable<T> entities)
-    {
-        await _context.Set<T>().AddRangeAsync(entities);
-        await _context.SaveChangesAsync();
-    }
+        => await _context.Set<T>().AddRangeAsync(entities);
 
     public async Task Update(T entity)
-    {
-        _context.Set<T>().Update(entity);
-        await _context.SaveChangesAsync();
-    }
+        => await Task.FromResult(_context.Set<T>().Update(entity));
 
     public async Task Remove(T entity)
-    {
-        _context.Set<T>().Remove(entity);
-        await _context.SaveChangesAsync();
-    }
+        => await Task.FromResult(_context.Set<T>().Remove(entity));
 
-    public async Task SaveChanges()
-    {
-        await _context.SaveChangesAsync();
-    }
+    public async Task SaveChangesAsync()
+        => await _context.SaveChangesAsync();
 }
