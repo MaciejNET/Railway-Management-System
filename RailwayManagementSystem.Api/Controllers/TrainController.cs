@@ -21,7 +21,10 @@ public class TrainController : ControllerBase
     {
         var train = await _trainService.GetById(id);
 
-        if (train.Success is false) return NotFound(train.Message);
+        if (train.Success is false)
+        {
+            return NotFound(train.Message);
+        }
 
         return Ok(train.Data);
     }
@@ -31,7 +34,10 @@ public class TrainController : ControllerBase
     {
         var train = await _trainService.GetByTrainName(name);
 
-        if (train.Success is false) return NotFound(train.Message);
+        if (train.Success is false)
+        {
+            return NotFound(train.Message);
+        }
 
         return Ok(train.Data);
     }
@@ -41,7 +47,10 @@ public class TrainController : ControllerBase
     {
         var trains = await _trainService.GetAll();
 
-        if (trains.Success is false) return NotFound(trains.Message);
+        if (trains.Success is false)
+        {
+            return NotFound(trains.Message);
+        }
 
         return Ok(trains.Data);
     }
@@ -52,7 +61,15 @@ public class TrainController : ControllerBase
     {
         var train = await _trainService.AddTrain(createTrain);
 
-        if (train.Success is false) return BadRequest(train.Message);
+        if (train.Success is false)
+        {
+            return BadRequest(train.Message);
+        }
+        
+        if (train.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"api/trains/{train.Data.Id}", null);
     }
@@ -63,7 +80,10 @@ public class TrainController : ControllerBase
     {
         var train = await _trainService.Delete(id);
 
-        if (train.Success is false) return BadRequest(train.Message);
+        if (train.Success is false)
+        {
+            return BadRequest(train.Message);
+        }
 
         return NoContent();
     }

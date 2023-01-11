@@ -184,3 +184,8 @@
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/bin/Debug/net6.0/runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/bin/Debug/net6.0/runtimes/win/lib/net6.0/System.Drawing.Common.dll
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/bin/Debug/net6.0/Microsoft.Net.Http.Server.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.RailwayManagementSystem.Api.Microsoft.AspNetCore.StaticWebAssets.props
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.build.RailwayManagementSystem.Api.props
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.buildMultiTargeting.RailwayManagementSystem.Api.props
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.buildTransitive.RailwayManagementSystem.Api.props
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets.pack.json

@@ -1,10 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Server;
-using Org.BouncyCastle.Bcpg;
-using RailwayManagementSystem.Core.Models;
-using RailwayManagementSystem.Infrastructure.Services;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -41,6 +37,11 @@ public class TicketController : ControllerBase
         if (ticketPdf.Success is false)
         {
             return NotFound(ticketPdf.Message);
+        }
+
+        if (ticketPdf.Data is null)
+        {
+            return StatusCode(500);
         }
         
         return File(ticketPdf.Data, "application/pdf", "ticket.pdf");

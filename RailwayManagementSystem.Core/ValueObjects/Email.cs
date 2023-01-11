@@ -15,7 +15,7 @@ public record Email
         Value = value;
     }
 
-    public string Value { get; }
+    public string Value { get; private set; }
 
     public static implicit operator Email(string value) => new(value);
 

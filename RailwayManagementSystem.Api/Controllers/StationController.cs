@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Station;
-using RailwayManagementSystem.Infrastructure.DTOs;
-using RailwayManagementSystem.Infrastructure.Services;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -25,7 +23,10 @@ public class StationController : ControllerBase
     {
         var station = await _stationService.GetById(id);
 
-        if (station.Success is false) return NotFound(station.Message);
+        if (station.Success is false)
+        {
+            return NotFound(station.Message);
+        }
 
         return Ok(station.Data);
     }
@@ -35,7 +36,10 @@ public class StationController : ControllerBase
     {
         var station = await _stationService.GetByName(name);
 
-        if (station.Success is false) return NotFound(station.Message);
+        if (station.Success is false)
+        {
+            return NotFound(station.Message);
+        }
 
         return Ok(station.Data);
     }
@@ -45,7 +49,10 @@ public class StationController : ControllerBase
     {
         var stations = await _stationService.GetAll();
 
-        if (stations.Success is false) return NotFound(stations.Message);
+        if (stations.Success is false)
+        {
+            return NotFound(stations.Message);
+        }
 
         return Ok(stations.Data);
     }
@@ -55,7 +62,10 @@ public class StationController : ControllerBase
     {
         var stations = await _stationService.GetByCity(city);
 
-        if (stations.Success is false) return NotFound(stations.Message);
+        if (stations.Success is false)
+        {
+            return NotFound(stations.Message);
+        }
 
         return Ok(stations.Data);
     }
@@ -66,7 +76,15 @@ public class StationController : ControllerBase
     {
         var station = await _stationService.AddStation(createStation);
 
-        if (station.Success is false) return BadRequest(station.Message);
+        if (station.Success is false)
+        {
+            return BadRequest(station.Message);
+        }
+        
+        if (station.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"api/stations/{station.Data.Id}", null);
     }
@@ -77,7 +95,10 @@ public class StationController : ControllerBase
     {
         var station = await _stationService.Delete(id);
 
-        if (station.Success is false) return BadRequest(station.Message);
+        if (station.Success is false)
+        {
+            return BadRequest(station.Message);
+        }
 
         return NoContent();
     }

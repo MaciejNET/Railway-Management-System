@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
-using RailwayManagementSystem.Infrastructure.Services;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -22,7 +21,10 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.GetById(id);
 
-        if (passenger.Success is false) return NotFound(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return NotFound(passenger.Message);
+        }
 
         return Ok(passenger.Data);
     }
@@ -32,7 +34,10 @@ public class PassengerController : ControllerBase
     {
         var passengers = await _passengerService.GetAll();
 
-        if (passengers.Success is false) return NotFound(passengers.Message);
+        if (passengers.Success is false)
+        {
+            return NotFound(passengers.Message);
+        }
 
         return Ok(passengers.Data);
     }
@@ -42,7 +47,15 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.Register(registerPassenger);
 
-        if (passenger.Success is false) return BadRequest(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return BadRequest(passenger.Message);
+        }
+        
+        if (passenger.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"passengers/{passenger.Data.Id}", null);
     }
@@ -52,7 +65,10 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.Login(loginPassenger);
 
-        if (passenger.Success is false) return BadRequest(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return BadRequest(passenger.Message);
+        }
 
         return Ok(passenger.Data);
     }
@@ -63,7 +79,10 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.Update(id, updatePassenger);
 
-        if (passenger.Success is false) return BadRequest(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return BadRequest(passenger.Message);
+        }
 
         return NoContent();
     }
@@ -74,7 +93,10 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.UpdateDiscount(id, discountName);
 
-        if (passenger.Success is false) return BadRequest(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return BadRequest(passenger.Message);
+        }
 
         return NoContent();
     }
@@ -85,7 +107,10 @@ public class PassengerController : ControllerBase
     {
         var passenger = await _passengerService.Delete(id);
 
-        if (passenger.Success is false) return BadRequest(passenger.Message);
+        if (passenger.Success is false)
+        {
+            return BadRequest(passenger.Message);
+        }
 
         return NoContent();
     }

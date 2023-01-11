@@ -1,6 +1,7 @@
 using AutoMapper;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Infrastructure.Commands.Carrier;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
@@ -86,15 +87,15 @@ public class CarrierService : ICarrierService
         return response;
     }
 
-    public async Task<ServiceResponse<CarrierDto>> AddCarrier(string name)
+    public async Task<ServiceResponse<CarrierDto>> AddCarrier(CreateCarrier createCarrier)
     {
-        var carrier = await _carrierRepository.GetByName(name);
+        var carrier = await _carrierRepository.GetByName(createCarrier.Name);
         if (carrier is not null)
         {
             var serviceResponse = new ServiceResponse<CarrierDto>
             {
                 Success = false,
-                Message = "Carrier with name: '" + name + "' already exists"
+                Message = "Carrier with name: '" + createCarrier.Name + "' already exists"
             };
 
             return serviceResponse;
@@ -104,7 +105,7 @@ public class CarrierService : ICarrierService
         {
             carrier = new Carrier
             {
-                Name = name
+                Name = createCarrier.Name
             };
         
             await _carrierRepository.Add(carrier);

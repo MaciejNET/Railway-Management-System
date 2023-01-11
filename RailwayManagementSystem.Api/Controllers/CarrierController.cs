@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RailwayManagementSystem.Core.Models;
-using RailwayManagementSystem.Infrastructure.DTOs;
-using RailwayManagementSystem.Infrastructure.Services;
+using RailwayManagementSystem.Infrastructure.Commands.Carrier;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -25,7 +23,10 @@ public class CarrierController : ControllerBase
     {
         var carrier = await _carrierService.GetById(id);
         
-        if (carrier.Success is false) return NotFound(carrier.Message);
+        if (carrier.Success is false)
+        {
+            return NotFound(carrier.Message);
+        }
 
         return Ok(carrier.Data);
     }
@@ -35,7 +36,10 @@ public class CarrierController : ControllerBase
     {
         var carrier = await _carrierService.GetByName(name);
 
-        if (carrier.Success is false) return NotFound(carrier.Message);
+        if (carrier.Success is false)
+        {
+            return NotFound(carrier.Message);
+        }
 
         return Ok(carrier.Data);
     }
@@ -45,7 +49,10 @@ public class CarrierController : ControllerBase
     {
         var trains = await _trainService.GetByCarrierId(id);
 
-        if (trains.Success is false) return NotFound(trains.Message);
+        if (trains.Success is false)
+        {
+            return NotFound(trains.Message);
+        }
 
         return Ok(trains.Data);
     }
@@ -55,18 +62,29 @@ public class CarrierController : ControllerBase
     {
         var carriers = await _carrierService.GetAll();
 
-        if (carriers.Success is false) return NotFound(carriers.Message);
+        if (carriers.Success is false)
+        {
+            return NotFound(carriers.Message);
+        }
 
         return Ok(carriers.Data);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddCarrier([FromBody] string name)
+    public async Task<IActionResult> AddCarrier([FromBody] CreateCarrier createCarrier)
     {
-        var carrier = await _carrierService.AddCarrier(name);
+        var carrier = await _carrierService.AddCarrier(createCarrier);
 
-        if (carrier.Success is false) return BadRequest(carrier.Message);
+        if (carrier.Success is false)
+        {
+            return BadRequest(carrier.Message);
+        }
+        
+        if (carrier.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"api/careers/{carrier.Data.Id}", null);
     }
@@ -77,7 +95,10 @@ public class CarrierController : ControllerBase
     {
         var carrier = await _carrierService.Delete(id);
 
-        if (carrier.Success is false) return BadRequest(carrier.Message);
+        if (carrier.Success is false)
+        {
+            return BadRequest(carrier.Message);
+        }
 
         return NoContent();
     }

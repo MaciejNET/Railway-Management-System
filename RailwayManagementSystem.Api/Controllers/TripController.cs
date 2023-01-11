@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Ticket;
 using RailwayManagementSystem.Infrastructure.Commands.Trip;
-using RailwayManagementSystem.Infrastructure.Services;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -28,7 +27,10 @@ public class TripController : ControllerBase
     {
         var trip = await _tripService.GetById(id);
 
-        if (trip.Success is false) return NotFound(trip.Message);
+        if (trip.Success is false)
+        {
+            return NotFound(trip.Message);
+        }
 
         return Ok(trip.Data);
     }
@@ -38,7 +40,10 @@ public class TripController : ControllerBase
     {
         var trips = await _tripService.GetAll();
 
-        if (trips.Success is false) return NotFound(trips.Message);
+        if (trips.Success is false)
+        {
+            return NotFound(trips.Message);
+        }
 
         return Ok(trips.Data);
     }
@@ -48,7 +53,10 @@ public class TripController : ControllerBase
     {
         var schedule = await _scheduleService.GetByTripId(id);
 
-        if (schedule.Success is false) return NotFound(schedule.Message);
+        if (schedule.Success is false)
+        {
+            return NotFound(schedule.Message);
+        }
 
         return Ok(schedule.Data);
     }
@@ -59,7 +67,10 @@ public class TripController : ControllerBase
         var trips = await _tripService.GetConnectionTrip(connectionTrip.StartStation, connectionTrip.EndStation,
             connectionTrip.Date);
 
-        if (trips.Success is false) return BadRequest(trips.Message);
+        if (trips.Success is false)
+        {
+            return BadRequest(trips.Message);
+        }
 
         return Ok(trips.Data);
     }
@@ -70,7 +81,15 @@ public class TripController : ControllerBase
     {
         var trip = await _tripService.AddTrip(createTrip);
 
-        if (trip.Success is false) return BadRequest(trip.Message);
+        if (trip.Success is false)
+        {
+            return BadRequest(trip.Message);
+        }
+        
+        if (trip.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"api/trips/{trip.Data.Id}", null);
     }
@@ -90,7 +109,10 @@ public class TripController : ControllerBase
         
         var ticket = await _bookingService.BookTicket(bookTicket, passengerId);
 
-        if (ticket.Success is false) return BadRequest(ticket.Message);
+        if (ticket.Success is false)
+        {
+            return BadRequest(ticket.Message);
+        }
 
         return Created($"api/passengers/{passengerId}/tickets", ticket.Data);
     }
@@ -101,7 +123,10 @@ public class TripController : ControllerBase
     {
         var trip = await _tripService.Delete(id);
 
-        if (trip.Success is false) return BadRequest(trip.Message);
+        if (trip.Success is false)
+        {
+            return BadRequest(trip.Message);
+        }
 
         return NoContent();
     }

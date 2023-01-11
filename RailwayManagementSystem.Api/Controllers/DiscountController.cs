@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Discount;
-using RailwayManagementSystem.Infrastructure.DTOs;
-using RailwayManagementSystem.Infrastructure.Services;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
@@ -23,7 +21,10 @@ public class DiscountController : ControllerBase
     {
         var discount = await _discountService.GetById(id);
 
-        if (discount.Success is false) return NotFound(discount.Message);
+        if (discount.Success is false)
+        {
+            return NotFound(discount.Message);
+        }
 
         return Ok(discount.Data);
     }
@@ -33,7 +34,10 @@ public class DiscountController : ControllerBase
     {
         var discounts = await _discountService.GetAll();
 
-        if (discounts.Success is false) return NotFound(discounts.Message);
+        if (discounts.Success is false)
+        {
+            return NotFound(discounts.Message);
+        }
 
         return Ok(discounts.Data);
     }
@@ -44,7 +48,15 @@ public class DiscountController : ControllerBase
     {
         var discount = await _discountService.AddDiscount(createDiscount);
 
-        if (discount.Success is false) return BadRequest(discount.Message);
+        if (discount.Success is false)
+        {
+            return BadRequest(discount.Message);
+        }
+        
+        if (discount.Data is null)
+        {
+            return StatusCode(500);
+        }
 
         return Created($"api/discounts/{discount.Data.Id}", null);
     }
@@ -55,7 +67,10 @@ public class DiscountController : ControllerBase
     {
         var discount = await _discountService.Delete(id);
 
-        if (discount.Success is false) return BadRequest(discount.Message);
+        if (discount.Success is false)
+        {
+            return BadRequest(discount.Message);
+        }
 
         return NoContent();
     }

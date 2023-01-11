@@ -8,7 +8,7 @@ public record City
         Value = value;
     }
 
-    public string Value { get; }
+    public string Value { get; private set; }
 
     public static implicit operator City(string value) => new(value);
 
