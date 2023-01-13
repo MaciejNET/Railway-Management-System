@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
@@ -74,10 +75,28 @@ public class PassengerController : ControllerBase
     }
 
     [Authorize(Roles = "Passenger,Admin")]
-    [HttpPatch("{id}/update")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdatePassenger updatePassenger)
+    [HttpPatch("update")]
+    public async Task<IActionResult> Update([FromBody] UpdatePassenger updatePassenger)
     {
-        var passenger = await _passengerService.Update(id, updatePassenger);
+        var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+        if (user is null)
+        {
+            return Unauthorized("No user login");
+        }
+
+        int passengerId;
+        
+        if (updatePassenger.Id is not null)
+        {
+            passengerId = (int) updatePassenger.Id;
+        }
+        else
+        {
+            passengerId = int.Parse(user.Value);
+        }
+
+        var passenger = await _passengerService.Update(passengerId, updatePassenger);
 
         if (passenger.Success is false)
         {
@@ -87,11 +106,29 @@ public class PassengerController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
-    [HttpPatch("{id:int}/updateDiscount")]
-    public async Task<IActionResult> UpdateDiscount([FromRoute] int id, [FromBody] string? discountName)
+    [Authorize(Roles = "Passenger,Admin")]
+    [HttpPatch("updateDiscount")]
+    public async Task<IActionResult> UpdateDiscount([FromBody] UpdatePassengerDiscount updatePassenger)
     {
-        var passenger = await _passengerService.UpdateDiscount(id, discountName);
+        var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+        if (user is null)
+        {
+            return Unauthorized("No user login");
+        }
+
+        int passengerId;
+        
+        if (updatePassenger.Id is not null)
+        {
+            passengerId = (int) updatePassenger.Id;
+        }
+        else
+        {
+            passengerId = int.Parse(user.Value);
+        }
+        
+        var passenger = await _passengerService.UpdateDiscount(passengerId, updatePassenger.DiscountName);
 
         if (passenger.Success is false)
         {

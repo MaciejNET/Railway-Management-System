@@ -28,7 +28,6 @@ public class TripRepository : GenericRepository<Trip>, ITripRepository
             .Include(x => x.TripInterval)
             .Include(x => x.Schedules)
             .ThenInclude(x => x.Station)
-            .AsNoTracking()
             .ToListAsync();
 
     public async Task<IEnumerable<Trip>> GetByTrainId(int id) 
@@ -40,6 +39,5 @@ public class TripRepository : GenericRepository<Trip>, ITripRepository
             .Include(x => x.Schedules)
             .ThenInclude(x => x.Station)
             .Where(x => x.TrainId == id)
-            .AsNoTracking()
             .ToListAsync();
 }
