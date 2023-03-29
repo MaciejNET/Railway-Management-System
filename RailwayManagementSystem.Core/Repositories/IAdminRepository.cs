@@ -4,5 +4,5 @@ namespace RailwayManagementSystem.Core.Repositories;
 
 public interface IAdminRepository : IGenericRepository<Admin>
 {
-    Task<Admin?> GetByName(string name);
+    Task<Admin?> GetByNameAsync(string name);
 }

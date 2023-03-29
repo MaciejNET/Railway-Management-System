@@ -10,11 +10,15 @@ public class StationRepository : GenericRepository<Station>, IStationRepository
     {
     }
 
-    public async Task<Station?> GetByName(string name)
+    public async Task<Station?> GetByNameAsync(string name)
     {
-        return await _context.Stations.FirstOrDefaultAsync(x => x.Name.Value == name);
+        return await _context.Stations
+            .FirstOrDefaultAsync(x => x.Name.Value == name);
     }
 
-    public async Task<IEnumerable<Station>> GetByCity(string city) 
-        => await _context.Stations.Where(x => x.City.Value == city).AsNoTracking().ToListAsync();
+    public async Task<IEnumerable<Station>> GetByCityAsync(string city) 
+        => await _context.Stations
+            .Where(x => x.City.Value == city)
+            .AsNoTracking()
+            .ToListAsync();
 }

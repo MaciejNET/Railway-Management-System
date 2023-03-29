@@ -19,7 +19,7 @@ public class ScheduleService : IScheduleService
 
     public async Task<ServiceResponse<IEnumerable<ScheduleDto>>> GetByTripId(int id)
     {
-        var schedules = await _scheduleRepository.GetByTripId(id);
+        var schedules = await _scheduleRepository.GetByTripIdAsync(id);
 
         if (schedules.Any() is false)
         {

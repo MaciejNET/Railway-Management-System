@@ -4,6 +4,6 @@ namespace RailwayManagementSystem.Core.Repositories;
 
 public interface IPassengerRepository : IGenericRepository<Passenger>
 {
-    Task<Passenger?> GetByEmail(string email);
-    Task<Passenger?> GetByPhoneNumber(string phoneNumber);
+    Task<Passenger?> GetByEmailAsync(string email);
+    Task<Passenger?> GetByPhoneNumberAsync(string phoneNumber);
 }

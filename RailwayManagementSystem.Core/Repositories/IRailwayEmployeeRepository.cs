@@ -4,5 +4,5 @@ namespace RailwayManagementSystem.Core.Repositories;
 
 public interface IRailwayEmployeeRepository : IGenericRepository<RailwayEmployee>
 {
-    Task<RailwayEmployee?> GetByName(string name);
+    Task<RailwayEmployee?> GetByNameAsync(string name);
 }

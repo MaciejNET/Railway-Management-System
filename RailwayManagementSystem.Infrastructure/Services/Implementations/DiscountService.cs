@@ -20,7 +20,7 @@ public class DiscountService : IDiscountService
 
     public async Task<ServiceResponse<DiscountDto>> GetById(int id)
     {
-        var discount = await _discountRepository.GetById(id);
+        var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
@@ -43,7 +43,7 @@ public class DiscountService : IDiscountService
 
     public async Task<ServiceResponse<IEnumerable<DiscountDto>>> GetAll()
     {
-        var discounts = await _discountRepository.GetAll();
+        var discounts = await _discountRepository.GetAllAsync();
 
         if (!discounts.Any())
         {
@@ -66,7 +66,7 @@ public class DiscountService : IDiscountService
 
     public async Task<ServiceResponse<DiscountDto>> AddDiscount(CreateDiscount createDiscount)
     {
-        var discount = await _discountRepository.GetByName(createDiscount.Name);
+        var discount = await _discountRepository.GetByNameAsync(createDiscount.Name);
         if (discount is not null)
         {
             var serviceResponse = new ServiceResponse<DiscountDto>
@@ -86,7 +86,7 @@ public class DiscountService : IDiscountService
                 Percentage = createDiscount.Percentage
             };
         
-            await _discountRepository.Add(discount);
+            await _discountRepository.AddAsync(discount);
             await _discountRepository.SaveChangesAsync();
 
             var response = new ServiceResponse<DiscountDto>
@@ -110,7 +110,7 @@ public class DiscountService : IDiscountService
 
     public async Task<ServiceResponse<DiscountDto>> Delete(int id)
     {
-        var discount = await _discountRepository.GetById(id);
+        var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
@@ -123,7 +123,7 @@ public class DiscountService : IDiscountService
             return serviceResponse;
         }
 
-        await _discountRepository.Remove(discount);
+        await _discountRepository.RemoveAsync(discount);
         await _discountRepository.SaveChangesAsync();
 
         var response = new ServiceResponse<DiscountDto>

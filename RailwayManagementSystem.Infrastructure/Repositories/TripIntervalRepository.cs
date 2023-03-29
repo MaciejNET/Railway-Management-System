@@ -10,6 +10,7 @@ public class TripIntervalRepository : GenericRepository<TripInterval>, ITripInte
     {
     }
 
-    public async Task<TripInterval> GetByTrip(Trip trip) 
-        => await _context.TripIntervals.FirstOrDefaultAsync(x => x.Trip.Equals(trip));
+    public async Task<TripInterval> GetByTripAsync(Trip trip) 
+        => await _context.TripIntervals
+            .FirstOrDefaultAsync(x => x.Trip.Equals(trip));
 }

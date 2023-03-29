@@ -23,7 +23,7 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse<AdminDto>> CreateAdmin(CreateAdmin createAdmin)
     {
-        var admin = await _adminRepository.GetByName(createAdmin.Name);
+        var admin = await _adminRepository.GetByNameAsync(createAdmin.Name);
 
         if (admin is not null)
         {
@@ -49,7 +49,7 @@ public class AdminService : IAdminService
                 Role = Role.Admin
             };
 
-            await _adminRepository.Add(admin);
+            await _adminRepository.AddAsync(admin);
             await _adminRepository.SaveChangesAsync();
         
             var response = new ServiceResponse<AdminDto>
@@ -73,7 +73,7 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse<string>> LoginAdmin(LoginAdmin loginAdmin)
     {
-        var admin = await _adminRepository.GetByName(loginAdmin.Name);
+        var admin = await _adminRepository.GetByNameAsync(loginAdmin.Name);
         if (admin is null)
         {
             var serviceResponse = new ServiceResponse<string>

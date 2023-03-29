@@ -10,6 +10,7 @@ public class AdminRepository : GenericRepository<Admin>, IAdminRepository
     {
     }
 
-    public async Task<Admin?> GetByName(string name)
-        => await _context.Admins.FirstOrDefaultAsync(x => x.Name.Value == name);
+    public async Task<Admin?> GetByNameAsync(string name)
+        => await _context.Admins
+            .FirstOrDefaultAsync(x => x.Name.Value == name);
 }

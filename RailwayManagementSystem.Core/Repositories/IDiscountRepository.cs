@@ -4,5 +4,5 @@ namespace RailwayManagementSystem.Core.Repositories;
 
 public interface IDiscountRepository : IGenericRepository<Discount>
 {
-    Task<Discount?> GetByName(string name);
+    Task<Discount?> GetByNameAsync(string name);
 }

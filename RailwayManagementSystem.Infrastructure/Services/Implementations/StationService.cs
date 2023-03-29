@@ -20,7 +20,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<StationDto>> GetById(int id)
     {
-        var station = await _stationRepository.GetById(id);
+        var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
@@ -43,7 +43,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<StationDto>> GetByName(string name)
     {
-        var station = await _stationRepository.GetByName(name);
+        var station = await _stationRepository.GetByNameAsync(name);
 
         if (station is null)
         {
@@ -66,7 +66,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<IEnumerable<StationDto>>> GetAll()
     {
-        var stations = await _stationRepository.GetAll();
+        var stations = await _stationRepository.GetAllAsync();
 
         if (stations.Any() is false)
         {
@@ -89,7 +89,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<IEnumerable<StationDto>>> GetByCity(string city)
     {
-        var stations = await _stationRepository.GetByCity(city);
+        var stations = await _stationRepository.GetByCityAsync(city);
         if (stations.Any() is false)
         {
             var serviceResult = new ServiceResponse<IEnumerable<StationDto>>
@@ -111,7 +111,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<StationDto>> AddStation(CreateStation createStation)
     {
-        var station = await _stationRepository.GetByName(createStation.Name);
+        var station = await _stationRepository.GetByNameAsync(createStation.Name);
         if (station is not null)
         {
             var serviceResponse = new ServiceResponse<StationDto>
@@ -132,7 +132,7 @@ public class StationService : IStationService
                 NumberOfPlatforms = createStation.NumberOfPlatforms
             };
         
-            await _stationRepository.Add(station);
+            await _stationRepository.AddAsync(station);
             await _stationRepository.SaveChangesAsync();
 
             var response = new ServiceResponse<StationDto>
@@ -156,7 +156,7 @@ public class StationService : IStationService
 
     public async Task<ServiceResponse<StationDto>> Delete(int id)
     {
-        var station = await _stationRepository.GetById(id);
+        var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
@@ -169,7 +169,7 @@ public class StationService : IStationService
             return serviceResponse;
         }
 
-        await _stationRepository.Remove(station);
+        await _stationRepository.RemoveAsync(station);
         await _stationRepository.SaveChangesAsync();
 
         var result = new ServiceResponse<StationDto>

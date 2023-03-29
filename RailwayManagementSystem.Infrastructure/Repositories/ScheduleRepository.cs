@@ -10,12 +10,15 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
     {
     }
 
-    public async Task<IEnumerable<Schedule>> GetByTripId(int id)
+    public async Task<IEnumerable<Schedule>> GetByTripIdAsync(int id)
     {
         return await _context.Schedules.Include(x => x.Station).Where(x => x.TripId == id).ToListAsync();
     }
 
-    public async Task<IEnumerable<Schedule>> GetByDepartureTimeAndStationId(TimeOnly departureTime, int id) 
-        => await _context.Schedules.Include(x => x.Station).Include(x => x.Trip)
-            .Where(x => x.DepartureTime >= departureTime && x.StationId == id).ToListAsync();
+    public async Task<IEnumerable<Schedule>> GetByDepartureTimeAndStationIdAsync(TimeOnly departureTime, int id) 
+        => await _context.Schedules
+            .Include(x => x.Station)
+            .Include(x => x.Trip)
+            .Where(x => x.DepartureTime >= departureTime && x.StationId == id)
+            .ToListAsync();
 }

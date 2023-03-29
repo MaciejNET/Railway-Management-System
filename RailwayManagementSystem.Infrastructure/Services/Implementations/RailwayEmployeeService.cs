@@ -23,7 +23,7 @@ public class RailwayEmployeeService : IRailwayEmployeeService
 
     public async Task<ServiceResponse<RailwayEmployeeDto>> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
     {
-        var railwayEmployee = await _railwayEmployeeRepository.GetByName(createRailwayEmployee.Name);
+        var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(createRailwayEmployee.Name);
 
         if (railwayEmployee is not null)
         {
@@ -50,7 +50,7 @@ public class RailwayEmployeeService : IRailwayEmployeeService
                 Role = Role.RailwayEmployee
             };
 
-            await _railwayEmployeeRepository.Add(railwayEmployee);
+            await _railwayEmployeeRepository.AddAsync(railwayEmployee);
             await _railwayEmployeeRepository.SaveChangesAsync();
         
             var response = new ServiceResponse<RailwayEmployeeDto>
@@ -74,7 +74,7 @@ public class RailwayEmployeeService : IRailwayEmployeeService
 
     public async Task<ServiceResponse<string>> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee)
     {
-        var railwayEmployee = await _railwayEmployeeRepository.GetByName(loginRailwayEmployee.Name);
+        var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(loginRailwayEmployee.Name);
         if (railwayEmployee is null)
         {
             var serviceResponse = new ServiceResponse<string>

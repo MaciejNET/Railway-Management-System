@@ -21,7 +21,7 @@ public class TicketService : ITicketService
 
     public async Task<ServiceResponse<TicketDto>> GetById(int id)
     {
-        var ticket = await _ticketRepository.GetById(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
@@ -44,7 +44,7 @@ public class TicketService : ITicketService
 
     public async Task<ServiceResponse<byte[]>> GetTicketPdf(int id)
     {
-        var ticket = await _ticketRepository.GetById(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
@@ -68,7 +68,7 @@ public class TicketService : ITicketService
 
     public async Task<ServiceResponse<VerifyTicketResponse>> VerifyTicket(int id)
     {
-        var ticket = await _ticketRepository.GetById(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
@@ -102,7 +102,7 @@ public class TicketService : ITicketService
 
     public async Task<ServiceResponse<IEnumerable<TicketDto>>> GetByPassengerId(int id)
     {
-        var tickets = await _ticketRepository.GetByPassengerId(id);
+        var tickets = await _ticketRepository.GetByPassengerIdAsync(id);
 
         if (tickets.Any() is false)
         {
@@ -125,7 +125,7 @@ public class TicketService : ITicketService
 
     public async Task<ServiceResponse<TicketDto>> Cancel(int id)
     {
-        var ticket = await _ticketRepository.GetById(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
@@ -138,7 +138,7 @@ public class TicketService : ITicketService
             return serviceResponse;
         }
         
-        await _ticketRepository.Remove(ticket);
+        await _ticketRepository.RemoveAsync(ticket);
         await _ticketRepository.SaveChangesAsync();
 
         var response = new ServiceResponse<TicketDto>

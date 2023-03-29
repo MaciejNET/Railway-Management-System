@@ -31,7 +31,7 @@ public class TripService : ITripService
 
     public async Task<ServiceResponse<TripDto>> GetById(int id)
     {
-        var trip = await _tripRepository.GetById(id);
+        var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
@@ -54,7 +54,7 @@ public class TripService : ITripService
 
     public async Task<ServiceResponse<IEnumerable<TripDto>>> GetAll()
     {
-        var trips = await _tripRepository.GetAll();
+        var trips = await _tripRepository.GetAllAsync();
 
         if (trips.Any() is false)
         {
@@ -78,7 +78,7 @@ public class TripService : ITripService
     public async Task<ServiceResponse<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation,
         string endStation, DateTime date)
     {
-        var start = await _stationRepository.GetByName(startStation);
+        var start = await _stationRepository.GetByNameAsync(startStation);
 
         if (start is null)
         {
@@ -91,7 +91,7 @@ public class TripService : ITripService
             return serviceResponse;
         }
 
-        var end = await _stationRepository.GetByName(endStation);
+        var end = await _stationRepository.GetByNameAsync(endStation);
 
         if (end is null)
         {
@@ -127,7 +127,7 @@ public class TripService : ITripService
 
     public async Task<ServiceResponse<TripDto>> AddTrip(CreateTrip createTrip)
     {
-        var train = await _trainRepository.GetTrainByName(createTrip.TrainName);
+        var train = await _trainRepository.GetTrainByNameAsync(createTrip.TrainName);
 
         if (train is null)
         {
@@ -163,7 +163,7 @@ public class TripService : ITripService
             var schedules = new List<Schedule>();
             foreach (var scheduleDto in createTrip.ScheduleDtos)
             {
-                var station = await _stationRepository.GetByName(scheduleDto.StationName);
+                var station = await _stationRepository.GetByNameAsync(scheduleDto.StationName);
                 if (station is null)
                 {
                     var serviceResponse = new ServiceResponse<TripDto>
@@ -196,9 +196,9 @@ public class TripService : ITripService
                 });
             }
 
-            await _tripIntervalRepository.Add(tripInterval);
-            await _tripRepository.Add(trip);
-            await _scheduleRepository.AddRange(schedules);
+            await _tripIntervalRepository.AddAsync(tripInterval);
+            await _tripRepository.AddAsync(trip);
+            await _scheduleRepository.AddRangeAsync(schedules);
 
             await _tripRepository.SaveChangesAsync();
 
@@ -223,7 +223,7 @@ public class TripService : ITripService
 
     public async Task<ServiceResponse<TripDto>> Delete(int id)
     {
-        var trip = await _tripRepository.GetById(id);
+        var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
@@ -236,9 +236,9 @@ public class TripService : ITripService
             return serviceResponse;
         }
 
-        var tripInterval = await _tripIntervalRepository.GetByTrip(trip);
-        await _tripRepository.Remove(trip);
-        await _tripIntervalRepository.Remove(tripInterval);
+        var tripInterval = await _tripIntervalRepository.GetByTripAsync(trip);
+        await _tripRepository.RemoveAsync(trip);
+        await _tripIntervalRepository.RemoveAsync(tripInterval);
 
         await _tripRepository.SaveChangesAsync();
 
@@ -254,7 +254,7 @@ public class TripService : ITripService
     {
         var time = TimeOnly.FromDateTime(tripDate);
         var date = DateOnly.FromDateTime(tripDate);
-        var schedules = await _scheduleRepository.GetByDepartureTimeAndStationId(time, station.Id);
+        var schedules = await _scheduleRepository.GetByDepartureTimeAndStationIdAsync(time, station.Id);
         var trips = schedules.Select(x => x.Trip).Where(x => TripExtensions.IsTrainRunsOnGivenDate(x, date)).ToList();
         
         return trips;

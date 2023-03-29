@@ -28,7 +28,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceResponse<TicketDto>> BookTicket(BookTicket bookTicket, int passengerId)
     {
-        var trip = await _tripRepository.GetById(bookTicket.TripId);
+        var trip = await _tripRepository.GetByIdAsync(bookTicket.TripId);
 
         if (trip is null)
         {
@@ -60,7 +60,7 @@ public class BookingService : IBookingService
             return serviceResponse;
         }
 
-        var passenger = await _passengerRepository.GetById(passengerId);
+        var passenger = await _passengerRepository.GetByIdAsync(passengerId);
 
         if (passenger is null)
         {
@@ -132,7 +132,7 @@ public class BookingService : IBookingService
             Stations = stations
         };
 
-        await _ticketRepository.Add(ticket);
+        await _ticketRepository.AddAsync(ticket);
         await _ticketRepository.SaveChangesAsync();
         
         var response = new ServiceResponse<TicketDto>
@@ -190,7 +190,7 @@ public class BookingService : IBookingService
 
     private async Task<Station> GetOrFailStation(string stationName)
     {
-        var station = await _stationRepository.GetByName(stationName);
+        var station = await _stationRepository.GetByNameAsync(stationName);
         if (station is null) throw new Exception($"Station with name: '{stationName}' does not exist");
 
         return station;

@@ -20,7 +20,7 @@ public class CarrierService : ICarrierService
 
     public async Task<ServiceResponse<CarrierDto>> GetById(int id)
     {
-        var carrier = await _carrierRepository.GetById(id);
+        var carrier = await _carrierRepository.GetByIdAsync(id);
 
         if (carrier is null)
         {
@@ -43,7 +43,7 @@ public class CarrierService : ICarrierService
 
     public async Task<ServiceResponse<CarrierDto>> GetByName(string name)
     {
-        var carrier = await _carrierRepository.GetByName(name);
+        var carrier = await _carrierRepository.GetByNameAsync(name);
 
         if (carrier is null)
         {
@@ -66,7 +66,7 @@ public class CarrierService : ICarrierService
 
     public async Task<ServiceResponse<IEnumerable<CarrierDto>>> GetAll()
     {
-        var carriers = await _carrierRepository.GetAll();
+        var carriers = await _carrierRepository.GetAllAsync();
 
         if (!carriers.Any())
         {
@@ -89,7 +89,7 @@ public class CarrierService : ICarrierService
 
     public async Task<ServiceResponse<CarrierDto>> AddCarrier(CreateCarrier createCarrier)
     {
-        var carrier = await _carrierRepository.GetByName(createCarrier.Name);
+        var carrier = await _carrierRepository.GetByNameAsync(createCarrier.Name);
         if (carrier is not null)
         {
             var serviceResponse = new ServiceResponse<CarrierDto>
@@ -108,7 +108,7 @@ public class CarrierService : ICarrierService
                 Name = createCarrier.Name
             };
         
-            await _carrierRepository.Add(carrier);
+            await _carrierRepository.AddAsync(carrier);
             await _carrierRepository.SaveChangesAsync();
 
             var response = new ServiceResponse<CarrierDto>
@@ -132,7 +132,7 @@ public class CarrierService : ICarrierService
 
     public async Task<ServiceResponse<CarrierDto>> Delete(int id)
     {
-        var career = await _carrierRepository.GetById(id);
+        var career = await _carrierRepository.GetByIdAsync(id);
 
         if (career is null)
         {
@@ -145,7 +145,7 @@ public class CarrierService : ICarrierService
             return serviceResponse;
         }
 
-        await _carrierRepository.Remove(career);
+        await _carrierRepository.RemoveAsync(career);
         await _carrierRepository.SaveChangesAsync();
 
         var response = new ServiceResponse<CarrierDto>

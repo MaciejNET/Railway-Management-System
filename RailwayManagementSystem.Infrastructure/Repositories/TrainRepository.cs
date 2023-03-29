@@ -10,15 +10,25 @@ public class TrainRepository : GenericRepository<Train>, ITrainRepository
     {
     }
 
-    public new async Task<Train?> GetById(int id) 
-        => await _context.Trains.Include(x => x.Carrier).FirstOrDefaultAsync(x => x.Id == id);
+    public new async Task<Train?> GetByIdAsync(int id) 
+        => await _context.Trains
+            .Include(x => x.Carrier)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-    public new async Task<IEnumerable<Train>> GetAll() 
-        => await _context.Trains.Include(x => x.Carrier).AsNoTracking().ToListAsync();
+    public new async Task<IEnumerable<Train>> GetAllAsync() 
+        => await _context.Trains
+            .Include(x => x.Carrier)
+            .AsNoTracking()
+            .ToListAsync();
 
-    public async Task<Train?> GetTrainByName(string name) 
-        => await _context.Trains.FirstOrDefaultAsync(x => x.Name.Value == name);
+    public async Task<Train?> GetTrainByNameAsync(string name) 
+        => await _context.Trains
+            .FirstOrDefaultAsync(x => x.Name.Value == name);
 
-    public async Task<IEnumerable<Train>> GetByCarrierId(int id) 
-        => await _context.Trains.Include(x => x.Carrier).Where(x => x.CarrierId == id).AsNoTracking().ToListAsync();
+    public async Task<IEnumerable<Train>> GetByCarrierIdAsync(int id) 
+        => await _context.Trains
+            .Include(x => x.Carrier)
+            .Where(x => x.CarrierId == id)
+            .AsNoTracking()
+            .ToListAsync();
 }

@@ -10,17 +10,24 @@ public class PassengerRepository : GenericRepository<Passenger>, IPassengerRepos
     {
     }
 
-    public new async Task<Passenger?> GetById(int id)
+    public new async Task<Passenger?> GetByIdAsync(int id)
     {
-        return await _context.Passengers.Include(x => x.Discount).FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Passengers
+            .Include(x => x.Discount)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public new async Task<IEnumerable<Passenger>> GetAll() 
-        => await _context.Passengers.Include(x => x.Discount).AsNoTracking().ToListAsync();
+    public new async Task<IEnumerable<Passenger>> GetAllAsync() 
+        => await _context.Passengers
+            .Include(x => x.Discount)
+            .AsNoTracking()
+            .ToListAsync();
 
-    public async Task<Passenger?> GetByEmail(string email) 
-        => await _context.Passengers.FirstOrDefaultAsync(x => x.Email.Value == email);
+    public async Task<Passenger?> GetByEmailAsync(string email) 
+        => await _context.Passengers
+            .FirstOrDefaultAsync(x => x.Email.Value == email);
 
-    public async Task<Passenger?> GetByPhoneNumber(string phoneNumber) 
-        => await _context.Passengers.FirstOrDefaultAsync(x => x.PhoneNumber.Value == phoneNumber);
+    public async Task<Passenger?> GetByPhoneNumberAsync(string phoneNumber) 
+        => await _context.Passengers
+            .FirstOrDefaultAsync(x => x.PhoneNumber.Value == phoneNumber);
 }

@@ -26,14 +26,14 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<PassengerDto>> GetById(int id)
     {
-        var passenger = await _passengerRepository.GetById(id);
+        var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
             var serviceResponse = new ServiceResponse<PassengerDto>
             {
                 Success = false,
-                Message = "User with id: '" + id + "' does not exist"
+                Message = $"User with id: '{id}' does not exist"
             };
 
             return serviceResponse;
@@ -49,7 +49,7 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<IEnumerable<PassengerDto>>> GetAll()
     {
-        var passengers = await _passengerRepository.GetAll();
+        var passengers = await _passengerRepository.GetAllAsync();
         if (!passengers.Any())
         {
             var serviceResponse = new ServiceResponse<IEnumerable<PassengerDto>>
@@ -70,13 +70,13 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<string>> Login(LoginPassenger loginPassenger)
     {
-        var passenger = await _passengerRepository.GetByEmail(loginPassenger.Email);
+        var passenger = await _passengerRepository.GetByEmailAsync(loginPassenger.Email);
         if (passenger is null)
         {
             var serviceResponse = new ServiceResponse<string>
             {
                 Success = false,
-                Message = "Passenger with email: '" + loginPassenger.Email + "' does not exists."
+                Message = $"Passenger with email: '{loginPassenger.Email}' does not exists."
             };
 
             return serviceResponse;
@@ -104,36 +104,36 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<PassengerDto>> Register(RegisterPassenger registerPassenger)
     {
-        if (await _passengerRepository.GetByEmail(registerPassenger.Email) is not null)
+        if (await _passengerRepository.GetByEmailAsync(registerPassenger.Email) is not null)
         {
             var serviceResponse = new ServiceResponse<PassengerDto>
             {
                 Success = false,
-                Message = "Passenger with email: '" + registerPassenger.Email + "' already exists."
+                Message = $"Passenger with email: '{registerPassenger.Email}' already exists."
             };
 
             return serviceResponse;
         }
 
-        if (await _passengerRepository.GetByPhoneNumber(registerPassenger.PhoneNumber) is not null)
+        if (await _passengerRepository.GetByPhoneNumberAsync(registerPassenger.PhoneNumber) is not null)
         {
             var serviceResponse = new ServiceResponse<PassengerDto>
             {
                 Success = false,
-                Message = "Passenger with phone number: '" + registerPassenger.PhoneNumber + "' already exists."
+                Message = $"Passenger with phone number: '{registerPassenger.PhoneNumber}' already exists."
             };
 
             return serviceResponse;
         }
 
-        var discount = await _discountRepository.GetByName(registerPassenger.DiscountName);
+        var discount = await _discountRepository.GetByNameAsync(registerPassenger.DiscountName);
 
-        if (discount is null && string.IsNullOrWhiteSpace(registerPassenger.DiscountName) is false)
+        if (discount is null && !string.IsNullOrWhiteSpace(registerPassenger.DiscountName))
         {
             var serviceResponse = new ServiceResponse<PassengerDto>
             {
                 Success = false,
-                Message = "Cannot create passenger because discount does not exists."
+                Message = "Discount does not exists."
             };
 
             return serviceResponse;
@@ -155,7 +155,7 @@ public class PassengerService : IPassengerService
                 Role = Role.Passenger
             };
 
-            await _passengerRepository.Add(passenger);
+            await _passengerRepository.AddAsync(passenger);
             await _passengerRepository.SaveChangesAsync();
         
             var response = new ServiceResponse<PassengerDto>
@@ -179,7 +179,7 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<PassengerDto>> Update(int id, UpdatePassenger updatePassenger)
     {
-        var passenger = await _passengerRepository.GetById(id);
+        var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
@@ -192,7 +192,7 @@ public class PassengerService : IPassengerService
             return serviceResponse;
         }
 
-        if (updatePassenger.Email is not null && await _passengerRepository.GetByEmail(updatePassenger.Email) is null)
+        if (updatePassenger.Email is not null && await _passengerRepository.GetByEmailAsync(updatePassenger.Email) is null)
         {
             passenger.Email = updatePassenger.Email;
         }
@@ -208,7 +208,7 @@ public class PassengerService : IPassengerService
         }
 
         if (updatePassenger.PhoneNumber is not null &&
-            await _passengerRepository.GetByPhoneNumber(updatePassenger.Password) is null)
+            await _passengerRepository.GetByPhoneNumberAsync(updatePassenger.Password) is null)
         {
             passenger.PhoneNumber = updatePassenger.PhoneNumber;
         }
@@ -242,7 +242,7 @@ public class PassengerService : IPassengerService
             return serviceResponse;
         }
 
-        await _passengerRepository.Update(passenger);
+        await _passengerRepository.UpdateAsync(passenger);
         await _passengerRepository.SaveChangesAsync();
 
         var response = new ServiceResponse<PassengerDto>
@@ -255,7 +255,7 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<PassengerDto>> UpdateDiscount(int id, string? discountName)
     {
-        var passenger = await _passengerRepository.GetById(id);
+        var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
@@ -274,7 +274,7 @@ public class PassengerService : IPassengerService
         }
         else
         {
-            var discount = await _discountRepository.GetByName(discountName);
+            var discount = await _discountRepository.GetByNameAsync(discountName);
 
             if (discount is null)
             {
@@ -288,7 +288,7 @@ public class PassengerService : IPassengerService
             }
         }
 
-        await _passengerRepository.Update(passenger);
+        await _passengerRepository.UpdateAsync(passenger);
 
         var response = new ServiceResponse<PassengerDto>
         {
@@ -300,7 +300,7 @@ public class PassengerService : IPassengerService
 
     public async Task<ServiceResponse<PassengerDto>> Delete(int id)
     {
-        var passenger = await _passengerRepository.GetById(id);
+        var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
@@ -313,7 +313,7 @@ public class PassengerService : IPassengerService
             return serviceResponse;
         }
 
-        await _passengerRepository.Remove(passenger);
+        await _passengerRepository.RemoveAsync(passenger);
 
         var response = new ServiceResponse<PassengerDto>
         {

@@ -26,7 +26,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<TrainDto>> GetById(int id)
     {
-        var train = await _trainRepository.GetById(id);
+        var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
@@ -49,7 +49,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<TrainDto>> GetByTrainName(string name)
     {
-        var train = await _trainRepository.GetTrainByName(name);
+        var train = await _trainRepository.GetTrainByNameAsync(name);
         if (train is null)
         {
             var serviceResponse = new ServiceResponse<TrainDto>
@@ -71,7 +71,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetByCarrierId(int id)
     {
-        var trains = await _trainRepository.GetByCarrierId(id);
+        var trains = await _trainRepository.GetByCarrierIdAsync(id);
 
         if (trains.Any() is false)
         {
@@ -94,7 +94,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetAll()
     {
-        var trains = await _trainRepository.GetAll();
+        var trains = await _trainRepository.GetAllAsync();
 
         if (trains.Any() is false)
         {
@@ -117,7 +117,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<TrainDto>> AddTrain(CreateTrain createTrain)
     {
-        var train = await _trainRepository.GetTrainByName(createTrain.Name);
+        var train = await _trainRepository.GetTrainByNameAsync(createTrain.Name);
 
         if (train is not null)
         {
@@ -130,7 +130,7 @@ public class TrainService : ITrainService
             return serviceResponse;
         }
 
-        var carrier = await _carrierRepository.GetByName(createTrain.CarrierName);
+        var carrier = await _carrierRepository.GetByNameAsync(createTrain.CarrierName);
 
         if (carrier is null)
         {
@@ -151,7 +151,7 @@ public class TrainService : ITrainService
                 SeatsAmount = createTrain.SeatsAmount,
                 Carrier = carrier
             };
-            await _trainRepository.Add(train);
+            await _trainRepository.AddAsync(train);
             var seats = new List<Seat>();
             for (var i = 0; i < train.SeatsAmount; i++)
                 seats.Add(new Seat
@@ -161,7 +161,7 @@ public class TrainService : ITrainService
                     Train = train
                 });
 
-            await _seatRepository.AddRange(seats);
+            await _seatRepository.AddRangeAsync(seats);
 
             await _trainRepository.SaveChangesAsync();
 
@@ -186,7 +186,7 @@ public class TrainService : ITrainService
 
     public async Task<ServiceResponse<TrainDto>> Delete(int id)
     {
-        var train = await _trainRepository.GetById(id);
+        var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
@@ -199,7 +199,7 @@ public class TrainService : ITrainService
             return serviceResponse;
         }
 
-        await _trainRepository.Remove(train);
+        await _trainRepository.RemoveAsync(train);
         await _trainRepository.SaveChangesAsync();
 
         var response = new ServiceResponse<TrainDto>
