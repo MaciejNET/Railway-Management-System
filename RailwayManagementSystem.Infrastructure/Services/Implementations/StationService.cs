@@ -1,6 +1,8 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Station;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -18,165 +20,98 @@ public class StationService : IStationService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<StationDto>> GetById(int id)
+    public async Task<ErrorOr<StationDto>> GetById(int id)
     {
         var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
-            var serviceResponse = new ServiceResponse<StationDto>
-            {
-                Success = false,
-                Message = $"Station with id: '{id}' does not exists"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Station with id: '{id}' does not exists");
         }
 
-        var result = new ServiceResponse<StationDto>
-        {
-            Data = _mapper.Map<StationDto>(station)
-        };
-
-        return result;
+        return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ServiceResponse<StationDto>> GetByName(string name)
+    public async Task<ErrorOr<StationDto>> GetByName(string name)
     {
         var station = await _stationRepository.GetByNameAsync(name);
 
         if (station is null)
         {
-            var serviceResult = new ServiceResponse<StationDto>
-            {
-                Success = false,
-                Message = $"Station with name: '{name}' does not exists."
-            };
-
-            return serviceResult;
+            return Error.NotFound($"Station with name: '{name}' does not exists.");
         }
 
-        var result = new ServiceResponse<StationDto>
-        {
-            Data = _mapper.Map<StationDto>(station)
-        };
-
-        return result;
+        return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ServiceResponse<IEnumerable<StationDto>>> GetAll()
+    public async Task<ErrorOr<IEnumerable<StationDto>>> GetAll()
     {
         var stations = await _stationRepository.GetAllAsync();
 
-        if (stations.Any() is false)
+        if (!stations.Any())
         {
-            var serviceResult = new ServiceResponse<IEnumerable<StationDto>>
-            {
-                Success = false,
-                Message = "Cannot find any stations."
-            };
-
-            return serviceResult;
+            return Error.NotFound("Cannot find any stations.");
         }
 
-        var result = new ServiceResponse<IEnumerable<StationDto>>
-        {
-            Data = _mapper.Map<IEnumerable<StationDto>>(stations)
-        };
-
-        return result;
+        var stationsDto = _mapper.Map<IEnumerable<StationDto>>(stations);
+        
+        return stationsDto.ToList();
     }
 
-    public async Task<ServiceResponse<IEnumerable<StationDto>>> GetByCity(string city)
+    public async Task<ErrorOr<IEnumerable<StationDto>>> GetByCity(string city)
     {
         var stations = await _stationRepository.GetByCityAsync(city);
-        if (stations.Any() is false)
+        
+        if (!stations.Any())
         {
-            var serviceResult = new ServiceResponse<IEnumerable<StationDto>>
-            {
-                Success = false,
-                Message = $"Cannot find any stations for '{city}'."
-            };
-
-            return serviceResult;
+            return Error.NotFound($"Cannot find any stations for '{city}'.");
         }
 
-        var result = new ServiceResponse<IEnumerable<StationDto>>
-        {
-            Data = _mapper.Map<IEnumerable<StationDto>>(stations)
-        };
+        var stationsDto = _mapper.Map<IEnumerable<StationDto>>(stations);
 
-        return result;
+        return stationsDto.ToList();
     }
 
-    public async Task<ServiceResponse<StationDto>> AddStation(CreateStation createStation)
+    public async Task<ErrorOr<StationDto>> AddStation(CreateStation createStation)
     {
         var station = await _stationRepository.GetByNameAsync(createStation.Name);
+        
         if (station is not null)
         {
-            var serviceResponse = new ServiceResponse<StationDto>
-            {
-                Success = false,
-                Message = $"Station with '{createStation.Name}' already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation($"Station with '{createStation.Name}' already exists.");
         }
 
-        try
+        ErrorOr<StationName> name = StationName.Create(createStation.Name);
+        ErrorOr<City> city = City.Create(createStation.City);
+
+        if (name.IsError || city.IsError)
         {
-            station = new Station
-            {
-                Name = createStation.Name,
-                City = createStation.City,
-                NumberOfPlatforms = createStation.NumberOfPlatforms
-            };
-        
-            await _stationRepository.AddAsync(station);
-            await _stationRepository.SaveChangesAsync();
+            List<Error> errors = new();
+            
+            if (name.IsError) errors.AddRange(name.Errors);
+            if (city.IsError) errors.AddRange(city.Errors);
 
-            var response = new ServiceResponse<StationDto>
-            {
-                Data = _mapper.Map<StationDto>(station)
-            };
-
-            return response;
+            return errors;
         }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<StationDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
 
-            return response;
-        }
+        station = Station.Create(name.Value, city.Value, createStation.NumberOfPlatforms);
+
+        await _stationRepository.AddAsync(station);
+
+        return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ServiceResponse<StationDto>> Delete(int id)
+    public async Task<ErrorOr<Deleted>> Delete(int id)
     {
         var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
-            var serviceResponse = new ServiceResponse<StationDto>
-            {
-                Success = false,
-                Message = $"Station with id: '{id}' does not exists"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Station with id: '{id}' does not exists");
         }
 
         await _stationRepository.RemoveAsync(station);
-        await _stationRepository.SaveChangesAsync();
 
-        var result = new ServiceResponse<StationDto>
-        {
-            Data = _mapper.Map<StationDto>(station)
-        };
-
-        return result;
+        return Result.Deleted;
     }
 }

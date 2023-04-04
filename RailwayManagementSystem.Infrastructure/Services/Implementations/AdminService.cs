@@ -1,7 +1,9 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Models.Enums;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Admin;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -21,86 +23,44 @@ public class AdminService : IAdminService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<AdminDto>> CreateAdmin(CreateAdmin createAdmin)
+    public async Task<ErrorOr<AdminDto>> CreateAdmin(CreateAdmin createAdmin)
     {
         var admin = await _adminRepository.GetByNameAsync(createAdmin.Name);
 
         if (admin is not null)
         {
-            var serviceResponse = new ServiceResponse<AdminDto>()
-            {
-                Success = false,
-                Message = $"Admin with name: {createAdmin.Name} already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation(description: $"Admin with name : '{createAdmin.Name}' already exists.");
         }
         
         _authService.CreatePasswordHash(createAdmin.Password, out var passwordHash, out var passwordSalt);
-
-
-        try
-        {
-            admin = new Admin
-            {
-                Name = createAdmin.Name,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Role = Role.Admin
-            };
-
-            await _adminRepository.AddAsync(admin);
-            await _adminRepository.SaveChangesAsync();
         
-            var response = new ServiceResponse<AdminDto>
-            {
-                Data = _mapper.Map<AdminDto>(admin)
-            };
-
-            return response;
-        }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<AdminDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
-
-            return response;
-        }
+           ErrorOr<AdminName> name = AdminName.Create(createAdmin.Name);
+           
+           if (name.IsError)
+           {
+               return name.FirstError;
+           }
+           
+           admin = Admin.Create(name.Value, passwordHash, passwordSalt);
+           
+           await _adminRepository.AddAsync(admin);
+           
+           return _mapper.Map<AdminDto>(admin);
     }
 
-    public async Task<ServiceResponse<string>> LoginAdmin(LoginAdmin loginAdmin)
+    public async Task<ErrorOr<string>> LoginAdmin(LoginAdmin loginAdmin)
     {
         var admin = await _adminRepository.GetByNameAsync(loginAdmin.Name);
         if (admin is null)
         {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = $"Admin with name: '{loginAdmin.Name}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound(description: $"Admin with name: '{loginAdmin.Name}' does not exists.");
         }
 
         if (!_authService.VerifyPasswordHash(loginAdmin.Password, admin.PasswordHash, admin.PasswordSalt))
         {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = "Invalid password."
-            };
-
-            return serviceResponse;
+            return Error.Validation(description: "Invalid password.");
         }
         
-        var response = new ServiceResponse<string>
-        {
-            Data = _authService.CreateToken(admin)
-        };
-
-        return response;
+        return _authService.CreateToken(admin);
     }
 }

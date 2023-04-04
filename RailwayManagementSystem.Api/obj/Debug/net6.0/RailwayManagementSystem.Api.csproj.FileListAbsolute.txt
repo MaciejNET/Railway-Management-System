@@ -189,3 +189,4 @@
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.buildMultiTargeting.RailwayManagementSystem.Api.props
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets/msbuild.buildTransitive.RailwayManagementSystem.Api.props
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/obj/Debug/net6.0/staticwebassets.pack.json
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Api/bin/Debug/net6.0/ErrorOr.dll

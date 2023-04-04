@@ -1,24 +1,30 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Core.Models;
 
 public class Trip
 {
     public int Id { get; set; }
-    
-    [Precision(5, 2)]
     public decimal Price { get; set; }
-
-    [ForeignKey("Train")] public int TrainId { get; set; }
-
+    public int TrainId { get; set; }
     public Train Train { get; set; }
+    public List<Schedule> Schedules { get; set; } = new();
+    public TripInterval TripInterval { get; set; }
+    public List<Ticket> Tickets { get; set; } = new();
 
-    [NotMapped] public IEnumerable<Schedule> Schedules { get; set; }
+    private Trip(decimal price, Train train, TripInterval tripInterval)
+    {
+        Price = price;
+        TrainId = train.Id;
+        Train = train;
+        TripInterval = tripInterval;
+    }
 
-    [ForeignKey("TripInterval")] public int TripIntervalId { get; set; }
-
-    public virtual TripInterval TripInterval { get; set; }
-
-    [NotMapped] public virtual IEnumerable<Ticket> Tickets { get; set; }
+    public static Trip Create(decimal price, Train train, TripInterval tripInterval)
+    {
+        return new Trip(price, train, tripInterval);
+    }
+    
+    private Trip() {}
 }

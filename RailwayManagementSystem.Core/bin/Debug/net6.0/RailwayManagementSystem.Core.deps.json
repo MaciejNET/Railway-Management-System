@@ -13,6 +13,7 @@
           "AutoMapper.Extensions.EnumMapping": "3.0.1",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.0",
           "DateOnlyTimeOnly.AspNet": "1.0.3",
+          "ErrorOr": "1.2.1",
           "GemBox.Pdf": "17.0.1224",
           "IronSoftware.System.Drawing": "2022.11.10457",
           "Microsoft.EntityFrameworkCore": "6.0.10",
@@ -136,6 +137,14 @@
           "lib/netstandard2.1/EntityFramework.dll": {
             "assemblyVersion": "6.0.0.0",
             "fileVersion": "6.400.420.21404"
+          }
+        }
+      },
+      "ErrorOr/1.2.1": {
+        "runtime": {
+          "lib/net6.0/ErrorOr.dll": {
+            "assemblyVersion": "1.2.1.0",
+            "fileVersion": "1.2.1.0"
           }
         }
       },
@@ -1551,6 +1560,13 @@
       "sha512": "sha512-yj1+/4tci7Panu3jKDHYizxwVm0Jvm7b7m057b5h4u8NUHGCR8WIWirBTw+8EptRffwftIWPBeIRGNKD1ewEMQ==",
       "path": "entityframework/6.4.4",
       "hashPath": "entityframework.6.4.4.nupkg.sha512"
+    },
+    "ErrorOr/1.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5xcbQErEPQKq2z/sLwSaFPX3T2G7x4ISX0us0X7jSxXSQT/wlfOOhw4knPUN/GWOf2strhuzdvRA36JViwvu+A==",
+      "path": "erroror/1.2.1",
+      "hashPath": "erroror.1.2.1.nupkg.sha512"
     },
     "GemBox.Pdf/17.0.1224": {
       "type": "package",

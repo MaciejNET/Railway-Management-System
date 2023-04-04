@@ -7,9 +7,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/trips")]
-public class TripController : ControllerBase
+public class TripController : ApiController
 {
     private readonly IBookingService _bookingService;
     private readonly IScheduleService _scheduleService;
@@ -25,73 +24,53 @@ public class TripController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var trip = await _tripService.GetById(id);
+        var tripOrError = await _tripService.GetById(id);
 
-        if (trip.Success is false)
-        {
-            return NotFound(trip.Message);
-        }
-
-        return Ok(trip.Data);
+        return tripOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var trips = await _tripService.GetAll();
+        var tripsOrError = await _tripService.GetAll();
 
-        if (trips.Success is false)
-        {
-            return NotFound(trips.Message);
-        }
-
-        return Ok(trips.Data);
+        return tripsOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet("{id:int}/schedule")]
     public async Task<IActionResult> GetTripSchedule([FromRoute] int id)
     {
-        var schedule = await _scheduleService.GetByTripId(id);
+        var scheduleOrError = await _scheduleService.GetByTripId(id);
 
-        if (schedule.Success is false)
-        {
-            return NotFound(schedule.Message);
-        }
-
-        return Ok(schedule.Data);
+        return scheduleOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpPost("find")]
     public async Task<IActionResult> GetConnectionTrip(ConnectionTrip connectionTrip)
     {
-        var trips = await _tripService.GetConnectionTrip(connectionTrip.StartStation, connectionTrip.EndStation,
+        var tripsOrError = await _tripService.GetConnectionTrip(connectionTrip.StartStation, connectionTrip.EndStation,
             connectionTrip.Date);
 
-        if (trips.Success is false)
-        {
-            return BadRequest(trips.Message);
-        }
-
-        return Ok(trips.Data);
+        return tripsOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddTrip(CreateTrip createTrip)
     {
-        var trip = await _tripService.AddTrip(createTrip);
+        var tripOrError = await _tripService.AddTrip(createTrip);
 
-        if (trip.Success is false)
-        {
-            return BadRequest(trip.Message);
-        }
-        
-        if (trip.Data is null)
-        {
-            return StatusCode(500);
-        }
-
-        return Created($"api/trips/{trip.Data.Id}", null);
+        return tripOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Passenger")]
@@ -107,27 +86,21 @@ public class TripController : ControllerBase
 
         var passengerId = int.Parse(user.Value);
         
-        var ticket = await _bookingService.BookTicket(bookTicket, passengerId);
+        var ticketOrError = await _bookingService.BookTicket(bookTicket, passengerId);
 
-        if (ticket.Success is false)
-        {
-            return BadRequest(ticket.Message);
-        }
-
-        return Created($"api/passengers/{passengerId}/tickets", ticket.Data);
+        return ticketOrError.Match(
+            value => Created($"api/passengers/{passengerId}/tickets", value),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var trip = await _tripService.Delete(id);
+        var tripOrError = await _tripService.Delete(id);
 
-        if (trip.Success is false)
-        {
-            return BadRequest(trip.Message);
-        }
-
-        return NoContent();
+        return tripOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 }

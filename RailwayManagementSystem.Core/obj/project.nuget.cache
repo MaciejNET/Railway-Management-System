@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "eTfcFdxSLVt94HZnoC7W1fD/bWmjekdx2+pZvlIoHEG4LFcrUQFivVJxHRg1mxcXjg1KJONgdH6rXpfWxItaQw==",
+  "dgSpecHash": "0Q3XuMYBVD69pE/toEh2b43B4KjK7uSdeWndWeQW8myVn7gaS5OiBNRMbIC/hQaoiguewFqWUg9/yOpW+eqpoQ==",
   "success": true,
   "projectFilePath": "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
   "expectedPackageFiles": [
@@ -13,6 +13,7 @@
     "/Users/maciejnet/.nuget/packages/delegatedecompiler/0.28.0/delegatedecompiler.0.28.0.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/delegatedecompiler.entityframework/0.28.0/delegatedecompiler.entityframework.0.28.0.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/entityframework/6.4.4/entityframework.6.4.4.nupkg.sha512",
+    "/Users/maciejnet/.nuget/packages/erroror/1.2.1/erroror.1.2.1.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/gembox.pdf/17.0.1224/gembox.pdf.17.0.1224.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/harfbuzzsharp/2.8.2/harfbuzzsharp.2.8.2.nupkg.sha512",
     "/Users/maciejnet/.nuget/packages/harfbuzzsharp.nativeassets.macos/2.8.2/harfbuzzsharp.nativeassets.macos.2.8.2.nupkg.sha512",

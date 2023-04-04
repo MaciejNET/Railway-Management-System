@@ -1,7 +1,9 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Models.Enums;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Train;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -24,189 +26,108 @@ public class TrainService : ITrainService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<TrainDto>> GetById(int id)
+    public async Task<ErrorOr<TrainDto>> GetById(int id)
     {
         var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
-            var serviceResponse = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = $"Train with id: '{id}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Train with id: '{id}' does not exists.");
         }
 
-        var response = new ServiceResponse<TrainDto>
-        {
-            Data = _mapper.Map<TrainDto>(train)
-        };
-
-        return response;
+        return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ServiceResponse<TrainDto>> GetByTrainName(string name)
+    public async Task<ErrorOr<TrainDto>> GetByTrainName(string name)
     {
         var train = await _trainRepository.GetTrainByNameAsync(name);
+        
         if (train is null)
         {
-            var serviceResponse = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = $"Train with name: '{name}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Train with name: '{name}' does not exists.");
         }
 
-        var response = new ServiceResponse<TrainDto>
-        {
-            Data = _mapper.Map<TrainDto>(train)
-        };
-
-        return response;
+        return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetByCarrierId(int id)
+    public async Task<ErrorOr<IEnumerable<TrainDto>>> GetByCarrierId(int id)
     {
         var trains = await _trainRepository.GetByCarrierIdAsync(id);
 
-        if (trains.Any() is false)
+        if (!trains.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<TrainDto>>
-            {
-                Success = false,
-                Message = $"Cannot find any trains for career with id: {id}."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Cannot find any trains for career with id: {id}.");
         }
 
-        var response = new ServiceResponse<IEnumerable<TrainDto>>
-        {
-            Data = _mapper.Map<IEnumerable<TrainDto>>(trains)
-        };
+        var trainsDto = _mapper.Map<IEnumerable<TrainDto>>(trains);
 
-        return response;
+        return trainsDto.ToList();
     }
 
-    public async Task<ServiceResponse<IEnumerable<TrainDto>>> GetAll()
+    public async Task<ErrorOr<IEnumerable<TrainDto>>> GetAll()
     {
         var trains = await _trainRepository.GetAllAsync();
 
-        if (trains.Any() is false)
+        if (!trains.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<TrainDto>>
-            {
-                Success = false,
-                Message = "Cannot find any trains"
-            };
-
-            return serviceResponse;
+            return Error.NotFound("Cannot find any trains");
         }
 
-        var response = new ServiceResponse<IEnumerable<TrainDto>>
-        {
-            Data = _mapper.Map<IEnumerable<TrainDto>>(trains)
-        };
+        var trainsDto = _mapper.Map<IEnumerable<TrainDto>>(trains);
 
-        return response;
+        return trainsDto.ToList();
     }
 
-    public async Task<ServiceResponse<TrainDto>> AddTrain(CreateTrain createTrain)
+    public async Task<ErrorOr<TrainDto>> AddTrain(CreateTrain createTrain)
     {
         var train = await _trainRepository.GetTrainByNameAsync(createTrain.Name);
 
         if (train is not null)
         {
-            var serviceResponse = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = $"Train with name: '{createTrain.Name}' already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation($"Train with name: '{createTrain.Name}' already exists.");
         }
 
         var carrier = await _carrierRepository.GetByNameAsync(createTrain.CarrierName);
 
         if (carrier is null)
         {
-            var serviceResponse = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = $"Cannot create train because carrier with name: '{createTrain.CarrierName}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation(
+                $"Cannot create train because carrier with name: '{createTrain.CarrierName}' does not exists.");
         }
 
-        try
+        ErrorOr<TrainName> name = TrainName.Create(createTrain.Name);
+
+        if (name.IsError)
         {
-            train = new Train
-            {
-                Name = createTrain.Name,
-                SeatsAmount = createTrain.SeatsAmount,
-                Carrier = carrier
-            };
-            await _trainRepository.AddAsync(train);
-            var seats = new List<Seat>();
-            for (var i = 0; i < train.SeatsAmount; i++)
-                seats.Add(new Seat
-                {
-                    SeatNumber = i + 1,
-                    Place = (i + 1) % 2 == 0 ? Place.Window : Place.Middle,
-                    Train = train
-                });
-
-            await _seatRepository.AddRangeAsync(seats);
-
-            await _trainRepository.SaveChangesAsync();
-
-            var response = new ServiceResponse<TrainDto>
-            {
-                Data = _mapper.Map<TrainDto>(train)
-            };
-
-            return response;
+            return name.Errors;
         }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
 
-            return response;
-        }
+        train = Train.Create(name.Value, createTrain.SeatsAmount, carrier);
+        await _trainRepository.AddAsync(train);
+        var seats = new List<Seat>();
+        for (var i = 0; i < train.SeatsAmount; i++)
+            seats.Add(
+                Seat.Create(
+                    seatNumber: i + 1,
+                    place: (i + 1) % 2 == 0 ? Place.Window : Place.Middle,
+                    train: train));
+
+        await _seatRepository.AddRangeAsync(seats);
+
+        return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ServiceResponse<TrainDto>> Delete(int id)
+    public async Task<ErrorOr<Deleted>> Delete(int id)
     {
         var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
-            var serviceResponse = new ServiceResponse<TrainDto>
-            {
-                Success = false,
-                Message = $"Train with id: '{id}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Train with id: '{id}' does not exists.");
         }
 
         await _trainRepository.RemoveAsync(train);
-        await _trainRepository.SaveChangesAsync();
 
-        var response = new ServiceResponse<TrainDto>
-        {
-            Data = _mapper.Map<TrainDto>(train)
-        };
-
-        return response;
+        return Result.Deleted;
     }
 }

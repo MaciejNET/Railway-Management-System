@@ -1,4 +1,5 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Infrastructure.Commands.Ticket;
@@ -26,90 +27,57 @@ public class BookingService : IBookingService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<TicketDto>> BookTicket(BookTicket bookTicket, int passengerId)
+    public async Task<ErrorOr<TicketDto>> BookTicket(BookTicket bookTicket, int passengerId)
     {
         var trip = await _tripRepository.GetByIdAsync(bookTicket.TripId);
 
         if (trip is null)
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "Trip not found."
-            };
-            return serviceResponse;
+            return Error.NotFound(description: $"Trip with id: '{bookTicket.TripId}' does not exists.");
         }
 
         if (bookTicket.TripDate < DateOnly.FromDateTime(DateTime.Now))
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "Cannot book ticket for a past date."
-            };
-            return serviceResponse;
+            return Error.Validation(description: "Cannot book ticket for a past date.");
         }
         
         if (TripExtensions.IsTrainRunsOnGivenDate(trip, bookTicket.TripDate) is false)
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "This trip does not run on given date."
-            };
-            return serviceResponse;
+            return Error.Validation(description: "This trip does not run on given date.");
         }
 
         var passenger = await _passengerRepository.GetByIdAsync(passengerId);
 
         if (passenger is null)
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "Passenger not found."
-            };
-            return serviceResponse;
+            return Error.NotFound(description: $"Passenger with id: '{passengerId}' does not exists.");
         }
 
-        Station startStation, endStation;
-        try
+        
+        var startStation = await _stationRepository.GetByNameAsync(bookTicket.StartStation);
+        if (startStation is null)
         {
-            startStation = await GetOrFailStation(bookTicket.StartStation);
-            endStation = await GetOrFailStation(bookTicket.EndStation);
+            return Error.NotFound($"Station with name: '{bookTicket.StartStation}' does not exists.");
         }
-        catch (Exception ex)
+        
+        var endStation = await _stationRepository.GetByNameAsync(bookTicket.EndStation);
+        if (endStation is null)
         {
-            var serviceResponse = new ServiceResponse<TicketDto>()
-            {
-                Success = false,
-                Message = ex.Message
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Station with name: '{bookTicket.EndStation}' does not exists.");
         }
+        
 
         var tripStations = trip.Schedules.Select(x => x.Station).ToList();
-        if ((tripStations.Contains(startStation) && tripStations.Contains(endStation)) is false)
+        if (!(tripStations.Contains(startStation) && tripStations.Contains(endStation)))
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "Trip schedule does not contains provided stations"
-            };
-            return serviceResponse;
+            return Error.Validation(description: "Trip schedule does not contains provided stations");
         }
 
         var seatsToBook = GetAvailableSeats(trip, bookTicket.TripDate, startStation, endStation).ToList();
 
         if (seatsToBook.Count == 0)
         {
-            var serviceResponse = new ServiceResponse<TicketDto>
-            {
-                Success = false,
-                Message = "There is no free seat to book"
-            };
-            return serviceResponse;
+            return Error.Failure(description: "There is no free seat to book");
         }
 
         var stations = GetStationsToBook(tripStations, startStation, endStation).ToList();
@@ -120,26 +88,17 @@ public class BookingService : IBookingService
         {
             passengerDiscount = passenger.Discount.Percentage;
         }
-        
-        var ticket = new Ticket
-        {
-            Trip = trip,
-            Passenger = passenger,
-            Price = trip.Price * (decimal) ((100 - passengerDiscount) / 100.0) * 
-                    (stations.Count / (decimal)tripStations.Count),
-            Seat = seatsToBook.First(),
-            TripDate = bookTicket.TripDate,
-            Stations = stations
-        };
+
+        var price = trip.Price * (decimal) ((100 - passengerDiscount) / 100.0) *
+                    (stations.Count / (decimal) tripStations.Count);
+
+        var seat = seatsToBook.First();
+
+        var ticket = Ticket.Create(trip, passenger, price, seat, bookTicket.TripDate, stations);
 
         await _ticketRepository.AddAsync(ticket);
-        await _ticketRepository.SaveChangesAsync();
         
-        var response = new ServiceResponse<TicketDto>
-        {
-            Data = _mapper.Map<TicketDto>(ticket)
-        };
-        return response;
+        return _mapper.Map<TicketDto>(ticket);
     }
 
     private static Dictionary<Seat, List<Station>> GetBookedStationsForSeats(Trip trip, DateOnly tripDate)
@@ -186,13 +145,5 @@ public class BookingService : IBookingService
         var stationsToBook = stations.GetRange(startStationIndex, endStationIndex - startStationIndex);
 
         return stationsToBook;
-    }
-
-    private async Task<Station> GetOrFailStation(string stationName)
-    {
-        var station = await _stationRepository.GetByNameAsync(stationName);
-        if (station is null) throw new Exception($"Station with name: '{stationName}' does not exist");
-
-        return station;
     }
 }

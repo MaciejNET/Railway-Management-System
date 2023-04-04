@@ -1,3 +1,4 @@
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
 using RailwayManagementSystem.Infrastructure.DTOs;
@@ -6,11 +7,11 @@ namespace RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 public interface IPassengerService
 {
-    Task<ServiceResponse<PassengerDto>> GetById(int id);
-    Task<ServiceResponse<IEnumerable<PassengerDto>>> GetAll();
-    Task<ServiceResponse<string>> Login(LoginPassenger loginPassenger);
-    Task<ServiceResponse<PassengerDto>> Register(RegisterPassenger registerPassenger);
-    Task<ServiceResponse<PassengerDto>> Update(int id, UpdatePassenger updatePassenger);
-    Task<ServiceResponse<PassengerDto>> UpdateDiscount(int id, string? discountName);
-    Task<ServiceResponse<PassengerDto>> Delete(int id);
+    Task<ErrorOr<PassengerDto>> GetById(int id);
+    Task<ErrorOr<IEnumerable<PassengerDto>>> GetAll();
+    Task<ErrorOr<string>> Login(LoginPassenger loginPassenger);
+    Task<ErrorOr<PassengerDto>> Register(RegisterPassenger registerPassenger);
+    Task<ErrorOr<Updated>> Update(int id, UpdatePassenger updatePassenger);
+    Task<ErrorOr<Updated>> UpdateDiscount(int id, string? discountName);
+    Task<ErrorOr<Deleted>> Delete(int id);
 }

@@ -141,6 +141,19 @@
           "buildTransitive/netcoreapp3.0/EntityFramework.targets": {}
         }
       },
+      "ErrorOr/1.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ErrorOr.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ErrorOr.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GemBox.Pdf/17.0.1224": {
         "type": "package",
         "dependencies": {
@@ -2780,6 +2793,7 @@
           "AutoMapper.Extensions.EnumMapping": "3.0.1",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.0",
           "DateOnlyTimeOnly.AspNet": "1.0.3",
+          "ErrorOr": "1.2.1",
           "GemBox.Pdf": "17.0.1224",
           "IronSoftware.System.Drawing": "2022.11.10457",
           "Microsoft.EntityFrameworkCore": "6.0.10",
@@ -2811,6 +2825,7 @@
           "AutoMapper.Extensions.EnumMapping": "3.0.1",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.0",
           "DateOnlyTimeOnly.AspNet": "1.0.3",
+          "ErrorOr": "1.2.1",
           "GemBox.Pdf": "17.0.1224",
           "IronSoftware.System.Drawing": "2022.11.10457",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.11",
@@ -3007,6 +3022,22 @@
         "tools/netcoreapp3.0/any/ef6.dll",
         "tools/netcoreapp3.0/any/ef6.pdb",
         "tools/netcoreapp3.0/any/ef6.runtimeconfig.json"
+      ]
+    },
+    "ErrorOr/1.2.1": {
+      "sha512": "5xcbQErEPQKq2z/sLwSaFPX3T2G7x4ISX0us0X7jSxXSQT/wlfOOhw4knPUN/GWOf2strhuzdvRA36JViwvu+A==",
+      "type": "package",
+      "path": "erroror/1.2.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "erroror.1.2.1.nupkg.sha512",
+        "erroror.nuspec",
+        "icon-square.png",
+        "lib/net6.0/ErrorOr.dll",
+        "lib/net6.0/ErrorOr.xml",
+        "lib/netstandard2.0/ErrorOr.dll",
+        "lib/netstandard2.0/ErrorOr.xml"
       ]
     },
     "GemBox.Pdf/17.0.1224": {
@@ -8541,6 +8572,7 @@
       "AutoMapper.Extensions.EnumMapping >= 3.0.1",
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 12.0.0",
       "DateOnlyTimeOnly.AspNet >= 1.0.3",
+      "ErrorOr >= 1.2.1",
       "GemBox.Pdf >= 17.0.1224",
       "IronSoftware.System.Drawing >= 2022.11.10457",
       "Microsoft.EntityFrameworkCore >= 6.0.10",
@@ -8621,6 +8653,10 @@
           "DateOnlyTimeOnly.AspNet": {
             "target": "Package",
             "version": "[1.0.3, )"
+          },
+          "ErrorOr": {
+            "target": "Package",
+            "version": "[1.2.1, )"
           },
           "GemBox.Pdf": {
             "target": "Package",

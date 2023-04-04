@@ -6,7 +6,19 @@ namespace RailwayManagementSystem.Core.Models;
 public class Carrier
 {
     public int Id { get; set; }
-    public Name Name { get; set; }
+    public CarrierName Name { get; set; }
 
-    [NotMapped] public virtual IEnumerable<Train> Trains { get; set; }
+    public List<Train> Trains { get; set; } = new();
+
+    private Carrier(CarrierName name)
+    {
+        Name = name;
+    }
+
+    public static Carrier Create(CarrierName name)
+    {
+        return new Carrier(name);
+    }
+    
+    private Carrier() {}
 }

@@ -1,6 +1,8 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Trip;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Extensions;
@@ -14,94 +16,63 @@ public class TripService : ITripService
     private readonly IScheduleRepository _scheduleRepository;
     private readonly IStationRepository _stationRepository;
     private readonly ITrainRepository _trainRepository;
-    private readonly ITripIntervalRepository _tripIntervalRepository;
     private readonly ITripRepository _tripRepository;
 
-    public TripService(ITripRepository tripRepository, ITripIntervalRepository tripIntervalRepository,
-        ITrainRepository trainRepository, IStationRepository stationRepository, IScheduleRepository scheduleRepository,
+    public TripService(
+        ITripRepository tripRepository,
+        ITrainRepository trainRepository,
+        IStationRepository stationRepository,
+        IScheduleRepository scheduleRepository,
         IMapper mapper)
     {
         _tripRepository = tripRepository;
-        _tripIntervalRepository = tripIntervalRepository;
         _trainRepository = trainRepository;
         _stationRepository = stationRepository;
         _scheduleRepository = scheduleRepository;
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<TripDto>> GetById(int id)
+    public async Task<ErrorOr<TripDto>> GetById(int id)
     {
         var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
-            var serviceResponse = new ServiceResponse<TripDto>
-            {
-                Success = false,
-                Message = $"Trip with id: '{id}' dose not exists"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Trip with id: '{id}' dose not exists");
         }
 
-        var response = new ServiceResponse<TripDto>
-        {
-            Data = _mapper.Map<TripDto>(trip)
-        };
-
-        return response;
+        return _mapper.Map<TripDto>(trip);
     }
 
-    public async Task<ServiceResponse<IEnumerable<TripDto>>> GetAll()
+    public async Task<ErrorOr<IEnumerable<TripDto>>> GetAll()
     {
         var trips = await _tripRepository.GetAllAsync();
 
-        if (trips.Any() is false)
+        if (!trips.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<TripDto>>
-            {
-                Success = false,
-                Message = "Cannot find any trip"
-            };
-
-            return serviceResponse;
+            return Error.NotFound("Cannot find any trip");
         }
 
-        var response = new ServiceResponse<IEnumerable<TripDto>>
-        {
-            Data = _mapper.Map<IEnumerable<TripDto>>(trips)
-        };
+        var tripsDto = _mapper.Map<IEnumerable<TripDto>>(trips);
 
-        return response;
+        return tripsDto.ToList();
     }
 
-    public async Task<ServiceResponse<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation,
+    public async Task<ErrorOr<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation,
         string endStation, DateTime date)
     {
         var start = await _stationRepository.GetByNameAsync(startStation);
 
         if (start is null)
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<ConnectionTripDto>>
-            {
-                Success = false,
-                Message = $"Station with name: '{startStation}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Station with name: '{startStation}' does not exists.");
         }
 
         var end = await _stationRepository.GetByNameAsync(endStation);
 
         if (end is null)
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<ConnectionTripDto>>
-            {
-                Success = false,
-                Message = $"Station with name: '{endStation}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Station with name: '{endStation}' does not exists.");
         }
 
         var trips = await GetAllTrips(start, date);
@@ -117,137 +88,72 @@ public class TripService : ITripService
                 ArrivalTime = trip.Schedules.FirstOrDefault(x => x.Station.Equals(end)).ArrivalTime
             }).ToList();
 
-        var response = new ServiceResponse<IEnumerable<ConnectionTripDto>>
-        {
-            Data = connectionTrips
-        };
-
-        return response;
+        return connectionTrips;
     }
 
-    public async Task<ServiceResponse<TripDto>> AddTrip(CreateTrip createTrip)
+    public async Task<ErrorOr<TripDto>> AddTrip(CreateTrip createTrip)
     {
         var train = await _trainRepository.GetTrainByNameAsync(createTrip.TrainName);
 
         if (train is null)
         {
-            var serviceResponse = new ServiceResponse<TripDto>
-            {
-                Success = false,
-                Message = $"Train with name: '{createTrip.TrainName}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Train with name: '{createTrip.TrainName}' does not exists.");
         }
 
-        try
+        var tripInterval = new TripInterval(
+            createTrip.TripIntervalDto.Monday,
+            createTrip.TripIntervalDto.Tuesday,
+            createTrip.TripIntervalDto.Wednesday,
+            createTrip.TripIntervalDto.Thursday,
+            createTrip.TripIntervalDto.Friday,
+            createTrip.TripIntervalDto.Saturday,
+            createTrip.TripIntervalDto.Sunday);
+
+
+        var trip = Trip.Create(createTrip.Price, train, tripInterval);
+        var schedules = new List<Schedule>();
+        foreach (var scheduleDto in createTrip.ScheduleDtos)
         {
-            var tripInterval = new TripInterval
+            var station = await _stationRepository.GetByNameAsync(scheduleDto.StationName);
+                
+            if (station is null)
             {
-                Monday = createTrip.TripIntervalDto.Monday,
-                Tuesday = createTrip.TripIntervalDto.Tuesday,
-                Wednesday = createTrip.TripIntervalDto.Wednesday,
-                Thursday = createTrip.TripIntervalDto.Thursday,
-                Friday = createTrip.TripIntervalDto.Friday,
-                Saturday = createTrip.TripIntervalDto.Saturday,
-                Sunday = createTrip.TripIntervalDto.Sunday
-            };
-
-            var trip = new Trip
-            {
-                Price = createTrip.Price,
-                Train = train,
-                TripInterval = tripInterval
-            };
-
-            var schedules = new List<Schedule>();
-            foreach (var scheduleDto in createTrip.ScheduleDtos)
-            {
-                var station = await _stationRepository.GetByNameAsync(scheduleDto.StationName);
-                if (station is null)
-                {
-                    var serviceResponse = new ServiceResponse<TripDto>
-                    {
-                        Success = false,
-                        Message = $"Station with name: '{scheduleDto.StationName}' does not exists."
-                    };
-
-                    return serviceResponse;
-                }
-
-                if (scheduleDto.DepartureTime < scheduleDto.ArrivalTime)
-                {
-                    var serviceResponse = new ServiceResponse<TripDto>
-                    {
-                        Success = false,
-                        Message = $"In station: '{scheduleDto.StationName}' departure time is before arrival time."
-                    };
-
-                    return serviceResponse;
-                }
-
-                schedules.Add(new Schedule
-                {
-                    Trip = trip,
-                    Station = station,
-                    ArrivalTime = scheduleDto.ArrivalTime,
-                    DepartureTime = scheduleDto.DepartureTime,
-                    Platform = scheduleDto.Platform
-                });
+                return Error.NotFound($"Station with name: '{scheduleDto.StationName}' does not exists.");
             }
 
-            await _tripIntervalRepository.AddAsync(tripInterval);
-            await _tripRepository.AddAsync(trip);
-            await _scheduleRepository.AddRangeAsync(schedules);
-
-            await _tripRepository.SaveChangesAsync();
-
-            var response = new ServiceResponse<TripDto>
+            if (scheduleDto.DepartureTime < scheduleDto.ArrivalTime)
             {
-                Data = _mapper.Map<TripDto>(trip)
-            };
+                return Error.Conflict(
+                    $"In station: '{scheduleDto.StationName}' departure time is before arrival time.");
+            }
 
-            return response;
+            schedules.Add(
+                Schedule.Create(
+                    trip,
+                    station,
+                    scheduleDto.ArrivalTime,
+                    scheduleDto.DepartureTime,
+                    scheduleDto.Platform));
         }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<TripDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
+        
+        await _tripRepository.AddAsync(trip);
+        await _scheduleRepository.AddRangeAsync(schedules);
 
-            return response;
-        }
+        return _mapper.Map<TripDto>(trip);
     }
 
-    public async Task<ServiceResponse<TripDto>> Delete(int id)
+    public async Task<ErrorOr<Deleted>> Delete(int id)
     {
         var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
-            var serviceResponse = new ServiceResponse<TripDto>
-            {
-                Success = false,
-                Message = $"Trip with id: '{id}' dose not exists"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Trip with id: '{id}' dose not exists");
         }
 
-        var tripInterval = await _tripIntervalRepository.GetByTripAsync(trip);
         await _tripRepository.RemoveAsync(trip);
-        await _tripIntervalRepository.RemoveAsync(tripInterval);
 
-        await _tripRepository.SaveChangesAsync();
-
-        var response = new ServiceResponse<TripDto>
-        {
-            Data = _mapper.Map<TripDto>(trip)
-        };
-
-        return response;
+        return Result.Deleted;
     }
 
     private async Task<IEnumerable<Trip>> GetAllTrips(Station station, DateTime tripDate)

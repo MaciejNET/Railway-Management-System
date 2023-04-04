@@ -1,5 +1,6 @@
 using AutoMapper;
 using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.DTOs;
 
 namespace RailwayManagementSystem.Infrastructure.Profiles;

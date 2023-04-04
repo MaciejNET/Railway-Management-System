@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ErrorOr;
 
 namespace RailwayManagementSystem.Core.ValueObjects;
 
@@ -6,18 +7,27 @@ public record PhoneNumber
 {
     private const string PhoneNumberPattern = @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$";
 
-    public PhoneNumber(string value)
+    private PhoneNumber(string value)
     {
-        if (string.IsNullOrWhiteSpace(value)) throw new Exception("Phone number cannot be empty");
-
-        if (Regex.IsMatch(value, PhoneNumberPattern) is false) throw new Exception("Incorrect phone number");
-
         Value = value;
     }
 
     public string Value { get; private set; }
 
-    public static implicit operator PhoneNumber(string value) => new(value);
+    public static ErrorOr<PhoneNumber> Create(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return Error.Validation(description: "Phone number cannot be empty.");
+        }
+
+        if (!Regex.IsMatch(phoneNumber, PhoneNumberPattern))
+        {
+            return Error.Validation(description: "Incorrect phone number.");
+        }
+
+        return new PhoneNumber(phoneNumber);
+    }
 
     public static implicit operator string(PhoneNumber phoneNumber) => phoneNumber.Value;
 }

@@ -30,6 +30,10 @@ namespace RailwayManagementSystem.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -54,6 +58,10 @@ namespace RailwayManagementSystem.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Carriers");
@@ -66,6 +74,10 @@ namespace RailwayManagementSystem.Api.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Percentage")
                         .HasColumnType("integer");
@@ -89,6 +101,18 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.Property<int?>("DiscountId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -96,6 +120,10 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("bytea");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
@@ -114,6 +142,18 @@ namespace RailwayManagementSystem.Api.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
@@ -195,6 +235,14 @@ namespace RailwayManagementSystem.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("NumberOfPlatforms")
                         .HasColumnType("integer");
 
@@ -249,6 +297,10 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.Property<int>("CarrierId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("SeatsAmount")
                         .HasColumnType("integer");
 
@@ -274,51 +326,11 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.Property<int>("TrainId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TripIntervalId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TrainId");
 
-                    b.HasIndex("TripIntervalId")
-                        .IsUnique();
-
                     b.ToTable("Trips");
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.TripInterval", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Friday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Monday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Saturday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Sunday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Thursday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Tuesday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Wednesday")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TripIntervals");
                 });
 
             modelBuilder.Entity("StationTicket", b =>
@@ -336,231 +348,19 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.ToTable("TicketStation", (string)null);
                 });
 
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Admin", b =>
-                {
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("AdminId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("AdminId");
-
-                            b1.ToTable("Admins");
-
-                            b1.WithOwner()
-                                .HasForeignKey("AdminId");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Carrier", b =>
-                {
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("CarrierId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("CarrierId");
-
-                            b1.ToTable("Carriers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CarrierId");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Discount", b =>
-                {
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("DiscountId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("DiscountId");
-
-                            b1.ToTable("Discounts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("DiscountId");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Passenger", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Models.Discount", "Discount")
-                        .WithMany()
+                        .WithMany("Passengers")
                         .HasForeignKey("DiscountId");
 
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "FirstName", b1 =>
-                        {
-                            b1.Property<int>("PassengerId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PassengerId");
-
-                            b1.ToTable("Passengers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PassengerId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "LastName", b1 =>
-                        {
-                            b1.Property<int>("PassengerId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PassengerId");
-
-                            b1.ToTable("Passengers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PassengerId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Email", "Email", b1 =>
-                        {
-                            b1.Property<int>("PassengerId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PassengerId");
-
-                            b1.ToTable("Passengers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PassengerId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
-                        {
-                            b1.Property<int>("PassengerId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PassengerId");
-
-                            b1.ToTable("Passengers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PassengerId");
-                        });
-
                     b.Navigation("Discount");
-
-                    b.Navigation("Email")
-                        .IsRequired();
-
-                    b.Navigation("FirstName")
-                        .IsRequired();
-
-                    b.Navigation("LastName")
-                        .IsRequired();
-
-                    b.Navigation("PhoneNumber")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.RailwayEmployee", b =>
-                {
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "FirstName", b1 =>
-                        {
-                            b1.Property<int>("RailwayEmployeeId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("RailwayEmployeeId");
-
-                            b1.ToTable("RailwayEmployees");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RailwayEmployeeId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "LastName", b1 =>
-                        {
-                            b1.Property<int>("RailwayEmployeeId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("RailwayEmployeeId");
-
-                            b1.ToTable("RailwayEmployees");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RailwayEmployeeId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("RailwayEmployeeId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("RailwayEmployeeId");
-
-                            b1.ToTable("RailwayEmployees");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RailwayEmployeeId");
-                        });
-
-                    b.Navigation("FirstName")
-                        .IsRequired();
-
-                    b.Navigation("LastName")
-                        .IsRequired();
-
-                    b.Navigation("Name")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Schedule", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Models.Station", "Station")
-                        .WithMany()
+                        .WithMany("Schedule")
                         .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -587,53 +387,10 @@ namespace RailwayManagementSystem.Api.Migrations
                     b.Navigation("Train");
                 });
 
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Station", b =>
-                {
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("StationId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("StationId");
-
-                            b1.ToTable("Stations");
-
-                            b1.WithOwner()
-                                .HasForeignKey("StationId");
-                        });
-
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.City", "City", b1 =>
-                        {
-                            b1.Property<int>("StationId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("StationId");
-
-                            b1.ToTable("Stations");
-
-                            b1.WithOwner()
-                                .HasForeignKey("StationId");
-                        });
-
-                    b.Navigation("City")
-                        .IsRequired();
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Ticket", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Models.Passenger", "Passenger")
-                        .WithMany()
+                        .WithMany("Tickets")
                         .HasForeignKey("PassengerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -645,7 +402,7 @@ namespace RailwayManagementSystem.Api.Migrations
                         .IsRequired();
 
                     b.HasOne("RailwayManagementSystem.Core.Models.Trip", "Trip")
-                        .WithMany()
+                        .WithMany("Tickets")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -660,51 +417,60 @@ namespace RailwayManagementSystem.Api.Migrations
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Train", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Models.Carrier", "Carrier")
-                        .WithMany()
+                        .WithMany("Trains")
                         .HasForeignKey("CarrierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.Name", "Name", b1 =>
-                        {
-                            b1.Property<int>("TrainId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("TrainId");
-
-                            b1.ToTable("Trains");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TrainId");
-                        });
-
                     b.Navigation("Carrier");
-
-                    b.Navigation("Name")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Trip", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Models.Train", "Train")
-                        .WithMany()
+                        .WithMany("Trips")
                         .HasForeignKey("TrainId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RailwayManagementSystem.Core.Models.TripInterval", "TripInterval")
-                        .WithOne("Trip")
-                        .HasForeignKey("RailwayManagementSystem.Core.Models.Trip", "TripIntervalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.TripInterval", "TripInterval", b1 =>
+                        {
+                            b1.Property<int>("TripId")
+                                .HasColumnType("integer");
+
+                            b1.Property<bool>("Friday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Monday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Saturday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Sunday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Thursday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Tuesday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Wednesday")
+                                .HasColumnType("boolean");
+
+                            b1.HasKey("TripId");
+
+                            b1.ToTable("Trips");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TripId");
+                        });
 
                     b.Navigation("Train");
 
-                    b.Navigation("TripInterval");
+                    b.Navigation("TripInterval")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("StationTicket", b =>
@@ -722,25 +488,43 @@ namespace RailwayManagementSystem.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Carrier", b =>
+                {
+                    b.Navigation("Trains");
+                });
+
+            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Discount", b =>
+                {
+                    b.Navigation("Passengers");
+                });
+
+            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Passenger", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Seat", b =>
                 {
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("RailwayManagementSystem.Core.Models.Station", b =>
+                {
+                    b.Navigation("Schedule");
+                });
+
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Train", b =>
                 {
                     b.Navigation("Seats");
+
+                    b.Navigation("Trips");
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Models.Trip", b =>
                 {
                     b.Navigation("Schedules");
-                });
 
-            modelBuilder.Entity("RailwayManagementSystem.Core.Models.TripInterval", b =>
-                {
-                    b.Navigation("Trip")
-                        .IsRequired();
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

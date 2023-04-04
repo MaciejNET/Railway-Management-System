@@ -1,7 +1,9 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Models.Enums;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Passenger;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -24,248 +26,166 @@ public class PassengerService : IPassengerService
         _authService = authService;
     }
 
-    public async Task<ServiceResponse<PassengerDto>> GetById(int id)
+    public async Task<ErrorOr<PassengerDto>> GetById(int id)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
-
+        
         if (passenger is null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = $"User with id: '{id}' does not exist"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"User with id: '{id}' does not exist");
         }
 
-        var response = new ServiceResponse<PassengerDto>
-        {
-            Data = _mapper.Map<PassengerDto>(passenger)
-        };
-
-        return response;
+        return _mapper.Map<PassengerDto>(passenger);
     }
 
-    public async Task<ServiceResponse<IEnumerable<PassengerDto>>> GetAll()
+    public async Task<ErrorOr<IEnumerable<PassengerDto>>> GetAll()
     {
         var passengers = await _passengerRepository.GetAllAsync();
+        
         if (!passengers.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<PassengerDto>>
-            {
-                Success = false,
-                Message = "Cannot find any passengers"
-            };
-
-            return serviceResponse;
+            return Error.NotFound("Cannot find any passengers");
         }
 
-        var response = new ServiceResponse<IEnumerable<PassengerDto>>
-        {
-            Data = _mapper.Map<IEnumerable<PassengerDto>>(passengers)
-        };
-        return response;
+        var passengersDto = _mapper.Map<IEnumerable<PassengerDto>>(passengers);
+        
+        return passengersDto.ToList();
     }
 
-    public async Task<ServiceResponse<string>> Login(LoginPassenger loginPassenger)
+    public async Task<ErrorOr<string>> Login(LoginPassenger loginPassenger)
     {
         var passenger = await _passengerRepository.GetByEmailAsync(loginPassenger.Email);
-        if (passenger is null)
-        {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = $"Passenger with email: '{loginPassenger.Email}' does not exists."
-            };
-
-            return serviceResponse;
-        }
-
-        if (_authService.VerifyPasswordHash(loginPassenger.Password, passenger.PasswordHash, passenger.PasswordSalt) is
-            false)
-        {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = "Invalid password."
-            };
-
-            return serviceResponse;
-        }
         
-        var response = new ServiceResponse<string>
+        if (passenger is null
+            || !_authService.VerifyPasswordHash(loginPassenger.Password, passenger.PasswordHash, passenger.PasswordSalt))
         {
-            Data = _authService.CreateToken(passenger)
-        };
+            return Error.Validation("Invalid credentials");
+        }
 
-        return response;
+        return _authService.CreateToken(passenger);
     }
 
-    public async Task<ServiceResponse<PassengerDto>> Register(RegisterPassenger registerPassenger)
+    public async Task<ErrorOr<PassengerDto>> Register(RegisterPassenger registerPassenger)
     {
         if (await _passengerRepository.GetByEmailAsync(registerPassenger.Email) is not null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = $"Passenger with email: '{registerPassenger.Email}' already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation($"Passenger with email: '{registerPassenger.Email}' already exists.");
         }
 
         if (await _passengerRepository.GetByPhoneNumberAsync(registerPassenger.PhoneNumber) is not null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = $"Passenger with phone number: '{registerPassenger.PhoneNumber}' already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation($"Passenger with phone number: '{registerPassenger.PhoneNumber}' already exists.");
         }
 
         var discount = await _discountRepository.GetByNameAsync(registerPassenger.DiscountName);
 
         if (discount is null && !string.IsNullOrWhiteSpace(registerPassenger.DiscountName))
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = "Discount does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Discount with name: {registerPassenger.DiscountName} does not exists.");
         }
 
         _authService.CreatePasswordHash(registerPassenger.Password, out var passwordHash, out var passwordSalt);
-        try
+
+        ErrorOr<FirstName> firstName = FirstName.Create(registerPassenger.FirstName);
+        ErrorOr<LastName> lastName = LastName.Create(registerPassenger.LastName);
+        ErrorOr<Email> email = Email.Create(registerPassenger.Email);
+        ErrorOr<PhoneNumber> phoneNumber = PhoneNumber.Create(registerPassenger.PhoneNumber);
+
+        if (firstName.IsError || lastName.IsError || email.IsError || phoneNumber.IsError)
         {
-            var passenger = new Passenger
-            {
-                FirstName = registerPassenger.FirstName,
-                LastName = registerPassenger.LastName,
-                Email = registerPassenger.Email,
-                PhoneNumber = registerPassenger.PhoneNumber,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Age = registerPassenger.Age,
-                Discount = discount,
-                Role = Role.Passenger
-            };
+            List<Error> errors = new();
+            
+            if (firstName.IsError) errors.AddRange(firstName.Errors);
+            if (lastName.IsError) errors.AddRange(lastName.Errors);
+            if (email.IsError) errors.AddRange(email.Errors);
+            if (phoneNumber.IsError) errors.AddRange(phoneNumber.Errors);
 
-            await _passengerRepository.AddAsync(passenger);
-            await _passengerRepository.SaveChangesAsync();
-        
-            var response = new ServiceResponse<PassengerDto>
-            {
-                Data = _mapper.Map<PassengerDto>(passenger)
-            };
-
-            return response;
+            return errors;
         }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
 
-            return response;
-        }
+        var passenger = Passenger.Create(
+            firstName.Value,
+            lastName.Value,
+            email.Value,
+            phoneNumber.Value,
+            registerPassenger.Age,
+            discount,
+            passwordHash,
+            passwordSalt);
+
+        await _passengerRepository.AddAsync(passenger);
+
+        return _mapper.Map<PassengerDto>(passenger);
     }
 
-    public async Task<ServiceResponse<PassengerDto>> Update(int id, UpdatePassenger updatePassenger)
+    public async Task<ErrorOr<Updated>> Update(int id, UpdatePassenger updatePassenger)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
+            return Error.NotFound($"User with id: '{id}' does not exist");
+        }
+
+        if (updatePassenger.Email is not null)
+        {
+            if (await _passengerRepository.GetByEmailAsync(updatePassenger.Email) is not null)
             {
-                Success = false,
-                Message = $"User with id: '{id}' does not exist"
-            };
+                return Error.Validation($"User with email: '{updatePassenger.Email}' already exists.");
+            }
 
-            return serviceResponse;
-        }
+            ErrorOr<Email> email = Email.Create(updatePassenger.Email);
 
-        if (updatePassenger.Email is not null && await _passengerRepository.GetByEmailAsync(updatePassenger.Email) is null)
-        {
-            passenger.Email = updatePassenger.Email;
-        }
-        else if (updatePassenger.Email is not null)
-        {
-            var serviceResponse = new ServiceResponse<PassengerDto>
+            if (email.IsError)
             {
-                Success = false,
-                Message = $"User with email: '{updatePassenger.Email}' already exists."
-            };
+                return email.Errors;
+            }
 
-            return serviceResponse;
+            passenger.Email = email.Value;
         }
 
-        if (updatePassenger.PhoneNumber is not null &&
-            await _passengerRepository.GetByPhoneNumberAsync(updatePassenger.Password) is null)
+        if (updatePassenger.PhoneNumber is not null)
         {
-            passenger.PhoneNumber = updatePassenger.PhoneNumber;
-        }
-        else if (updatePassenger.PhoneNumber is not null)
-        {
-            var serviceResponse = new ServiceResponse<PassengerDto>
+            if (await _passengerRepository.GetByPhoneNumberAsync(updatePassenger.PhoneNumber) is not null)
             {
-                Success = false,
-                Message = $"User with phone number: '{updatePassenger.PhoneNumber}' already exists."
-            };
+                return Error.Validation($"User with phone number: '{updatePassenger.PhoneNumber}' already exists.");
+            }
 
-            return serviceResponse;
+            ErrorOr<PhoneNumber> phoneNumber = PhoneNumber.Create(updatePassenger.PhoneNumber);
+
+            if (phoneNumber.IsError)
+            {
+                return phoneNumber.Errors;
+            }
+
+            passenger.PhoneNumber = phoneNumber.Value;
         }
 
-        if (updatePassenger.Password is not null &&
-            _authService.VerifyPasswordHash(updatePassenger.Password, passenger.PasswordHash, passenger.PasswordSalt) is
-                false)
+        if (updatePassenger.Password is not null)
         {
+            if (_authService.VerifyPasswordHash(updatePassenger.Password, passenger.PasswordHash,
+                    passenger.PasswordSalt))
+            {
+                return Error.Validation("New password must be different");
+            }
+            
             _authService.CreatePasswordHash(updatePassenger.Password, out var passwordHash, out var passwordSalt);
             passenger.PasswordHash = passwordHash;
             passenger.PasswordSalt = passwordSalt;
         }
-        else if (updatePassenger.Password is not null)
-        {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = "Same password."
-            };
-
-            return serviceResponse;
-        }
-
+        
         await _passengerRepository.UpdateAsync(passenger);
-        await _passengerRepository.SaveChangesAsync();
 
-        var response = new ServiceResponse<PassengerDto>
-        {
-            Data = _mapper.Map<PassengerDto>(passenger)
-        };
-
-        return response;
+        return Result.Updated;
     }
 
-    public async Task<ServiceResponse<PassengerDto>> UpdateDiscount(int id, string? discountName)
+    public async Task<ErrorOr<Updated>> UpdateDiscount(int id, string? discountName)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = $"User with id: '{id}' does not exist"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"User with id: '{id}' does not exist");
         }
 
         if (discountName is null)
@@ -278,48 +198,26 @@ public class PassengerService : IPassengerService
 
             if (discount is null)
             {
-                var serviceResponse = new ServiceResponse<PassengerDto>
-                {
-                    Success = false,
-                    Message = $"Discount with name: '{discountName}' does not exist"
-                };
-
-                return serviceResponse;
+                return Error.NotFound($"Discount with name: '{discountName}' does not exist");
             }
         }
 
         await _passengerRepository.UpdateAsync(passenger);
 
-        var response = new ServiceResponse<PassengerDto>
-        {
-            Data = _mapper.Map<PassengerDto>(passenger)
-        };
-
-        return response;
+        return Result.Updated;
     }
 
-    public async Task<ServiceResponse<PassengerDto>> Delete(int id)
+    public async Task<ErrorOr<Deleted>> Delete(int id)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            var serviceResponse = new ServiceResponse<PassengerDto>
-            {
-                Success = false,
-                Message = $"User with id: '{id}' does not exist"
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"User with id: '{id}' does not exist");
         }
 
         await _passengerRepository.RemoveAsync(passenger);
 
-        var response = new ServiceResponse<PassengerDto>
-        {
-            Data = _mapper.Map<PassengerDto>(passenger)
-        };
-
-        return response;
+        return Result.Deleted;
     }
 }

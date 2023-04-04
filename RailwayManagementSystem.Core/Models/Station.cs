@@ -6,11 +6,23 @@ namespace RailwayManagementSystem.Core.Models;
 public class Station
 {
     public int Id { get; set; }
-    public Name Name { get; set; }
+    public StationName Name { get; set; }
     public City City { get; set; }
     public int NumberOfPlatforms { get; set; }
+    public List<Schedule> Schedule { get; set; } = new();
+    public List<Ticket> Tickets { get; set; } = new();
 
-    [NotMapped] public virtual IEnumerable<Schedule> Schedule { get; set; }
+    private Station(StationName name, City city, int numberOfPlatforms)
+    {
+        Name = name;
+        City = city;
+        NumberOfPlatforms = numberOfPlatforms;
+    }
 
-    [NotMapped] public virtual IEnumerable<Ticket> Tickets { get; set; }
+    public static Station Create(StationName name, City city, int numberOfPlatforms)
+    {
+        return new Station(name, city, numberOfPlatforms);
+    }
+    
+    private Station() {}
 }

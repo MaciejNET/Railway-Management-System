@@ -1,6 +1,8 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.Discount;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -18,119 +20,66 @@ public class DiscountService : IDiscountService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<DiscountDto>> GetById(int id)
+    public async Task<ErrorOr<DiscountDto>> GetById(int id)
     {
         var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
-            var serviceResponse = new ServiceResponse<DiscountDto>
-            {
-                Success = false,
-                Message = $"Discount with id: '{id}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Discount with id: '{id}' does not exists.");
         }
 
-        var result = new ServiceResponse<DiscountDto>
-        {
-            Data = _mapper.Map<DiscountDto>(discount)
-        };
-
-        return result;
+        return _mapper.Map<DiscountDto>(discount);
     }
 
-    public async Task<ServiceResponse<IEnumerable<DiscountDto>>> GetAll()
+    public async Task<ErrorOr<IEnumerable<DiscountDto>>> GetAll()
     {
         var discounts = await _discountRepository.GetAllAsync();
 
         if (!discounts.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<DiscountDto>>
-            {
-                Success = false,
-                Message = "Cannot find any discounts"
-            };
-
-            return serviceResponse;
+            return Error.NotFound("Cannot find any discounts");
         }
 
-        var result = new ServiceResponse<IEnumerable<DiscountDto>>
-        {
-            Data = _mapper.Map<IEnumerable<DiscountDto>>(discounts)
-        };
+        var discountsDto = _mapper.Map<IEnumerable<DiscountDto>>(discounts);
 
-        return result;
+        return discountsDto.ToList();
     }
 
-    public async Task<ServiceResponse<DiscountDto>> AddDiscount(CreateDiscount createDiscount)
+    public async Task<ErrorOr<DiscountDto>> AddDiscount(CreateDiscount createDiscount)
     {
         var discount = await _discountRepository.GetByNameAsync(createDiscount.Name);
+        
         if (discount is not null)
         {
-            var serviceResponse = new ServiceResponse<DiscountDto>
-            {
-                Success = false,
-                Message = $"Discount with name :'{createDiscount.Name}' already exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Discount with name :'{createDiscount.Name}' already exists.");
         }
 
-        try
+        ErrorOr<DiscountName> name = DiscountName.Create(createDiscount.Name);
+
+        if (name.IsError)
         {
-            discount = new Discount
-            {
-                Name = createDiscount.Name,
-                Percentage = createDiscount.Percentage
-            };
+            return name.Errors;
+        }
+
+        discount = Discount.Create(name.Value, createDiscount.Percentage);
         
-            await _discountRepository.AddAsync(discount);
-            await _discountRepository.SaveChangesAsync();
+        await _discountRepository.AddAsync(discount);
 
-            var response = new ServiceResponse<DiscountDto>
-            {
-                Data = _mapper.Map<DiscountDto>(discount)
-            };
-
-            return response;
-        }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<DiscountDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
-            
-            return response;
-        }
+        return _mapper.Map<DiscountDto>(discount);
     }
 
-    public async Task<ServiceResponse<DiscountDto>> Delete(int id)
+    public async Task<ErrorOr<Deleted>> Delete(int id)
     {
         var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
-            var serviceResponse = new ServiceResponse<DiscountDto>
-            {
-                Success = false,
-                Message = $"Discount with id: '{id}' does not exists."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Discount with id: '{id}' does not exists.");
         }
 
         await _discountRepository.RemoveAsync(discount);
-        await _discountRepository.SaveChangesAsync();
-
-        var response = new ServiceResponse<DiscountDto>
-        {
-            Data = _mapper.Map<DiscountDto>(discount)
-        };
-
-        return response;
+        
+        return Result.Deleted;
     }
 }

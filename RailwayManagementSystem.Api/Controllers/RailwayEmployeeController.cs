@@ -5,9 +5,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/railwayEmployees")]
-public class RailwayEmployeeController : ControllerBase
+public class RailwayEmployeeController : ApiController
 {
     private readonly IRailwayEmployeeService _railwayEmployeeService;
 
@@ -20,26 +19,20 @@ public class RailwayEmployeeController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateRailwayEmployee([FromBody] CreateRailwayEmployee createRailwayEmployee)
     {
-        var railwayEmployee = await _railwayEmployeeService.CreateRailwayEmployee(createRailwayEmployee);
+        var railwayEmployeeOrError = await _railwayEmployeeService.CreateRailwayEmployee(createRailwayEmployee);
 
-        if (railwayEmployee.Success is false)
-        {
-            return BadRequest(railwayEmployee.Message);
-        }
-
-        return Ok();
+        return railwayEmployeeOrError.Match(
+            _ => Ok(),
+            errors => Problem(errors));
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRailwayEmployee loginRailwayEmployee)
     {
-        var railwayEmployee = await _railwayEmployeeService.LoginRailwayEmployee(loginRailwayEmployee);
+        var railwayEmployeeOrError = await _railwayEmployeeService.LoginRailwayEmployee(loginRailwayEmployee);
 
-        if (railwayEmployee.Success is false)
-        {
-            return BadRequest(railwayEmployee.Message);
-        }
-
-        return Ok(railwayEmployee.Data);
+        return railwayEmployeeOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 }

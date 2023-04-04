@@ -6,9 +6,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/passengers")]
-public class PassengerController : ControllerBase
+public class PassengerController : ApiController
 {
     private readonly IPassengerService _passengerService;
 
@@ -20,58 +19,41 @@ public class PassengerController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var passenger = await _passengerService.GetById(id);
+        var passengerOrError = await _passengerService.GetById(id);
 
-        if (passenger.Success is false)
-        {
-            return NotFound(passenger.Message);
-        }
-
-        return Ok(passenger.Data);
+        return passengerOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var passengers = await _passengerService.GetAll();
+        var passengersOrError = await _passengerService.GetAll();
 
-        if (passengers.Success is false)
-        {
-            return NotFound(passengers.Message);
-        }
-
-        return Ok(passengers.Data);
+        return passengersOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterPassenger registerPassenger)
     {
-        var passenger = await _passengerService.Register(registerPassenger);
+        var passengerOrError = await _passengerService.Register(registerPassenger);
 
-        if (passenger.Success is false)
-        {
-            return BadRequest(passenger.Message);
-        }
-        
-        if (passenger.Data is null)
-        {
-            return StatusCode(500);
-        }
-
-        return Created($"passengers/{passenger.Data.Id}", null);
+        return passengerOrError.Match(
+            value => Created($"passengers/{value.Id}", null),
+            errors => Problem(errors));
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginPassenger loginPassenger)
     {
-        var passenger = await _passengerService.Login(loginPassenger);
+        var passengerOrError = await _passengerService.Login(loginPassenger);
 
-        if (passenger.Success is false)
-        {
-            return BadRequest(passenger.Message);
-        }
-
-        return Ok(passenger.Data);
+        return passengerOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Passenger,Admin")]
@@ -82,7 +64,7 @@ public class PassengerController : ControllerBase
 
         if (user is null)
         {
-            return Unauthorized("No user login");
+            return Unauthorized("No user logged in");
         }
 
         int passengerId;
@@ -96,14 +78,11 @@ public class PassengerController : ControllerBase
             passengerId = int.Parse(user.Value);
         }
 
-        var passenger = await _passengerService.Update(passengerId, updatePassenger);
+        var passengerOrError = await _passengerService.Update(passengerId, updatePassenger);
 
-        if (passenger.Success is false)
-        {
-            return BadRequest(passenger.Message);
-        }
-
-        return NoContent();
+        return passengerOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Passenger,Admin")]
@@ -128,27 +107,21 @@ public class PassengerController : ControllerBase
             passengerId = int.Parse(user.Value);
         }
         
-        var passenger = await _passengerService.UpdateDiscount(passengerId, updatePassenger.DiscountName);
+        var passengerOrError = await _passengerService.UpdateDiscount(passengerId, updatePassenger.DiscountName);
 
-        if (passenger.Success is false)
-        {
-            return BadRequest(passenger.Message);
-        }
-
-        return NoContent();
+        return passengerOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Passenger,Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var passenger = await _passengerService.Delete(id);
+        var passengerOrError = await _passengerService.Delete(id);
 
-        if (passenger.Success is false)
-        {
-            return BadRequest(passenger.Message);
-        }
-
-        return NoContent();
+        return passengerOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 }

@@ -5,9 +5,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/stations")]
-public class StationController : ControllerBase
+public class StationController : ApiController
 {
     private readonly IScheduleService _scheduleService;
     private readonly IStationService _stationService;
@@ -21,85 +20,62 @@ public class StationController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var station = await _stationService.GetById(id);
+        var stationOrError = await _stationService.GetById(id);
 
-        if (station.Success is false)
-        {
-            return NotFound(station.Message);
-        }
-
-        return Ok(station.Data);
+        return stationOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet("names/{name}")]
     public async Task<IActionResult> GetByName(string name)
     {
-        var station = await _stationService.GetByName(name);
+        var stationOrError = await _stationService.GetByName(name);
 
-        if (station.Success is false)
-        {
-            return NotFound(station.Message);
-        }
-
-        return Ok(station.Data);
+        return stationOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var stations = await _stationService.GetAll();
+        var stationsOrError = await _stationService.GetAll();
 
-        if (stations.Success is false)
-        {
-            return NotFound(stations.Message);
-        }
-
-        return Ok(stations.Data);
+        return stationsOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet("cities/{city}")]
     public async Task<IActionResult> GetByCity(string city)
     {
-        var stations = await _stationService.GetByCity(city);
+        var stationsOrError = await _stationService.GetByCity(city);
 
-        if (stations.Success is false)
-        {
-            return NotFound(stations.Message);
-        }
-
-        return Ok(stations.Data);
+        return stationsOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
     
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddStation([FromBody] CreateStation createStation)
     {
-        var station = await _stationService.AddStation(createStation);
+        var stationOrError = await _stationService.AddStation(createStation);
 
-        if (station.Success is false)
-        {
-            return BadRequest(station.Message);
-        }
-        
-        if (station.Data is null)
-        {
-            return StatusCode(500);
-        }
-
-        return Created($"api/stations/{station.Data.Id}", null);
+        return stationOrError.Match(
+            value => Created($"api/stations/{value.Id}", null),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var station = await _stationService.Delete(id);
-
-        if (station.Success is false)
-        {
-            return BadRequest(station.Message);
-        }
-
-        return NoContent();
+        var stationOrError = await _stationService.Delete(id);
+        
+        return stationOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 }

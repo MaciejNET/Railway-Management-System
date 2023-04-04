@@ -6,14 +6,25 @@ namespace RailwayManagementSystem.Core.Models;
 public class Train
 {
     public int Id { get; set; }
-    public Name Name { get; set; }
+    public TrainName Name { get; set; }
     public int SeatsAmount { get; set; }
+    public int CarrierId { get; set; }
+    public Carrier Carrier { get; set; }
+    public List<Seat> Seats { get; set; } = new();
+    public List<Trip> Trips { get; set; } = new();
 
-    [ForeignKey("Carrier")] public int CarrierId { get; set; }
+    private Train(TrainName name, int seatsAmount, Carrier carrier)
+    {
+        Name = name;
+        SeatsAmount = seatsAmount;
+        CarrierId = carrier.Id;
+        Carrier = carrier;
+    }
 
-    public virtual Carrier Carrier { get; set; }
-
-    [NotMapped] public virtual IEnumerable<Seat> Seats { get; set; }
-
-    [NotMapped] public virtual IEnumerable<Trip> Trips { get; set; }
+    public static Train Create(TrainName name, int seatsAmount, Carrier carrier)
+    {
+        return new Train(name, seatsAmount, carrier);
+    }
+    
+    private Train() {}
 }

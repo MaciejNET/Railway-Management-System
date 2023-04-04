@@ -1,4 +1,5 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Infrastructure.DTOs;
@@ -10,33 +11,31 @@ public class ScheduleService : IScheduleService
 {
     private readonly IMapper _mapper;
     private readonly IScheduleRepository _scheduleRepository;
+    private readonly ITripRepository _tripRepository;
 
-    public ScheduleService(IScheduleRepository scheduleRepository, IMapper mapper)
+    public ScheduleService(IScheduleRepository scheduleRepository, IMapper mapper, ITripRepository tripRepository)
     {
         _scheduleRepository = scheduleRepository;
         _mapper = mapper;
+        _tripRepository = tripRepository;
     }
 
-    public async Task<ServiceResponse<IEnumerable<ScheduleDto>>> GetByTripId(int id)
+    public async Task<ErrorOr<IEnumerable<ScheduleDto>>> GetByTripId(int id)
     {
+        if (await _tripRepository.GetByIdAsync(id) is null)
+        {
+            return Error.NotFound($"Trip with id: '{id}' does not exists.");
+        }
+        
         var schedules = await _scheduleRepository.GetByTripIdAsync(id);
 
-        if (schedules.Any() is false)
+        if (!schedules.Any())
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<ScheduleDto>>
-            {
-                Success = false,
-                Message = $"Cannot find any schedule for trip with id : '{id}'."
-            };
-
-            return serviceResponse;
+            return Error.NotFound($"Cannot find any schedule for trip with id : '{id}'.");
         }
 
-        var response = new ServiceResponse<IEnumerable<ScheduleDto>>
-        {
-            Data = _mapper.Map<IEnumerable<ScheduleDto>>(schedules)
-        };
+        var schedulesDto = _mapper.Map<IEnumerable<ScheduleDto>>(schedules);
 
-        return response;
+        return schedulesDto.ToList();
     }
 }

@@ -5,9 +5,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/trains")]
-public class TrainController : ControllerBase
+public class TrainController : ApiController
 {
     private readonly ITrainService _trainService;
 
@@ -19,72 +18,52 @@ public class TrainController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var train = await _trainService.GetById(id);
+        var trainOrError = await _trainService.GetById(id);
 
-        if (train.Success is false)
-        {
-            return NotFound(train.Message);
-        }
-
-        return Ok(train.Data);
+        return trainOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet("names/{name}")]
     public async Task<IActionResult> GetByName([FromRoute] string name)
     {
-        var train = await _trainService.GetByTrainName(name);
+        var trainOrError = await _trainService.GetByTrainName(name);
 
-        if (train.Success is false)
-        {
-            return NotFound(train.Message);
-        }
-
-        return Ok(train.Data);
+        return trainOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var trains = await _trainService.GetAll();
+        var trainsOrError = await _trainService.GetAll();
 
-        if (trains.Success is false)
-        {
-            return NotFound(trains.Message);
-        }
-
-        return Ok(trains.Data);
+        return trainsOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddTrain([FromBody] CreateTrain createTrain)
     {
-        var train = await _trainService.AddTrain(createTrain);
-
-        if (train.Success is false)
-        {
-            return BadRequest(train.Message);
-        }
+        var trainOrError = await _trainService.AddTrain(createTrain);
         
-        if (train.Data is null)
-        {
-            return StatusCode(500);
-        }
-
-        return Created($"api/trains/{train.Data.Id}", null);
+        return trainOrError.Match(
+            value => Created($"api/trains/{value.Id}", null),
+            errors => Problem(errors));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var train = await _trainService.Delete(id);
+        var trainOrError = await _trainService.Delete(id);
 
-        if (train.Success is false)
-        {
-            return BadRequest(train.Message);
-        }
-
-        return NoContent();
+        return trainOrError.Match(
+            _ => NoContent(),
+            errors => Problem(errors));
     }
 }

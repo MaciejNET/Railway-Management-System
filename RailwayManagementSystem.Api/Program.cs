@@ -34,7 +34,6 @@ builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IStationRepository, StationRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITripRepository, TripRepository>();
-builder.Services.AddScoped<ITripIntervalRepository, TripIntervalRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IRailwayEmployeeRepository, RailwayEmployeeRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

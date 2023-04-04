@@ -1,3 +1,4 @@
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Infrastructure.Commands.Trip;
 using RailwayManagementSystem.Infrastructure.DTOs;
@@ -6,12 +7,12 @@ namespace RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 public interface ITripService
 {
-    Task<ServiceResponse<TripDto>> GetById(int id);
-    Task<ServiceResponse<IEnumerable<TripDto>>> GetAll();
+    Task<ErrorOr<TripDto>> GetById(int id);
+    Task<ErrorOr<IEnumerable<TripDto>>> GetAll();
 
-    Task<ServiceResponse<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation, string endStation,
+    Task<ErrorOr<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation, string endStation,
         DateTime date);
 
-    Task<ServiceResponse<TripDto>> AddTrip(CreateTrip createTrip);
-    Task<ServiceResponse<TripDto>> Delete(int id);
+    Task<ErrorOr<TripDto>> AddTrip(CreateTrip createTrip);
+    Task<ErrorOr<Deleted>> Delete(int id);
 }

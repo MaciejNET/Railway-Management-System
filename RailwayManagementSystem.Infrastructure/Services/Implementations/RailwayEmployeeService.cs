@@ -1,7 +1,9 @@
 using AutoMapper;
+using ErrorOr;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Models.Enums;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 using RailwayManagementSystem.Infrastructure.Commands.RailwayEmployee;
 using RailwayManagementSystem.Infrastructure.DTOs;
 using RailwayManagementSystem.Infrastructure.Services.Abstractions;
@@ -21,87 +23,53 @@ public class RailwayEmployeeService : IRailwayEmployeeService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<RailwayEmployeeDto>> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
+    public async Task<ErrorOr<RailwayEmployeeDto>> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(createRailwayEmployee.Name);
 
         if (railwayEmployee is not null)
         {
-            var serviceResponse = new ServiceResponse<RailwayEmployeeDto>()
-            {
-                Success = false,
-                Message = $"Railway employee with name: {createRailwayEmployee.Name} already exists."
-            };
-
-            return serviceResponse;
+            return Error.Validation($"Railway employee with name: {createRailwayEmployee.Name} already exists.");
         }
-        
+
+        ErrorOr<RailwayEmployeeName> name = RailwayEmployeeName.Create(createRailwayEmployee.Name);
+        ErrorOr<FirstName> firstName = FirstName.Create(createRailwayEmployee.FirstName);
+        ErrorOr<LastName> lastName = LastName.Create(createRailwayEmployee.LastName);
+
+        if (name.IsError || firstName.IsError || lastName.IsError)
+        {
+            List<Error> errors = new();
+            
+            if (name.IsError) errors.AddRange(name.Errors);
+            if (firstName.IsError) errors.AddRange(firstName.Errors);
+            if (lastName.IsError) errors.AddRange(lastName.Errors);
+
+            return errors;
+        }
+
         _authService.CreatePasswordHash(createRailwayEmployee.Password, out var passwordHash, out var passwordSalt);
 
-        try
-        {
-            railwayEmployee = new RailwayEmployee
-            {
-                Name = createRailwayEmployee.Name,
-                FirstName = createRailwayEmployee.FirstName,
-                LastName = createRailwayEmployee.LastName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Role = Role.RailwayEmployee
-            };
+        railwayEmployee = RailwayEmployee.Create(
+            name.Value,
+            firstName.Value,
+            lastName.Value,
+            passwordHash,
+            passwordSalt);
 
-            await _railwayEmployeeRepository.AddAsync(railwayEmployee);
-            await _railwayEmployeeRepository.SaveChangesAsync();
-        
-            var response = new ServiceResponse<RailwayEmployeeDto>
-            {
-                Data = _mapper.Map<RailwayEmployeeDto>(railwayEmployee)
-            };
+        await _railwayEmployeeRepository.AddAsync(railwayEmployee);
 
-            return response;
-        }
-        catch (Exception e)
-        {
-            var response = new ServiceResponse<RailwayEmployeeDto>
-            {
-                Success = false,
-                Message = e.Message
-            };
-
-            return response;
-        }
+        return _mapper.Map<RailwayEmployeeDto>(railwayEmployee);
     }
 
-    public async Task<ServiceResponse<string>> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee)
+    public async Task<ErrorOr<string>> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(loginRailwayEmployee.Name);
-        if (railwayEmployee is null)
+        
+        if (railwayEmployee is null || !_authService.VerifyPasswordHash(loginRailwayEmployee.Password, railwayEmployee.PasswordHash, railwayEmployee.PasswordSalt))
         {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = $"Railway employee with name: '{loginRailwayEmployee.Name}' does not exists."
-            };
-
-            return serviceResponse;
-        }
-
-        if (!_authService.VerifyPasswordHash(loginRailwayEmployee.Password, railwayEmployee.PasswordHash, railwayEmployee.PasswordSalt))
-        {
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Success = false,
-                Message = "Invalid password."
-            };
-
-            return serviceResponse;
+            return Error.Validation("Invalid credentials.");
         }
         
-        var response = new ServiceResponse<string>
-        {
-            Data = _authService.CreateToken(railwayEmployee)
-        };
-
-        return response;
+        return _authService.CreateToken(railwayEmployee);
     }
 }

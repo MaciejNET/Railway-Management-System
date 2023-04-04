@@ -4,9 +4,8 @@ using RailwayManagementSystem.Infrastructure.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
-[ApiController]
 [Route("api/admins")]
-public class AdminController : ControllerBase
+public class AdminController : ApiController
 {
     private readonly IAdminService _adminService;
 
@@ -18,26 +17,20 @@ public class AdminController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateAdmin([FromBody] CreateAdmin createAdmin)
     {
-        var admin = await _adminService.CreateAdmin(createAdmin);
+        var adminOrError = await _adminService.CreateAdmin(createAdmin);
 
-        if (admin.Success is false)
-        {
-            return BadRequest(admin.Message);
-        }
-
-        return Ok();
+         return adminOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginAdmin loginAdmin)
     {
-        var admin = await _adminService.LoginAdmin(loginAdmin);
+        var adminOrError = await _adminService.LoginAdmin(loginAdmin);
 
-        if (admin.Success is false)
-        {
-            return BadRequest(admin.Message);
-        }
-
-        return Ok(admin.Data);
+        return adminOrError.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 }

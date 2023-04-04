@@ -58,6 +58,10 @@
               "target": "Package",
               "version": "[1.0.3, )"
             },
+            "ErrorOr": {
+              "target": "Package",
+              "version": "[1.2.1, )"
+            },
             "GemBox.Pdf": {
               "target": "Package",
               "version": "[17.0.1224, )"
