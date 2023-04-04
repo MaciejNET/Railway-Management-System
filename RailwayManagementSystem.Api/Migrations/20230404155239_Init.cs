@@ -11,16 +11,32 @@ namespace RailwayManagementSystem.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Careers",
+                name: "Admins",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name_Value = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Careers", x => x.Id);
+                    table.PrimaryKey("PK_Admins", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Carriers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carriers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -29,7 +45,7 @@ namespace RailwayManagementSystem.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name_Value = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Percentage = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -38,13 +54,31 @@ namespace RailwayManagementSystem.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RailwayEmployees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RailwayEmployees", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name_Value = table.Column<string>(type: "text", nullable: false),
-                    City_Value = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false),
                     NumberOfPlatforms = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -53,41 +87,22 @@ namespace RailwayManagementSystem.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TripIntervals",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Monday = table.Column<bool>(type: "boolean", nullable: false),
-                    Tuesday = table.Column<bool>(type: "boolean", nullable: false),
-                    Wednesday = table.Column<bool>(type: "boolean", nullable: false),
-                    Thursday = table.Column<bool>(type: "boolean", nullable: false),
-                    Friday = table.Column<bool>(type: "boolean", nullable: false),
-                    Saturday = table.Column<bool>(type: "boolean", nullable: false),
-                    Sunday = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TripIntervals", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Trains",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name_Value = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     SeatsAmount = table.Column<int>(type: "integer", nullable: false),
-                    CareerId = table.Column<int>(type: "integer", nullable: false)
+                    CarrierId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Trains", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Trains_Careers_CareerId",
-                        column: x => x.CareerId,
-                        principalTable: "Careers",
+                        name: "FK_Trains_Carriers_CarrierId",
+                        column: x => x.CarrierId,
+                        principalTable: "Carriers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -98,14 +113,15 @@ namespace RailwayManagementSystem.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName_Value = table.Column<string>(type: "text", nullable: false),
-                    LastName_Value = table.Column<string>(type: "text", nullable: false),
-                    Email_Value = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber_Value = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    Age = table.Column<int>(type: "integer", nullable: false),
+                    DiscountId = table.Column<int>(type: "integer", nullable: true),
                     PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
-                    Age = table.Column<int>(type: "integer", nullable: false),
-                    DiscountId = table.Column<int>(type: "integer", nullable: true)
+                    Role = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -144,9 +160,15 @@ namespace RailwayManagementSystem.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Price = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: false),
                     TrainId = table.Column<int>(type: "integer", nullable: false),
-                    TripIntervalId = table.Column<int>(type: "integer", nullable: false)
+                    TripInterval_Monday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Tuesday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Wednesday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Thursday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Friday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Saturday = table.Column<bool>(type: "boolean", nullable: false),
+                    TripInterval_Sunday = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -155,12 +177,6 @@ namespace RailwayManagementSystem.Api.Migrations
                         name: "FK_Trips_Trains_TrainId",
                         column: x => x.TrainId,
                         principalTable: "Trains",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Trips_TripIntervals_TripIntervalId",
-                        column: x => x.TripIntervalId,
-                        principalTable: "TripIntervals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -202,10 +218,9 @@ namespace RailwayManagementSystem.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TripId = table.Column<int>(type: "integer", nullable: false),
                     PassengerId = table.Column<int>(type: "integer", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: false),
                     SeatId = table.Column<int>(type: "integer", nullable: false),
-                    TripDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    PdfVersion = table.Column<byte[]>(type: "bytea", nullable: false)
+                    TripDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -295,24 +310,24 @@ namespace RailwayManagementSystem.Api.Migrations
                 column: "TicketsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trains_CareerId",
+                name: "IX_Trains_CarrierId",
                 table: "Trains",
-                column: "CareerId");
+                column: "CarrierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trips_TrainId",
                 table: "Trips",
                 column: "TrainId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trips_TripIntervalId",
-                table: "Trips",
-                column: "TripIntervalId",
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Admins");
+
+            migrationBuilder.DropTable(
+                name: "RailwayEmployees");
+
             migrationBuilder.DropTable(
                 name: "Schedules");
 
@@ -341,10 +356,7 @@ namespace RailwayManagementSystem.Api.Migrations
                 name: "Trains");
 
             migrationBuilder.DropTable(
-                name: "TripIntervals");
-
-            migrationBuilder.DropTable(
-                name: "Careers");
+                name: "Carriers");
         }
     }
 }

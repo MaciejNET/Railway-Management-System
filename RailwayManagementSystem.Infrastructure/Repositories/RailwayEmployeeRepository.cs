@@ -12,5 +12,5 @@ public class RailwayEmployeeRepository : GenericRepository<RailwayEmployee>, IRa
 
     public async Task<RailwayEmployee?> GetByNameAsync(string name) 
         => await _context.RailwayEmployees
-            .FirstOrDefaultAsync(x => x.Name.Value == name);
+            .FirstOrDefaultAsync(x => x.Name == name);
 }

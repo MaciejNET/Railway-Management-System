@@ -12,5 +12,5 @@ public class CarrierRepository : GenericRepository<Carrier>, ICarrierRepository
 
     public async Task<Carrier?> GetByNameAsync(string name)
         => await _context.Carriers
-            .FirstOrDefaultAsync(x => x.Name.Value == name);
+            .FirstOrDefaultAsync(x => x.Name == name);
 }

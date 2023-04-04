@@ -25,9 +25,9 @@ public class PassengerRepository : GenericRepository<Passenger>, IPassengerRepos
 
     public async Task<Passenger?> GetByEmailAsync(string email) 
         => await _context.Passengers
-            .FirstOrDefaultAsync(x => x.Email.Value == email);
+            .FirstOrDefaultAsync(x => x.Email == email);
 
     public async Task<Passenger?> GetByPhoneNumberAsync(string phoneNumber) 
         => await _context.Passengers
-            .FirstOrDefaultAsync(x => x.PhoneNumber.Value == phoneNumber);
+            .FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
 }

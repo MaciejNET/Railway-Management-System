@@ -23,7 +23,7 @@ public class TrainRepository : GenericRepository<Train>, ITrainRepository
 
     public async Task<Train?> GetTrainByNameAsync(string name) 
         => await _context.Trains
-            .FirstOrDefaultAsync(x => x.Name.Value == name);
+            .FirstOrDefaultAsync(x => x.Name == name);
 
     public async Task<IEnumerable<Train>> GetByCarrierIdAsync(int id) 
         => await _context.Trains

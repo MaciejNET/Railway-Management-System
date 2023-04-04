@@ -13,12 +13,12 @@ public class StationRepository : GenericRepository<Station>, IStationRepository
     public async Task<Station?> GetByNameAsync(string name)
     {
         return await _context.Stations
-            .FirstOrDefaultAsync(x => x.Name.Value == name);
+            .FirstOrDefaultAsync(x => x.Name == name);
     }
 
     public async Task<IEnumerable<Station>> GetByCityAsync(string city) 
         => await _context.Stations
-            .Where(x => x.City.Value == city)
+            .Where(x => x.City == city)
             .AsNoTracking()
             .ToListAsync();
 }

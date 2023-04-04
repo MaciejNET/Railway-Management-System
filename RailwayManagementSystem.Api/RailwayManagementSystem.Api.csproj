@@ -42,4 +42,8 @@
         <ProjectReference Include="..\RailwayManagementSystem.Infrastructure\RailwayManagementSystem.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations" />
+    </ItemGroup>
+
 </Project>
