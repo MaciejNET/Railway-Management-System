@@ -5,8 +5,9 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
+[ApiController]
 [Route("api/railwayEmployees")]
-public class RailwayEmployeeController : ApiController
+public class RailwayEmployeeController : ControllerBase
 {
     private readonly IRailwayEmployeeService _railwayEmployeeService;
 
@@ -19,20 +20,16 @@ public class RailwayEmployeeController : ApiController
     [HttpPost("create")]
     public async Task<IActionResult> CreateRailwayEmployee([FromBody] CreateRailwayEmployee createRailwayEmployee)
     {
-        var railwayEmployeeOrError = await _railwayEmployeeService.CreateRailwayEmployee(createRailwayEmployee);
+        var railwayEmployee = await _railwayEmployeeService.CreateRailwayEmployee(createRailwayEmployee);
 
-        return railwayEmployeeOrError.Match(
-            _ => Ok(),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRailwayEmployee loginRailwayEmployee)
     {
-        var railwayEmployeeOrError = await _railwayEmployeeService.LoginRailwayEmployee(loginRailwayEmployee);
+        var railwayEmployee = await _railwayEmployeeService.LoginRailwayEmployee(loginRailwayEmployee);
 
-        return railwayEmployeeOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return NoContent();
     }
 }

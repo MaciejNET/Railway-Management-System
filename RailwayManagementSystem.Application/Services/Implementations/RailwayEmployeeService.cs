@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.RailwayEmployee;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -22,36 +23,25 @@ public class RailwayEmployeeService : IRailwayEmployeeService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<RailwayEmployeeDto>> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
+    public async Task<RailwayEmployeeDto> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(createRailwayEmployee.Name);
 
         if (railwayEmployee is not null)
         {
-            return Error.Validation($"Railway employee with name: {createRailwayEmployee.Name} already exists.");
+            throw new InvalidCredentialsException();
         }
 
-        ErrorOr<RailwayEmployeeName> name = RailwayEmployeeName.Create(createRailwayEmployee.Name);
-        ErrorOr<FirstName> firstName = FirstName.Create(createRailwayEmployee.FirstName);
-        ErrorOr<LastName> lastName = LastName.Create(createRailwayEmployee.LastName);
-
-        if (name.IsError || firstName.IsError || lastName.IsError)
-        {
-            List<Error> errors = new();
-            
-            if (name.IsError) errors.AddRange(name.Errors);
-            if (firstName.IsError) errors.AddRange(firstName.Errors);
-            if (lastName.IsError) errors.AddRange(lastName.Errors);
-
-            return errors;
-        }
+        var name = new RailwayEmployeeName(createRailwayEmployee.Name);
+        var firstName = new FirstName(createRailwayEmployee.FirstName);
+        var lastName = new LastName(createRailwayEmployee.LastName);
 
         _authService.CreatePasswordHash(createRailwayEmployee.Password, out var passwordHash, out var passwordSalt);
 
         railwayEmployee = RailwayEmployee.Create(
-            name.Value,
-            firstName.Value,
-            lastName.Value,
+            name,
+            firstName,
+            lastName,
             passwordHash,
             passwordSalt);
 
@@ -60,13 +50,13 @@ public class RailwayEmployeeService : IRailwayEmployeeService
         return _mapper.Map<RailwayEmployeeDto>(railwayEmployee);
     }
 
-    public async Task<ErrorOr<string>> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee)
+    public async Task<string> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee)
     {
         var railwayEmployee = await _railwayEmployeeRepository.GetByNameAsync(loginRailwayEmployee.Name);
         
         if (railwayEmployee is null || !_authService.VerifyPasswordHash(loginRailwayEmployee.Password, railwayEmployee.PasswordHash, railwayEmployee.PasswordSalt))
         {
-            return Error.Validation("Invalid credentials.");
+            throw new InvalidCredentialsException();
         }
         
         return _authService.CreateToken(railwayEmployee);

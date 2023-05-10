@@ -483,6 +483,10 @@
               "target": "Package",
               "version": "[17.0.1224, )"
             },
+            "Humanizer": {
+              "target": "Package",
+              "version": "[2.14.1, )"
+            },
             "IronSoftware.System.Drawing": {
               "target": "Package",
               "version": "[2022.11.10457, )"

@@ -12,9 +12,7 @@ public class CarriersConfiguration : IEntityTypeConfiguration<Carrier>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasConversion(
-                x => x.Value,
-                v => CarrierName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new CarrierName(v))
             .IsRequired();
 
         builder.HasMany(x => x.Trains)

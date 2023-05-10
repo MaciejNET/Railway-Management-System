@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Admin;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -22,42 +23,37 @@ public class AdminService : IAdminService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<AdminDto>> CreateAdmin(CreateAdmin createAdmin)
+    public async Task<AdminDto> CreateAdmin(CreateAdmin createAdmin)
     {
         var admin = await _adminRepository.GetByNameAsync(createAdmin.Name);
 
         if (admin is not null)
         {
-            return Error.Validation(description: $"Admin with name : '{createAdmin.Name}' already exists.");
+            throw new AdminAlreadyExistsException(admin.Name);
         }
         
         _authService.CreatePasswordHash(createAdmin.Password, out var passwordHash, out var passwordSalt);
         
-           ErrorOr<AdminName> name = AdminName.Create(createAdmin.Name);
+        var name = new AdminName(createAdmin.Name);
            
-           if (name.IsError)
-           {
-               return name.FirstError;
-           }
-           
-           admin = Admin.Create(name.Value, passwordHash, passwordSalt);
-           
-           await _adminRepository.AddAsync(admin);
-           
-           return _mapper.Map<AdminDto>(admin);
+        admin = Admin.Create(name, passwordHash, passwordSalt);
+        
+        await _adminRepository.AddAsync(admin);
+        
+        return _mapper.Map<AdminDto>(admin);
     }
 
-    public async Task<ErrorOr<string>> LoginAdmin(LoginAdmin loginAdmin)
+    public async Task<string> LoginAdmin(LoginAdmin loginAdmin)
     {
         var admin = await _adminRepository.GetByNameAsync(loginAdmin.Name);
         if (admin is null)
         {
-            return Error.NotFound(description: $"Admin with name: '{loginAdmin.Name}' does not exists.");
+            throw new InvalidCredentialsException();
         }
 
         if (!_authService.VerifyPasswordHash(loginAdmin.Password, admin.PasswordHash, admin.PasswordSalt))
         {
-            return Error.Validation(description: "Invalid password.");
+            throw new InvalidCredentialsException();
         }
         
         return _authService.CreateToken(admin);

@@ -12,9 +12,7 @@ public class TrainsConfiguration : IEntityTypeConfiguration<Train>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasConversion(
-                x => x.Value,
-                v => TrainName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new TrainName(v))
             .IsRequired();
 
         builder.Property(x => x.SeatsAmount)

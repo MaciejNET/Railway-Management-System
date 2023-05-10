@@ -7,8 +7,9 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
+[ApiController]
 [Route("api/trips")]
-public class TripController : ApiController
+public class TripController : ControllerBase
 {
     private readonly IBookingService _bookingService;
     private readonly IScheduleService _scheduleService;
@@ -24,53 +25,43 @@ public class TripController : ApiController
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var tripOrError = await _tripService.GetById(id);
+        var trip = await _tripService.GetById(id);
 
-        return tripOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var tripsOrError = await _tripService.GetAll();
+        var trips = await _tripService.GetAll();
 
-        return tripsOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok();
     }
 
     [HttpGet("{id:int}/schedule")]
     public async Task<IActionResult> GetTripSchedule([FromRoute] int id)
     {
-        var scheduleOrError = await _scheduleService.GetByTripId(id);
+        var schedule = await _scheduleService.GetByTripId(id);
 
-        return scheduleOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok();
     }
 
     [HttpPost("find")]
     public async Task<IActionResult> GetConnectionTrip(ConnectionTrip connectionTrip)
     {
-        var tripsOrError = await _tripService.GetConnectionTrip(connectionTrip.StartStation, connectionTrip.EndStation,
+        var trips = await _tripService.GetConnectionTrip(connectionTrip.StartStation, connectionTrip.EndStation,
             connectionTrip.Date);
 
-        return tripsOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddTrip(CreateTrip createTrip)
     {
-        var tripOrError = await _tripService.AddTrip(createTrip);
+        var trip = await _tripService.AddTrip(createTrip);
 
-        return tripOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Passenger")]
@@ -86,21 +77,17 @@ public class TripController : ApiController
 
         var passengerId = int.Parse(user.Value);
         
-        var ticketOrError = await _bookingService.BookTicket(bookTicket, passengerId);
+        var ticket = await _bookingService.BookTicket(bookTicket, passengerId);
 
-        return ticketOrError.Match(
-            value => Created($"api/passengers/{passengerId}/tickets", value),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var tripOrError = await _tripService.Delete(id);
+        await _tripService.Delete(id);
 
-        return tripOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 }

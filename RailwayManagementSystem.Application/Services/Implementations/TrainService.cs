@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Train;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Models.Enums;
@@ -26,37 +27,37 @@ public class TrainService : ITrainService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<TrainDto>> GetById(int id)
+    public async Task<TrainDto> GetById(int id)
     {
         var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
-            return Error.NotFound($"Train with id: '{id}' does not exists.");
+            throw new TrainNotFoundException(id);
         }
 
         return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ErrorOr<TrainDto>> GetByTrainName(string name)
+    public async Task<TrainDto> GetByTrainName(string name)
     {
         var train = await _trainRepository.GetTrainByNameAsync(name);
         
         if (train is null)
         {
-            return Error.NotFound($"Train with name: '{name}' does not exists.");
+            throw new TrainNotFoundException(name);
         }
 
         return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ErrorOr<IEnumerable<TrainDto>>> GetByCarrierId(int id)
+    public async Task<IEnumerable<TrainDto>> GetByCarrierId(int id)
     {
         var trains = await _trainRepository.GetByCarrierIdAsync(id);
 
         if (!trains.Any())
         {
-            return Error.NotFound($"Cannot find any trains for career with id: {id}.");
+            return new List<TrainDto>();
         }
 
         var trainsDto = _mapper.Map<IEnumerable<TrainDto>>(trains);
@@ -64,13 +65,13 @@ public class TrainService : ITrainService
         return trainsDto.ToList();
     }
 
-    public async Task<ErrorOr<IEnumerable<TrainDto>>> GetAll()
+    public async Task<IEnumerable<TrainDto>> GetAll()
     {
         var trains = await _trainRepository.GetAllAsync();
 
         if (!trains.Any())
         {
-            return Error.NotFound("Cannot find any trains");
+            return new List<TrainDto>();
         }
 
         var trainsDto = _mapper.Map<IEnumerable<TrainDto>>(trains);
@@ -78,29 +79,23 @@ public class TrainService : ITrainService
         return trainsDto.ToList();
     }
 
-    public async Task<ErrorOr<TrainDto>> AddTrain(CreateTrain createTrain)
+    public async Task<TrainDto> AddTrain(CreateTrain createTrain)
     {
         var train = await _trainRepository.GetTrainByNameAsync(createTrain.Name);
 
         if (train is not null)
         {
-            return Error.Validation($"Train with name: '{createTrain.Name}' already exists.");
+            throw new TrainWithGivenNameAlreadyExistsException(createTrain.Name);
         }
 
         var carrier = await _carrierRepository.GetByNameAsync(createTrain.CarrierName);
 
         if (carrier is null)
         {
-            return Error.Validation(
-                $"Cannot create train because carrier with name: '{createTrain.CarrierName}' does not exists.");
+            throw new CarrierNotFoundException(createTrain.CarrierName);
         }
 
-        ErrorOr<TrainName> name = TrainName.Create(createTrain.Name);
-
-        if (name.IsError)
-        {
-            return name.Errors;
-        }
+        var name = new TrainName(createTrain.Name);
 
         train = Train.Create(name.Value, createTrain.SeatsAmount, carrier);
         await _trainRepository.AddAsync(train);
@@ -117,17 +112,15 @@ public class TrainService : ITrainService
         return _mapper.Map<TrainDto>(train);
     }
 
-    public async Task<ErrorOr<Deleted>> Delete(int id)
+    public async Task Delete(int id)
     {
         var train = await _trainRepository.GetByIdAsync(id);
 
         if (train is null)
         {
-            return Error.NotFound($"Train with id: '{id}' does not exists.");
+            throw new TrainNotFoundException(id);
         }
 
         await _trainRepository.RemoveAsync(train);
-
-        return Result.Deleted;
     }
 }

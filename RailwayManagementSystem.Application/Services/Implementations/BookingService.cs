@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Ticket;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Extensions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
@@ -27,57 +28,57 @@ public class BookingService : IBookingService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<TicketDto>> BookTicket(BookTicket bookTicket, int passengerId)
+    public async Task<TicketDto> BookTicket(BookTicket bookTicket, int passengerId)
     {
         var trip = await _tripRepository.GetByIdAsync(bookTicket.TripId);
 
         if (trip is null)
         {
-            return Error.NotFound(description: $"Trip with id: '{bookTicket.TripId}' does not exists.");
+            throw new TripNotFoundException(bookTicket.TripId);
         }
 
         if (bookTicket.TripDate < DateOnly.FromDateTime(DateTime.Now))
         {
-            return Error.Validation(description: "Cannot book ticket for a past date.");
+            throw new InvalidBookTicketDateException();
         }
         
         if (TripExtensions.IsTrainRunsOnGivenDate(trip, bookTicket.TripDate) is false)
         {
-            return Error.Validation(description: "This trip does not run on given date.");
+            throw new InvalidTripDateException(trip.Id);
         }
 
         var passenger = await _passengerRepository.GetByIdAsync(passengerId);
 
         if (passenger is null)
         {
-            return Error.NotFound(description: $"Passenger with id: '{passengerId}' does not exists.");
+            throw new PassengerNotFoundException(passengerId);
         }
 
         
         var startStation = await _stationRepository.GetByNameAsync(bookTicket.StartStation);
         if (startStation is null)
         {
-            return Error.NotFound($"Station with name: '{bookTicket.StartStation}' does not exists.");
+            throw new StationNotFoundException(bookTicket.StartStation);
         }
         
         var endStation = await _stationRepository.GetByNameAsync(bookTicket.EndStation);
         if (endStation is null)
         {
-            return Error.NotFound($"Station with name: '{bookTicket.EndStation}' does not exists.");
+            throw new StationNotFoundException(bookTicket.EndStation);
         }
         
 
         var tripStations = trip.Schedules.Select(x => x.Station).ToList();
         if (!(tripStations.Contains(startStation) && tripStations.Contains(endStation)))
         {
-            return Error.Validation(description: "Trip schedule does not contains provided stations");
+            throw new InvalidScheduleStationsException();
         }
 
         var seatsToBook = GetAvailableSeats(trip, bookTicket.TripDate, startStation, endStation).ToList();
 
         if (seatsToBook.Count == 0)
         {
-            return Error.Failure(description: "There is no free seat to book");
+            throw new NoSeatsToBookException();
         }
 
         var stations = GetStationsToBook(tripStations, startStation, endStation).ToList();

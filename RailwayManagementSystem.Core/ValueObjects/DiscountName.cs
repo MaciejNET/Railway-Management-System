@@ -1,25 +1,22 @@
 using ErrorOr;
+using RailwayManagementSystem.Core.Exceptions;
 
 namespace RailwayManagementSystem.Core.ValueObjects;
 
 public record DiscountName
 {
-    private DiscountName(string value)
+    public string Value { get; private set; }
+    
+    public DiscountName(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidDiscountNameException();
+        }
         Value = value;
     }
 
-    public string Value { get; private set; }
-
-    public static ErrorOr<DiscountName> Create(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return Error.Validation(description: "Discount name cannot be empty.");
-        }
-
-        return new DiscountName(name);
-    }
-
     public static implicit operator string(DiscountName discountName) => discountName.Value;
+
+    public static implicit operator DiscountName(string value) => new(value);
 }

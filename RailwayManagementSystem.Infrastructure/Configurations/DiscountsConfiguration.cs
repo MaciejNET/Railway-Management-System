@@ -12,9 +12,7 @@ public class DiscountsConfiguration : IEntityTypeConfiguration<Discount>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasConversion(
-                x => x.Value,
-                v => DiscountName.Create(v).Value);
+            .HasConversion(x => x.Value, v => new DiscountName(v));
 
         builder.Property(x => x.Percentage)
             .IsRequired();

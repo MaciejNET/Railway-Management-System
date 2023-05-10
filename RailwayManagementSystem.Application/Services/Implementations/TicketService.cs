@@ -1,6 +1,7 @@
 using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -20,37 +21,37 @@ public class TicketService : ITicketService
         _pdfCreator = pdfCreator;
     }
 
-    public async Task<ErrorOr<TicketDto>> GetById(int id)
+    public async Task<TicketDto> GetById(int id)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
-            return Error.NotFound($"Ticket with id: '{id}' does not exists.");
+            throw new TicketNotFoundException(id);
         }
 
         return _mapper.Map<TicketDto>(ticket);
     }
 
-    public async Task<ErrorOr<byte[]>> GetTicketPdf(int id)
+    public async Task<byte[]> GetTicketPdf(int id)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
-            return Error.NotFound($"Ticket with id: '{id}' does not exists.");
+            throw new TicketNotFoundException(id);
         }
 
         return _pdfCreator.CreateTicketPdf(ticket);
     }
 
-    public async Task<ErrorOr<VerifyTicketResponse>> VerifyTicket(int id)
+    public async Task<VerifyTicketResponse> VerifyTicket(int id)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
-            return Error.NotFound($"Ticket with id: '{id}' does not exists.");
+            throw new TicketNotFoundException(id);
         }
 
         var today = DateOnly.FromDateTime(DateTime.Now);
@@ -70,13 +71,13 @@ public class TicketService : ITicketService
         return response;
     }
 
-    public async Task<ErrorOr<IEnumerable<TicketDto>>> GetByPassengerId(int id)
+    public async Task<IEnumerable<TicketDto>> GetByPassengerId(int id)
     {
         var tickets = await _ticketRepository.GetByPassengerIdAsync(id);
 
         if (!tickets.Any())
         {
-            return Error.NotFound($"Cannot find any ticket for passenger with id: '{id}'");
+            return new List<TicketDto>();
         }
 
         var ticketsDto = _mapper.Map<IEnumerable<TicketDto>>(tickets);
@@ -84,17 +85,15 @@ public class TicketService : ITicketService
         return ticketsDto.ToList();
     }
 
-    public async Task<ErrorOr<Success>> Cancel(int id)
+    public async Task Cancel(int id)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
         {
-            return Error.NotFound($"Ticket with id: '{id}' does not exists.");
+            throw new TicketNotFoundException(id);
         }
         
         await _ticketRepository.RemoveAsync(ticket);
-
-        return Result.Success;
     }
 }

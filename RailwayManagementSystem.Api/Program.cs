@@ -9,6 +9,7 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Application.Services.Implementations;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Infrastructure;
+using RailwayManagementSystem.Infrastructure.Exceptions;
 using RailwayManagementSystem.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

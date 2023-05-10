@@ -6,9 +6,9 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface ITicketService
 {
-    Task<ErrorOr<TicketDto>> GetById(int id);
-    Task<ErrorOr<byte[]>> GetTicketPdf(int id);
-    Task<ErrorOr<VerifyTicketResponse>> VerifyTicket(int id);
-    Task<ErrorOr<IEnumerable<TicketDto>>> GetByPassengerId(int id);
-    Task<ErrorOr<Success>> Cancel(int id);
+    Task<TicketDto> GetById(int id);
+    Task<byte[]> GetTicketPdf(int id);
+    Task<VerifyTicketResponse> VerifyTicket(int id);
+    Task<IEnumerable<TicketDto>> GetByPassengerId(int id);
+    Task Cancel(int id);
 }

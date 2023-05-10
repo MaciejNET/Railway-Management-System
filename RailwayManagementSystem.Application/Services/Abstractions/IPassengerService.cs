@@ -6,11 +6,11 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface IPassengerService
 {
-    Task<ErrorOr<PassengerDto>> GetById(int id);
-    Task<ErrorOr<IEnumerable<PassengerDto>>> GetAll();
-    Task<ErrorOr<string>> Login(LoginPassenger loginPassenger);
-    Task<ErrorOr<PassengerDto>> Register(RegisterPassenger registerPassenger);
-    Task<ErrorOr<Updated>> Update(int id, UpdatePassenger updatePassenger);
-    Task<ErrorOr<Updated>> UpdateDiscount(int id, string? discountName);
-    Task<ErrorOr<Deleted>> Delete(int id);
+    Task<PassengerDto> GetById(int id);
+    Task<IEnumerable<PassengerDto>> GetAll();
+    Task<string> Login(LoginPassenger loginPassenger);
+    Task<PassengerDto> Register(RegisterPassenger registerPassenger);
+    Task<Updated> Update(int id, UpdatePassenger updatePassenger);
+    Task UpdateDiscount(int id, string? discountName);
+    Task Delete(int id);
 }

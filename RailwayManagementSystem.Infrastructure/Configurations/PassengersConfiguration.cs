@@ -12,27 +12,19 @@ public class PassengersConfiguration : IEntityTypeConfiguration<Passenger>
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.FirstName)
-            .HasConversion(
-                x => x.Value,
-                v => FirstName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new FirstName(v))
             .IsRequired();
 
         builder.Property(x => x.LastName)
-            .HasConversion(
-                x => x.Value,
-                v => LastName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new LastName(v))
             .IsRequired();
 
         builder.Property(x => x.Email)
-            .HasConversion(
-                x => x.Value,
-                v => Email.Create(v).Value)
+            .HasConversion(x => x.Value, v => new Email(v))
             .IsRequired();
 
         builder.Property(x => x.PhoneNumber)
-            .HasConversion(
-                x => x.Value,
-                v => PhoneNumber.Create(v).Value)
+            .HasConversion(x => x.Value, v => new PhoneNumber(v))
             .IsRequired();
 
         builder.Property(x => x.Age)

@@ -6,5 +6,5 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface IBookingService
 {
-    Task<ErrorOr<TicketDto>> BookTicket(BookTicket bookTicket, int passengerId);
+    Task<TicketDto> BookTicket(BookTicket bookTicket, int passengerId);
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Passenger;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -25,25 +26,25 @@ public class PassengerService : IPassengerService
         _authService = authService;
     }
 
-    public async Task<ErrorOr<PassengerDto>> GetById(int id)
+    public async Task<PassengerDto> GetById(int id)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
         
         if (passenger is null)
         {
-            return Error.NotFound($"User with id: '{id}' does not exist");
+            throw new PassengerNotFoundException(id);
         }
 
         return _mapper.Map<PassengerDto>(passenger);
     }
 
-    public async Task<ErrorOr<IEnumerable<PassengerDto>>> GetAll()
+    public async Task<IEnumerable<PassengerDto>> GetAll()
     {
         var passengers = await _passengerRepository.GetAllAsync();
         
         if (!passengers.Any())
         {
-            return Error.NotFound("Cannot find any passengers");
+            return new List<PassengerDto>();
         }
 
         var passengersDto = _mapper.Map<IEnumerable<PassengerDto>>(passengers);
@@ -51,62 +52,51 @@ public class PassengerService : IPassengerService
         return passengersDto.ToList();
     }
 
-    public async Task<ErrorOr<string>> Login(LoginPassenger loginPassenger)
+    public async Task<string> Login(LoginPassenger loginPassenger)
     {
         var passenger = await _passengerRepository.GetByEmailAsync(loginPassenger.Email);
         
         if (passenger is null
             || !_authService.VerifyPasswordHash(loginPassenger.Password, passenger.PasswordHash, passenger.PasswordSalt))
         {
-            return Error.Validation("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
 
         return _authService.CreateToken(passenger);
     }
 
-    public async Task<ErrorOr<PassengerDto>> Register(RegisterPassenger registerPassenger)
+    public async Task<PassengerDto> Register(RegisterPassenger registerPassenger)
     {
         if (await _passengerRepository.GetByEmailAsync(registerPassenger.Email) is not null)
         {
-            return Error.Validation($"Passenger with email: '{registerPassenger.Email}' already exists.");
+            throw new PassengerWithGivenEmailAlreadyExists(registerPassenger.Email);
         }
 
         if (await _passengerRepository.GetByPhoneNumberAsync(registerPassenger.PhoneNumber) is not null)
         {
-            return Error.Validation($"Passenger with phone number: '{registerPassenger.PhoneNumber}' already exists.");
+            throw new PassengerWithGivenPhoneNumberAlreadyExists(registerPassenger.PhoneNumber);
         }
 
         var discount = await _discountRepository.GetByNameAsync(registerPassenger.DiscountName);
 
         if (discount is null && !string.IsNullOrWhiteSpace(registerPassenger.DiscountName))
         {
-            return Error.NotFound($"Discount with name: {registerPassenger.DiscountName} does not exists.");
+            throw new DiscountNotFoundException(registerPassenger.DiscountName);
         }
 
         _authService.CreatePasswordHash(registerPassenger.Password, out var passwordHash, out var passwordSalt);
 
-        ErrorOr<FirstName> firstName = FirstName.Create(registerPassenger.FirstName);
-        ErrorOr<LastName> lastName = LastName.Create(registerPassenger.LastName);
-        ErrorOr<Email> email = Email.Create(registerPassenger.Email);
-        ErrorOr<PhoneNumber> phoneNumber = PhoneNumber.Create(registerPassenger.PhoneNumber);
-
-        if (firstName.IsError || lastName.IsError || email.IsError || phoneNumber.IsError)
-        {
-            List<Error> errors = new();
-            
-            if (firstName.IsError) errors.AddRange(firstName.Errors);
-            if (lastName.IsError) errors.AddRange(lastName.Errors);
-            if (email.IsError) errors.AddRange(email.Errors);
-            if (phoneNumber.IsError) errors.AddRange(phoneNumber.Errors);
-
-            return errors;
-        }
+        var firstName = new FirstName(registerPassenger.FirstName);
+        var lastName = new LastName(registerPassenger.LastName);
+        var email = new Email(registerPassenger.Email);
+        var phoneNumber = new PhoneNumber(registerPassenger.PhoneNumber);
+        
 
         var passenger = Passenger.Create(
-            firstName.Value,
-            lastName.Value,
-            email.Value,
-            phoneNumber.Value,
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
             registerPassenger.Age,
             discount,
             passwordHash,
@@ -117,28 +107,23 @@ public class PassengerService : IPassengerService
         return _mapper.Map<PassengerDto>(passenger);
     }
 
-    public async Task<ErrorOr<Updated>> Update(int id, UpdatePassenger updatePassenger)
+    public async Task<Updated> Update(int id, UpdatePassenger updatePassenger)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            return Error.NotFound($"User with id: '{id}' does not exist");
+            throw new PassengerNotFoundException(id);
         }
 
         if (updatePassenger.Email is not null)
         {
             if (await _passengerRepository.GetByEmailAsync(updatePassenger.Email) is not null)
             {
-                return Error.Validation($"User with email: '{updatePassenger.Email}' already exists.");
+                throw new PassengerWithGivenEmailAlreadyExists(updatePassenger.Email);
             }
 
-            ErrorOr<Email> email = Email.Create(updatePassenger.Email);
-
-            if (email.IsError)
-            {
-                return email.Errors;
-            }
+            var email = new Email(updatePassenger.Email);
 
             passenger.Email = email.Value;
         }
@@ -147,15 +132,10 @@ public class PassengerService : IPassengerService
         {
             if (await _passengerRepository.GetByPhoneNumberAsync(updatePassenger.PhoneNumber) is not null)
             {
-                return Error.Validation($"User with phone number: '{updatePassenger.PhoneNumber}' already exists.");
+                throw new PassengerWithGivenPhoneNumberAlreadyExists(updatePassenger.PhoneNumber);
             }
 
-            ErrorOr<PhoneNumber> phoneNumber = PhoneNumber.Create(updatePassenger.PhoneNumber);
-
-            if (phoneNumber.IsError)
-            {
-                return phoneNumber.Errors;
-            }
+            var phoneNumber = new PhoneNumber(updatePassenger.PhoneNumber);
 
             passenger.PhoneNumber = phoneNumber.Value;
         }
@@ -165,7 +145,7 @@ public class PassengerService : IPassengerService
             if (_authService.VerifyPasswordHash(updatePassenger.Password, passenger.PasswordHash,
                     passenger.PasswordSalt))
             {
-                return Error.Validation("New password must be different");
+                throw new InvalidCredentialsException();
             }
             
             _authService.CreatePasswordHash(updatePassenger.Password, out var passwordHash, out var passwordSalt);
@@ -178,13 +158,13 @@ public class PassengerService : IPassengerService
         return Result.Updated;
     }
 
-    public async Task<ErrorOr<Updated>> UpdateDiscount(int id, string? discountName)
+    public async Task UpdateDiscount(int id, string? discountName)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            return Error.NotFound($"User with id: '{id}' does not exist");
+            throw new PassengerNotFoundException(id);
         }
 
         if (discountName is null)
@@ -197,26 +177,22 @@ public class PassengerService : IPassengerService
 
             if (discount is null)
             {
-                return Error.NotFound($"Discount with name: '{discountName}' does not exist");
+                throw new DiscountNotFoundException(discountName);
             }
         }
 
         await _passengerRepository.UpdateAsync(passenger);
-
-        return Result.Updated;
     }
 
-    public async Task<ErrorOr<Deleted>> Delete(int id)
+    public async Task Delete(int id)
     {
         var passenger = await _passengerRepository.GetByIdAsync(id);
 
         if (passenger is null)
         {
-            return Error.NotFound($"User with id: '{id}' does not exist");
+            throw new PassengerNotFoundException(id);
         }
 
         await _passengerRepository.RemoveAsync(passenger);
-
-        return Result.Deleted;
     }
 }

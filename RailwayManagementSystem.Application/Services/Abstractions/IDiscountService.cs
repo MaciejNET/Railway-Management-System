@@ -6,8 +6,8 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface IDiscountService
 {
-    Task<ErrorOr<DiscountDto>> GetById(int id);
-    Task<ErrorOr<IEnumerable<DiscountDto>>> GetAll();
-    Task<ErrorOr<DiscountDto>> AddDiscount(CreateDiscount createDiscount);
-    Task<ErrorOr<Deleted>> Delete(int id);
+    Task<DiscountDto> GetById(int id);
+    Task<IEnumerable<DiscountDto>> GetAll();
+    Task<DiscountDto> AddDiscount(CreateDiscount createDiscount);
+    Task Delete(int id);
 }

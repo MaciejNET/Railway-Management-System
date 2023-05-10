@@ -1,31 +1,29 @@
 using System.ComponentModel.DataAnnotations;
 using ErrorOr;
+using RailwayManagementSystem.Core.Exceptions;
 
 namespace RailwayManagementSystem.Core.ValueObjects;
 
 public record Email
 {
-    private Email(string value)
+    public string Value { get; private set; }
+    
+    public Email(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidEmailException();
+        }
+        
+        if (!new EmailAddressAttribute().IsValid(value))
+        {
+            throw new InvalidEmailException();
+        }
+        
         Value = value;
     }
 
-    public string Value { get; private set; }
-
-    public static ErrorOr<Email> Create(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            return Error.Validation(description: "Email cannot be empty.");
-        }
-
-        if (!new EmailAddressAttribute().IsValid(email))
-        {
-            return Error.Validation(description: "Email structure is invalid");
-        }
-
-        return new Email(email);
-    }
-
     public static implicit operator string(Email email) => email.Value;
+
+    public static implicit operator Email(string value) => new(value);
 }

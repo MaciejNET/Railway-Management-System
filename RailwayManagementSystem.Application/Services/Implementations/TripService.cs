@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Trip;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Extensions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
@@ -32,25 +33,25 @@ public class TripService : ITripService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<TripDto>> GetById(int id)
+    public async Task<TripDto> GetById(int id)
     {
         var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
-            return Error.NotFound($"Trip with id: '{id}' dose not exists");
+            throw new TripNotFoundException(id);
         }
 
         return _mapper.Map<TripDto>(trip);
     }
 
-    public async Task<ErrorOr<IEnumerable<TripDto>>> GetAll()
+    public async Task<IEnumerable<TripDto>> GetAll()
     {
         var trips = await _tripRepository.GetAllAsync();
 
         if (!trips.Any())
         {
-            return Error.NotFound("Cannot find any trip");
+            return new List<TripDto>();
         }
 
         var tripsDto = _mapper.Map<IEnumerable<TripDto>>(trips);
@@ -58,21 +59,21 @@ public class TripService : ITripService
         return tripsDto.ToList();
     }
 
-    public async Task<ErrorOr<IEnumerable<ConnectionTripDto>>> GetConnectionTrip(string startStation,
+    public async Task<IEnumerable<ConnectionTripDto>> GetConnectionTrip(string startStation,
         string endStation, DateTime date)
     {
         var start = await _stationRepository.GetByNameAsync(startStation);
 
         if (start is null)
         {
-            return Error.NotFound($"Station with name: '{startStation}' does not exists.");
+            throw new StationNotFoundException(startStation);
         }
 
         var end = await _stationRepository.GetByNameAsync(endStation);
 
         if (end is null)
         {
-            return Error.NotFound($"Station with name: '{endStation}' does not exists.");
+            throw new StationNotFoundException(endStation);
         }
 
         var trips = await GetAllTrips(start, date);
@@ -91,13 +92,13 @@ public class TripService : ITripService
         return connectionTrips;
     }
 
-    public async Task<ErrorOr<TripDto>> AddTrip(CreateTrip createTrip)
+    public async Task<TripDto> AddTrip(CreateTrip createTrip)
     {
         var train = await _trainRepository.GetTrainByNameAsync(createTrip.TrainName);
 
         if (train is null)
         {
-            return Error.NotFound($"Train with name: '{createTrip.TrainName}' does not exists.");
+            throw new TrainNotFoundException(createTrip.TrainName);
         }
 
         var tripInterval = new TripInterval(
@@ -118,13 +119,12 @@ public class TripService : ITripService
                 
             if (station is null)
             {
-                return Error.NotFound($"Station with name: '{scheduleDto.StationName}' does not exists.");
+                throw new StationNotFoundException(scheduleDto.StationName);
             }
 
             if (scheduleDto.DepartureTime < scheduleDto.ArrivalTime)
             {
-                return Error.Conflict(
-                    $"In station: '{scheduleDto.StationName}' departure time is before arrival time.");
+                throw new InvalidDepartureTimeException(scheduleDto.StationName);
             }
 
             schedules.Add(
@@ -142,18 +142,16 @@ public class TripService : ITripService
         return _mapper.Map<TripDto>(trip);
     }
 
-    public async Task<ErrorOr<Deleted>> Delete(int id)
+    public async Task Delete(int id)
     {
         var trip = await _tripRepository.GetByIdAsync(id);
 
         if (trip is null)
         {
-            return Error.NotFound($"Trip with id: '{id}' dose not exists");
+            throw new TripNotFoundException(id);
         }
 
         await _tripRepository.RemoveAsync(trip);
-
-        return Result.Deleted;
     }
 
     private async Task<IEnumerable<Trip>> GetAllTrips(Station station, DateTime tripDate)
@@ -162,7 +160,7 @@ public class TripService : ITripService
         var date = DateOnly.FromDateTime(tripDate);
         var schedules = await _scheduleRepository.GetByDepartureTimeAndStationIdAsync(time, station.Id);
         var trips = schedules.Select(x => x.Trip).Where(x => TripExtensions.IsTrainRunsOnGivenDate(x, date)).ToList();
-        
+
         return trips;
     }
 }

@@ -12,15 +12,11 @@ public class StationsConfiguration : IEntityTypeConfiguration<Station>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasConversion(
-                x => x.Value,
-                v => StationName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new StationName(v))
             .IsRequired();
 
         builder.Property(x => x.City)
-            .HasConversion(
-                x => x.Value,
-                v => City.Create(v).Value)
+            .HasConversion(x => x.Value, v => new City(v))
             .IsRequired();
 
         builder.Property(x => x.NumberOfPlatforms)

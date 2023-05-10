@@ -1,25 +1,22 @@
 using ErrorOr;
+using RailwayManagementSystem.Core.Exceptions;
 
 namespace RailwayManagementSystem.Core.ValueObjects;
 
 public record City
 {
-    private City(string value)
+    public string Value { get; private set; }
+    
+    public City(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidCityNameException();
+        }
         Value = value;
     }
 
-    public string Value { get; private set; }
-
-    public static ErrorOr<City> Create(string city)
-    {
-        if (string.IsNullOrWhiteSpace(city))
-        {
-            return Error.Validation(description: "City cannot be empty.");
-        }
-
-        return new City(city);
-    }
-
     public static implicit operator string(City city) => city.Value;
+
+    public static implicit operator City(string value) => new(value);
 }

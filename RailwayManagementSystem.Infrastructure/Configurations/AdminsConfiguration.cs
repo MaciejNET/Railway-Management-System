@@ -12,9 +12,7 @@ public class AdminsConfiguration : IEntityTypeConfiguration<Admin>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasConversion(
-                x => x.Value,
-                v => AdminName.Create(v).Value)
+            .HasConversion(x => x.Value, v => new AdminName(v))
             .IsRequired();
     }
 }

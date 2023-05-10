@@ -10,7 +10,6 @@
         <None Remove="Models\" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="DomainErrors" />
         <Folder Include="Models\" />
     </ItemGroup>
     <ItemGroup>

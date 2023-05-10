@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Discount;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -20,25 +21,25 @@ public class DiscountService : IDiscountService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<DiscountDto>> GetById(int id)
+    public async Task<DiscountDto> GetById(int id)
     {
         var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
-            return Error.NotFound($"Discount with id: '{id}' does not exists.");
+            throw new DiscountNotFoundException(id);
         }
 
         return _mapper.Map<DiscountDto>(discount);
     }
 
-    public async Task<ErrorOr<IEnumerable<DiscountDto>>> GetAll()
+    public async Task<IEnumerable<DiscountDto>> GetAll()
     {
         var discounts = await _discountRepository.GetAllAsync();
 
         if (!discounts.Any())
         {
-            return Error.NotFound("Cannot find any discounts");
+            return new List<DiscountDto>();
         }
 
         var discountsDto = _mapper.Map<IEnumerable<DiscountDto>>(discounts);
@@ -46,40 +47,33 @@ public class DiscountService : IDiscountService
         return discountsDto.ToList();
     }
 
-    public async Task<ErrorOr<DiscountDto>> AddDiscount(CreateDiscount createDiscount)
+    public async Task<DiscountDto> AddDiscount(CreateDiscount createDiscount)
     {
         var discount = await _discountRepository.GetByNameAsync(createDiscount.Name);
         
         if (discount is not null)
         {
-            return Error.NotFound($"Discount with name :'{createDiscount.Name}' already exists.");
+            throw new DiscountNotFoundException(createDiscount.Name);
         }
 
-        ErrorOr<DiscountName> name = DiscountName.Create(createDiscount.Name);
+        var name = new DiscountName(createDiscount.Name);
 
-        if (name.IsError)
-        {
-            return name.Errors;
-        }
-
-        discount = Discount.Create(name.Value, createDiscount.Percentage);
+        discount = Discount.Create(name, createDiscount.Percentage);
         
         await _discountRepository.AddAsync(discount);
 
         return _mapper.Map<DiscountDto>(discount);
     }
 
-    public async Task<ErrorOr<Deleted>> Delete(int id)
+    public async Task Delete(int id)
     {
         var discount = await _discountRepository.GetByIdAsync(id);
 
         if (discount is null)
         {
-            return Error.NotFound($"Discount with id: '{id}' does not exists.");
+            throw new DiscountNotFoundException(id);
         }
 
         await _discountRepository.RemoveAsync(discount);
-        
-        return Result.Deleted;
     }
 }

@@ -6,10 +6,10 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface IStationService
 {
-    Task<ErrorOr<StationDto>> GetById(int id);
-    Task<ErrorOr<StationDto>> GetByName(string name);
-    Task<ErrorOr<IEnumerable<StationDto>>> GetAll();
-    Task<ErrorOr<IEnumerable<StationDto>>> GetByCity(string city);
-    Task<ErrorOr<StationDto>> AddStation(CreateStation createStation);
-    Task<ErrorOr<Deleted>> Delete(int id);
+    Task<StationDto> GetById(int id);
+    Task<StationDto> GetByName(string name);
+    Task<IEnumerable<StationDto>> GetAll();
+    Task<IEnumerable<StationDto>> GetByCity(string city);
+    Task<StationDto> AddStation(CreateStation createStation);
+    Task Delete(int id);
 }

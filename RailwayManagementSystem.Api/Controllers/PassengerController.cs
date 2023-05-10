@@ -6,8 +6,9 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
+[ApiController]
 [Route("api/passengers")]
-public class PassengerController : ApiController
+public class PassengerController : ControllerBase
 {
     private readonly IPassengerService _passengerService;
 
@@ -19,41 +20,33 @@ public class PassengerController : ApiController
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var passengerOrError = await _passengerService.GetById(id);
+        var passenger = await _passengerService.GetById(id);
 
-        return passengerOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(passenger);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var passengersOrError = await _passengerService.GetAll();
+        var passengers = await _passengerService.GetAll();
 
-        return passengersOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(passengers);
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterPassenger registerPassenger)
     {
-        var passengerOrError = await _passengerService.Register(registerPassenger);
+        var passenger = await _passengerService.Register(registerPassenger);
 
-        return passengerOrError.Match(
-            value => Created($"passengers/{value.Id}", null),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginPassenger loginPassenger)
     {
-        var passengerOrError = await _passengerService.Login(loginPassenger);
+        var passenger = await _passengerService.Login(loginPassenger);
 
-        return passengerOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Passenger,Admin")]
@@ -78,11 +71,9 @@ public class PassengerController : ApiController
             passengerId = int.Parse(user.Value);
         }
 
-        var passengerOrError = await _passengerService.Update(passengerId, updatePassenger);
+        var passenger = await _passengerService.Update(passengerId, updatePassenger);
 
-        return passengerOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Passenger,Admin")]
@@ -107,21 +98,17 @@ public class PassengerController : ApiController
             passengerId = int.Parse(user.Value);
         }
         
-        var passengerOrError = await _passengerService.UpdateDiscount(passengerId, updatePassenger.DiscountName);
+        await _passengerService.UpdateDiscount(passengerId, updatePassenger.DiscountName);
 
-        return passengerOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Passenger,Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var passengerOrError = await _passengerService.Delete(id);
+        await _passengerService.Delete(id);
 
-        return passengerOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 }

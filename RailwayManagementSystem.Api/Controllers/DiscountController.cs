@@ -5,8 +5,9 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
+[ApiController]
 [Route("api/discounts")]
-public class DiscountController : ApiController
+public class DiscountController : ControllerBase
 {
     private readonly IDiscountService _discountService;
 
@@ -18,42 +19,34 @@ public class DiscountController : ApiController
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var discountOrError = await _discountService.GetById(id);
+        var discount = await _discountService.GetById(id);
 
-        return discountOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(discount);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var discountsOrError = await _discountService.GetAll();
+        var discounts = await _discountService.GetAll();
 
-        return discountsOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(discounts);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> AddDiscount([FromBody] CreateDiscount createDiscount)
     {
-        var discountOrError = await _discountService.AddDiscount(createDiscount);
+        var discount = await _discountService.AddDiscount(createDiscount);
 
-        return discountOrError.Match(
-            value => Created($"api/discounts/{value.Id}", null),
-            errors => Problem(errors));
+        return NoContent();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var discountOrError = await _discountService.Delete(id);
+        await _discountService.Delete(id);
 
-        return discountOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 }

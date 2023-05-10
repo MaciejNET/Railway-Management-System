@@ -2,6 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using RailwayManagementSystem.Application.Commands.Station;
 using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Services.Abstractions;
 using RailwayManagementSystem.Core.Models;
 using RailwayManagementSystem.Core.Repositories;
@@ -20,37 +21,37 @@ public class StationService : IStationService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<StationDto>> GetById(int id)
+    public async Task<StationDto> GetById(int id)
     {
         var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
-            return Error.NotFound($"Station with id: '{id}' does not exists");
+            throw new StationNotFoundException(id);
         }
 
         return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ErrorOr<StationDto>> GetByName(string name)
+    public async Task<StationDto> GetByName(string name)
     {
         var station = await _stationRepository.GetByNameAsync(name);
 
         if (station is null)
         {
-            return Error.NotFound($"Station with name: '{name}' does not exists.");
+            throw new StationNotFoundException(name);
         }
 
         return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ErrorOr<IEnumerable<StationDto>>> GetAll()
+    public async Task<IEnumerable<StationDto>> GetAll()
     {
         var stations = await _stationRepository.GetAllAsync();
 
         if (!stations.Any())
         {
-            return Error.NotFound("Cannot find any stations.");
+            return new List<StationDto>();
         }
 
         var stationsDto = _mapper.Map<IEnumerable<StationDto>>(stations);
@@ -58,13 +59,13 @@ public class StationService : IStationService
         return stationsDto.ToList();
     }
 
-    public async Task<ErrorOr<IEnumerable<StationDto>>> GetByCity(string city)
+    public async Task<IEnumerable<StationDto>> GetByCity(string city)
     {
         var stations = await _stationRepository.GetByCityAsync(city);
         
         if (!stations.Any())
         {
-            return Error.NotFound($"Cannot find any stations for '{city}'.");
+            return new List<StationDto>();
         }
 
         var stationsDto = _mapper.Map<IEnumerable<StationDto>>(stations);
@@ -72,46 +73,34 @@ public class StationService : IStationService
         return stationsDto.ToList();
     }
 
-    public async Task<ErrorOr<StationDto>> AddStation(CreateStation createStation)
+    public async Task<StationDto> AddStation(CreateStation createStation)
     {
         var station = await _stationRepository.GetByNameAsync(createStation.Name);
         
         if (station is not null)
         {
-            return Error.Validation($"Station with '{createStation.Name}' already exists.");
+            throw new StationWithGivenNameAlreadyExistsException(createStation.Name);
         }
 
-        ErrorOr<StationName> name = StationName.Create(createStation.Name);
-        ErrorOr<City> city = City.Create(createStation.City);
+        var name = new StationName(createStation.Name);
+        var city = new City(createStation.City);
 
-        if (name.IsError || city.IsError)
-        {
-            List<Error> errors = new();
-            
-            if (name.IsError) errors.AddRange(name.Errors);
-            if (city.IsError) errors.AddRange(city.Errors);
-
-            return errors;
-        }
-
-        station = Station.Create(name.Value, city.Value, createStation.NumberOfPlatforms);
+        station = Station.Create(name, city, createStation.NumberOfPlatforms);
 
         await _stationRepository.AddAsync(station);
 
         return _mapper.Map<StationDto>(station);
     }
 
-    public async Task<ErrorOr<Deleted>> Delete(int id)
+    public async Task Delete(int id)
     {
         var station = await _stationRepository.GetByIdAsync(id);
 
         if (station is null)
         {
-            return Error.NotFound($"Station with id: '{id}' does not exists");
+            throw new StationNotFoundException(id);
         }
 
         await _stationRepository.RemoveAsync(station);
-
-        return Result.Deleted;
     }
 }

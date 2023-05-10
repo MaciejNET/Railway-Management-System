@@ -5,8 +5,9 @@ using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
+[ApiController]
 [Route("api/tickets")]
-public class TicketController : ApiController
+public class TicketController : ControllerBase
 {
     private readonly ITicketService _ticketService;
 
@@ -18,21 +19,17 @@ public class TicketController : ApiController
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById ([FromRoute] int id)
     {
-        var ticketOrError = await _ticketService.GetById(id);
+        var ticket = await _ticketService.GetById(id);
 
-        return ticketOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(ticket);
     }
 
     [HttpGet("{id:int}/pdf")]
     public async Task<IActionResult> GetTicketPdf([FromRoute] int id)
     {
-        var ticketPdfOrError = await _ticketService.GetTicketPdf(id);
+        var ticketPdf = await _ticketService.GetTicketPdf(id);
 
-        return ticketPdfOrError.Match(
-            value => File(value, "appllication/pdf", "ticket.pdf"),
-            errors => Problem(errors));
+        return Ok(ticketPdf);
     }
 
     [HttpGet]
@@ -47,31 +44,25 @@ public class TicketController : ApiController
         
         var id = int.Parse(user.Value);
         
-        var ticketsOrError = await _ticketService.GetByPassengerId(id);
+        var tickets = await _ticketService.GetByPassengerId(id);
 
-        return ticketsOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(tickets);
     }
     
     [Authorize(Roles = "Admin,RailwayEmployee")]
     [HttpGet("{id:int}/verify")]
     public async Task<IActionResult> VerifyTicket([FromRoute] int id)
     {
-        var ticketOrError = await _ticketService.VerifyTicket(id);
+        var ticket = await _ticketService.VerifyTicket(id);
 
-        return ticketOrError.Match(
-            value => Ok(value),
-            errors => Problem(errors));
+        return Ok(ticket);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> CancelTicket([FromRoute] int id)
     {
-        var ticketOrError = await _ticketService.Cancel(id);
+        await _ticketService.Cancel(id);
 
-        return ticketOrError.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return NoContent();
     }
 }

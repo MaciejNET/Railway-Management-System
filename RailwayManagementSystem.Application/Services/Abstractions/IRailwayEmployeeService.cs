@@ -6,6 +6,6 @@ namespace RailwayManagementSystem.Application.Services.Abstractions;
 
 public interface IRailwayEmployeeService
 {
-    Task<ErrorOr<RailwayEmployeeDto>> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee);
-    Task<ErrorOr<string>> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee);
+    Task<RailwayEmployeeDto> CreateRailwayEmployee(CreateRailwayEmployee createRailwayEmployee);
+    Task<string> LoginRailwayEmployee(LoginRailwayEmployee loginRailwayEmployee);
 }
