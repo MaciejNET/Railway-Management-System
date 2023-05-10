@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RailwayManagementSystem.Application.Services.Abstractions;
+using RailwayManagementSystem.Application.Services.Implementations;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Infrastructure;
 using RailwayManagementSystem.Infrastructure.Repositories;
-using RailwayManagementSystem.Infrastructure.Services.Abstractions;
-using RailwayManagementSystem.Infrastructure.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 

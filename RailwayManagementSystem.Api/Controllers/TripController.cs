@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RailwayManagementSystem.Infrastructure.Commands.Ticket;
-using RailwayManagementSystem.Infrastructure.Commands.Trip;
-using RailwayManagementSystem.Infrastructure.Services.Abstractions;
+using RailwayManagementSystem.Application.Commands.Ticket;
+using RailwayManagementSystem.Application.Commands.Trip;
+using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 

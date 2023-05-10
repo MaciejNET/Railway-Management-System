@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using RailwayManagementSystem.Infrastructure.Commands.Admin;
-using RailwayManagementSystem.Infrastructure.Services.Abstractions;
+using RailwayManagementSystem.Application.Commands.Admin;
+using RailwayManagementSystem.Application.Services.Abstractions;
 
 namespace RailwayManagementSystem.Api.Controllers;
 

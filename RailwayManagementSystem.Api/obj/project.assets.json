@@ -2784,6 +2784,22 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
+      "RailwayManagementSystem.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "ErrorOr": "1.2.1",
+          "Microsoft.IdentityModel.Tokens": "6.25.0",
+          "RailwayManagementSystem.Core": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "6.25.0"
+        },
+        "compile": {
+          "bin/placeholder/RailwayManagementSystem.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RailwayManagementSystem.Application.dll": {}
+        }
+      },
       "RailwayManagementSystem.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
@@ -2835,6 +2851,7 @@
           "Microsoft.Net.Http.Server": "1.1.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "6.0.7",
           "QRCoder": "1.4.3",
+          "RailwayManagementSystem.Application": "1.0.0",
           "RailwayManagementSystem.Core": "1.0.0",
           "SkiaSharp": "2.88.3",
           "SkiaSharp.NativeAssets.macOS": "2.88.3",
@@ -8553,6 +8570,11 @@
         "system.xml.xdocument.4.3.0.nupkg.sha512",
         "system.xml.xdocument.nuspec"
       ]
+    },
+    "RailwayManagementSystem.Application/1.0.0": {
+      "type": "project",
+      "path": "../RailwayManagementSystem.Application/RailwayManagementSystem.Application.csproj",
+      "msbuildProject": "../RailwayManagementSystem.Application/RailwayManagementSystem.Application.csproj"
     },
     "RailwayManagementSystem.Core/1.0.0": {
       "type": "project",

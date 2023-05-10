@@ -1,0 +1,17 @@
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.deps.json
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.runtimeconfig.json
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.pdb
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Core.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Core.pdb
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.csproj.AssemblyReference.cache
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.AssemblyInfoInputs.cache
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.AssemblyInfo.cs
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.csproj.CoreCompileInputs.cache
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.csproj.CopyComplete
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/refint/RailwayManagementSystem.Application.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.pdb
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.genruntimeconfig.cache
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/ref/RailwayManagementSystem.Application.dll
