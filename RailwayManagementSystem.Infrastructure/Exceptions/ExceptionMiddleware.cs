@@ -10,7 +10,7 @@ public sealed class ExceptionMiddleware : IMiddleware
     {
         try
         {
-
+            await next(context);
         }
         catch (CustomException e)
         {
