@@ -1,8 +1,10 @@
-using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Core.Repositories;
 
-public interface ITripRepository : IGenericRepository<Trip>
+public interface ITripRepository
 {
-    Task<IEnumerable<Trip>> GetByTrainIdAsync(int id);
+    Task<Trip?> GetByIdAsync(Guid id);
+    Task AddAsync(Trip trip);
+    Task UpdateAsync(Trip trip);
 }

@@ -4,10 +4,10 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class CarrierNotFoundException : CustomException
 {
-    public int? Id { get; }
+    public Guid? Id { get; }
     public string? Name { get; }
 
-    public CarrierNotFoundException(int id) : base(message: $"Carrier with Id: {id} does not exists.", httpStatusCode: 404)
+    public CarrierNotFoundException(Guid id) : base(message: $"Carrier with Id: {id} does not exists.", httpStatusCode: 404)
     {
         Id = id;
     }

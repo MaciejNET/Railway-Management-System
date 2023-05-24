@@ -1,8 +1,9 @@
-using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Core.Repositories;
 
-public interface IDiscountRepository : IGenericRepository<Discount>
+public interface IDiscountRepository
 {
-    Task<Discount?> GetByNameAsync(string name);
+    Task<bool> ExistsByNameAsync(string name);
+    Task AddAsync(Discount discount);
 }

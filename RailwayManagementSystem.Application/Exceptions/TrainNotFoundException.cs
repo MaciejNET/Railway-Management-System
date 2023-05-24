@@ -4,10 +4,10 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class TrainNotFoundException : CustomException
 {
-    public int? Id { get; }
+    public Guid? Id { get; }
     public string? Name { get; }
 
-    public TrainNotFoundException(int id) : base(message: $"Train with Id: {id} does not exists.", httpStatusCode: 404)
+    public TrainNotFoundException(Guid id) : base(message: $"Train with Id: {id} does not exists.", httpStatusCode: 404)
     {
         Id = id;
     }

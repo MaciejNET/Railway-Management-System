@@ -1,6 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Carrier;
 
-public class CreateCarrier
-{
-    public string Name { get; set; } = string.Empty;
-}
+public record CreateCarrier(Guid Id, string Name) : ICommand;

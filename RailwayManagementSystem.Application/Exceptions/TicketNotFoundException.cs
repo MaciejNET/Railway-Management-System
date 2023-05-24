@@ -4,7 +4,10 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class TicketNotFoundException : CustomException
 {
-    public TicketNotFoundException(int id) : base(message: $"Ticket with Id: {id} does not exists.", httpStatusCode: 404)
+    public Guid Id { get; }
+
+    public TicketNotFoundException(Guid id) : base(message: $"Ticket with Id: {id} does not exists.", httpStatusCode: 404)
     {
+        Id = id;
     }
 }

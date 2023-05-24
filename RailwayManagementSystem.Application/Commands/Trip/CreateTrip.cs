@@ -1,11 +1,16 @@
-using RailwayManagementSystem.Application.DTOs;
+using RailwayManagementSystem.Application.Abstractions;
 
 namespace RailwayManagementSystem.Application.Commands.Trip;
 
-public class CreateTrip
-{
-    public decimal Price { get; set; }
-    public string TrainName { get; set; } = string.Empty;
-    public IEnumerable<ScheduleDto> ScheduleDtos { get; set; }
-    public TripIntervalDto TripIntervalDto { get; set; }
-}
+public record CreateTrip(Guid Id, decimal Price, string TrainName, IEnumerable<ScheduleWriteModel> Schedules, TripIntervalWriteModel TripInterval) : ICommand;
+
+public record ScheduleWriteModel(string StationName, DateTime DepartureTime, DateTime ArrivalTime, int Platform);
+
+public record TripIntervalWriteModel(
+    bool Monday,
+    bool Tuesday,
+    bool Wednesday,
+    bool Thursday,
+    bool Friday,
+    bool Saturday,
+    bool Sunday);

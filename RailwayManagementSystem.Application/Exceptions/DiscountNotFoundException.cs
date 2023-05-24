@@ -4,10 +4,10 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class DiscountNotFoundException : CustomException
 {
-    public int? Id { get; }
+    public Guid? Id { get; }
     public string? Name { get; }
 
-    public DiscountNotFoundException(int id) : base(message: $"Discount with Id: {id} does not exists.", httpStatusCode: 404)
+    public DiscountNotFoundException(Guid id) : base(message: $"Discount with Id: {id} does not exists.", httpStatusCode: 404)
     {
         Id = id;
     }

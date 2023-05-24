@@ -1,9 +1,11 @@
-using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Core.Repositories;
 
-public interface IPassengerRepository : IGenericRepository<Passenger>
+public interface IPassengerRepository
 {
-    Task<Passenger?> GetByEmailAsync(string email);
-    Task<Passenger?> GetByPhoneNumberAsync(string phoneNumber);
+    Task<Passenger?> GetByIdAsync(Guid id);
+    Task AddAsync(Passenger passenger);
+    Task UpdateAsync(Passenger passenger);
+    Task DeleteAsync(Passenger passenger);
 }

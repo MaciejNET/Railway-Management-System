@@ -1,7 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Discount;
 
-public class CreateDiscount
-{
-    public string Name { get; set; } = string.Empty;
-    public int Percentage { get; set; }
-}
+public record CreateDiscount(Guid Id, string Name, int Percentage) : ICommand;

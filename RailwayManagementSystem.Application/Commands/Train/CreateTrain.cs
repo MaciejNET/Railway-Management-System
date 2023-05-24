@@ -1,8 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Train;
 
-public class CreateTrain
-{
-    public string Name { get; set; } = string.Empty;
-    public int SeatsAmount { get; set; }
-    public string CarrierName { get; set; } = string.Empty;
-}
+public record CreateTrain(Guid Id, string Name, int SeatsAmount, string CarrierName) : ICommand;

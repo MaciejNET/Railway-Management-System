@@ -1,7 +1,8 @@
-using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Core.Repositories;
 
-public interface ISeatRepository : IGenericRepository<Seat>
+public interface ISeatRepository
 {
+    Task<Seat?> GetByIdAsync(Guid? id);
 }

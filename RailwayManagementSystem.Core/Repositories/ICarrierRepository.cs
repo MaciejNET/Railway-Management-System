@@ -1,8 +1,10 @@
-using RailwayManagementSystem.Core.Models;
+using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Core.Repositories;
 
-public interface ICarrierRepository : IGenericRepository<Carrier>
+public interface ICarrierRepository
 {
-    Task<Carrier?> GetByNameAsync(string name);
+    Task<bool> ExistsByNameAsync(string name);
+    Task<Carrier> GetByNameAsync(string name);
+    Task AddAsync(Carrier carrier);
 }

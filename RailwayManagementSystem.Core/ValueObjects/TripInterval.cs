@@ -7,4 +7,18 @@ public record TripInterval(
     bool Thursday,
     bool Friday,
     bool Saturday,
-    bool Sunday);
+    bool Sunday)
+{
+    public bool IsTripRunOnGivenDate(DayOfWeek dayOfWeek)
+        => dayOfWeek switch
+        {
+            DayOfWeek.Monday => Monday,
+            DayOfWeek.Tuesday => Tuesday,
+            DayOfWeek.Wednesday => Wednesday,
+            DayOfWeek.Thursday => Thursday,
+            DayOfWeek.Friday => Friday,
+            DayOfWeek.Saturday => Saturday,
+            DayOfWeek.Sunday => Sunday,
+            _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
+        };
+}

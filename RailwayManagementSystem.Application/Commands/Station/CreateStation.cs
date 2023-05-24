@@ -1,8 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Station;
 
-public class CreateStation
-{
-    public string Name { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
-    public int NumberOfPlatforms { get; set; }
-}
+public record CreateStation(Guid Id, string Name, string City, int NumberOfPlatforms) : ICommand;

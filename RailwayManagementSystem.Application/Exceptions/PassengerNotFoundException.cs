@@ -4,9 +4,9 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class PassengerNotFoundException : CustomException
 {
-    public int Id { get; }
+    public Guid Id { get; }
 
-    public PassengerNotFoundException(int id) : base(message: $"Passenger with Id: {id} does not exists.", httpStatusCode: 404)
+    public PassengerNotFoundException(Guid id) : base(message: $"Passenger with Id: {id} does not exists.", httpStatusCode: 404)
     {
         Id = id;
     }

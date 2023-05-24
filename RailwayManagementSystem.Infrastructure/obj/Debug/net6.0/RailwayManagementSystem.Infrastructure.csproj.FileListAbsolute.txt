@@ -32,3 +32,5 @@
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Infrastructure/obj/Debug/net6.0/RailwayManagementSystem.Infrastructure.pdb
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Infrastructure/obj/Debug/net6.0/RailwayManagementSystem.Infrastructure.genruntimeconfig.cache
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Infrastructure/obj/Debug/net6.0/ref/RailwayManagementSystem.Infrastructure.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Infrastructure/bin/Debug/net6.0/RailwayManagementSystem.Application.dll
+/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Infrastructure/bin/Debug/net6.0/RailwayManagementSystem.Application.pdb

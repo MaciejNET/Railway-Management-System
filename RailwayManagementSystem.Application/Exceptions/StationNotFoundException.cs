@@ -4,10 +4,10 @@ namespace RailwayManagementSystem.Application.Exceptions;
 
 public sealed class StationNotFoundException : CustomException
 {
-    public int? Id { get; }
+    public Guid? Id { get; }
     public string? StationName { get; }
 
-    public StationNotFoundException(int id) : base(message: $"Station with Id: {id} does not exists.", httpStatusCode: 404)
+    public StationNotFoundException(Guid id) : base(message: $"Station with Id: {id} does not exists.", httpStatusCode: 404)
     {
         Id = id;
     }
