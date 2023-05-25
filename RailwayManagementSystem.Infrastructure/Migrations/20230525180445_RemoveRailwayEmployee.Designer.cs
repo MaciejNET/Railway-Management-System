@@ -12,8 +12,8 @@ using RailwayManagementSystem.Infrastructure.DAL;
 namespace RailwayManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(RailwayManagementSystemDbContext))]
-    [Migration("20230524195824_Init")]
-    partial class Init
+    [Migration("20230525180445_RemoveRailwayEmployee")]
+    partial class RemoveRailwayEmployee
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -112,32 +112,6 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Passengers", (string)null);
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.RailwayEmployee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RailwayEmployees", (string)null);
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Schedule", b =>

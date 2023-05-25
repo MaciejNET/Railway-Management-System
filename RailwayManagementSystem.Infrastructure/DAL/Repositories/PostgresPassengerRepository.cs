@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Repositories;
 
@@ -12,8 +13,14 @@ internal sealed class PostgresPassengerRepository : IPassengerRepository
         _dbContext = dbContext;
     }
 
+    public Task<bool> ExistsByEmailAsync(string email)
+        => _dbContext.Passengers.AnyAsync(x => x.Email == email);
+
     public async Task<Passenger?> GetByIdAsync(Guid id)
         => await _dbContext.Passengers.FindAsync(id);
+
+    public Task<Passenger?> GetByEmailAsync(string email)
+        => _dbContext.Passengers.SingleOrDefaultAsync(x => x.Email == email);
 
     public async Task AddAsync(Passenger passenger)
     {

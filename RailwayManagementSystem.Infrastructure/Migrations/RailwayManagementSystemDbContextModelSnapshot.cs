@@ -112,32 +112,6 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.ToTable("Passengers", (string)null);
                 });
 
-            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.RailwayEmployee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RailwayEmployees", (string)null);
-                });
-
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Schedule", b =>
                 {
                     b.Property<Guid>("Id")

@@ -1,7 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
-public class LoginPassenger
-{
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-}
+public record LoginPassenger(string Email, string Password) : ICommand;

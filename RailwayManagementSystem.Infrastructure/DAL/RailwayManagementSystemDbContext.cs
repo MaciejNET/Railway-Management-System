@@ -13,7 +13,6 @@ internal sealed class RailwayManagementSystemDbContext : DbContext
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Passenger> Passengers { get; set; }
     public DbSet<Admin> Admins { get; set; }
-    public DbSet<RailwayEmployee> RailwayEmployees { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<Seat> Seats { get; set; }
     public DbSet<Station> Stations { get; set; }

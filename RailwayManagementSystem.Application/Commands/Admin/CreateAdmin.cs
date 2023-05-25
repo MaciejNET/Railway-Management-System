@@ -1,7 +1,5 @@
+using RailwayManagementSystem.Application.Abstractions;
+
 namespace RailwayManagementSystem.Application.Commands.Admin;
 
-public class CreateAdmin
-{
-    public string Name { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-}
+public record CreateAdmin(Guid Id, string Name, string Password) : ICommand;

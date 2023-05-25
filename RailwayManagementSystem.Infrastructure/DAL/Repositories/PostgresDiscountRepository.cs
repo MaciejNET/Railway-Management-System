@@ -16,6 +16,9 @@ internal sealed class PostgresDiscountRepository : IDiscountRepository
     public Task<bool> ExistsByNameAsync(string name)
         => _dbContext.Discounts.AnyAsync(x => x.Name == name);
 
+    public Task<Discount?> GetByNameAsync(string name)
+        => _dbContext.Discounts.SingleOrDefaultAsync(x => x.Name == name);
+
     public async Task AddAsync(Discount discount)
     {
         await _dbContext.Discounts.AddAsync(discount);

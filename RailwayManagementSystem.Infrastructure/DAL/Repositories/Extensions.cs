@@ -13,6 +13,7 @@ internal static class Extensions
         services.AddScoped<ISeatRepository, PostgresSeatRepository>();
         services.AddScoped<ITrainRepository, PostgresTrainRepository>();
         services.AddScoped<ITripRepository, PostgresTripRepository>();
+        services.AddScoped<IAdminRepository, PostgresAdminRepository>();
         
         return services;
     }
