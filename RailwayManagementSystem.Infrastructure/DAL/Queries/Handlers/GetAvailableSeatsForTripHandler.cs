@@ -5,7 +5,7 @@ using RailwayManagementSystem.Application.DTO;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Queries;
 
-namespace RailwayManagementSystem.Infrastructure.DAL.Handlers;
+namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
 internal sealed class GetAvailableSeatsForTripHandler : IQueryHandler<GetAvailableSeatsForTrip, IEnumerable<SeatDto>>
 {

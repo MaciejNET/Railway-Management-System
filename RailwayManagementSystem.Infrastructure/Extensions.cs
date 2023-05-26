@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Infrastructure.Auth;
 using RailwayManagementSystem.Infrastructure.DAL;
+using RailwayManagementSystem.Infrastructure.DAL.Queries;
 using RailwayManagementSystem.Infrastructure.Exceptions;
 using RailwayManagementSystem.Infrastructure.Security;
 
@@ -18,13 +19,8 @@ public static class Extensions
         services.AddPostgres(configuration);
 
         services.AddSecurity();
-        
-        var infrastructureAssembly = typeof(RailwayManagementSystemDbContext).Assembly;
 
-        services.Scan(s => s.FromAssemblies(infrastructureAssembly)
-            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
+        services.AddQueries();
 
         services.AddAuth(configuration);
         

@@ -1,3 +1,4 @@
+using RailwayManagementSystem.Application;
 using RailwayManagementSystem.Core;
 using RailwayManagementSystem.Infrastructure;
 
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddCore()
+    .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -26,10 +28,6 @@ if (app.Environment.IsDevelopment())
 app.UseInfrastructure();
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

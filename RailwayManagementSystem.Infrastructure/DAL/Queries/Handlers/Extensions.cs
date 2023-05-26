@@ -1,7 +1,7 @@
 using RailwayManagementSystem.Application.DTO;
 using RailwayManagementSystem.Core.Entities;
 
-namespace RailwayManagementSystem.Infrastructure.DAL.Handlers;
+namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
 internal static class Extensions
 {
