@@ -1,3 +1,4 @@
+using RailwayManagementSystem.Core.Exceptions;
 using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Core.Entities;
@@ -13,6 +14,11 @@ public sealed class Schedule
 
     private Schedule(TripId tripId, Station station, DateTime arrivalTime, DateTime departureTime, int platform)
     {
+        if (DepartureTime < ArrivalTime)
+        {
+            throw new InvalidDepartureTimeException(station.Name);
+        }
+        
         Id = ScheduleId.Create();
         TripId = tripId;
         Station = station;

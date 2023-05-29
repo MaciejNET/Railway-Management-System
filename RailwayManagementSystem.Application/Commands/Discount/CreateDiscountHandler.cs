@@ -16,14 +16,17 @@ public class CreateDiscountHandler : ICommandHandler<CreateDiscount>
 
     public async Task HandleAsync(CreateDiscount command)
     {
-        var discountAlreadyExists = await _discountRepository.ExistsByNameAsync(command.Name);
+        var discountId = new DiscountId(command.Id);
+        var name = new DiscountName(command.Name);
+        
+        var discountAlreadyExists = await _discountRepository.ExistsByNameAsync(name);
         
         if (discountAlreadyExists)
         {
-            throw new DiscountAlreadyExistsException(command.Name);
+            throw new DiscountAlreadyExistsException(name);
         }
         
-        var discount = Core.Entities.Discount.Create(command.Id, command.Name, command.Percentage);
+        var discount = Core.Entities.Discount.Create(discountId, name, command.Percentage);
         
         await _discountRepository.AddAsync(discount);
     }

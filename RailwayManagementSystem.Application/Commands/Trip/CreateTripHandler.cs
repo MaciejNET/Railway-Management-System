@@ -1,6 +1,7 @@
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Entities;
+using RailwayManagementSystem.Core.Exceptions;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Core.ValueObjects;
 
@@ -21,48 +22,53 @@ public class CreateTripHandler : ICommandHandler<CreateTrip>
 
     public async Task HandleAsync(CreateTrip command)
     {
-         var train = await _trainRepository.GetByNameAsync(command.TrainName);
+        var tripId = new TripId(command.Id);
+        var trainName = new TrainName(command.TrainName);
 
-         if (train is null)
-         {
-             throw new TrainNotFoundException(command.TrainName);
-         }
+        if (command.Schedules.Count() < 2)
+        {
+            throw new TripSchedulesCountException();
+        }
+        
+        var train = await _trainRepository.GetByNameAsync(trainName);
 
-         var tripInterval = new TripInterval(
-             command.TripInterval.Monday,
-             command.TripInterval.Tuesday,
-             command.TripInterval.Wednesday,
-             command.TripInterval.Thursday,
-             command.TripInterval.Friday,
-             command.TripInterval.Saturday,
-             command.TripInterval.Sunday);
+        if (train is null)
+        {
+            throw new TrainNotFoundException(trainName);
+        }
+
+        var tripInterval = new TripInterval(
+            command.TripInterval.Monday,
+            command.TripInterval.Tuesday,
+            command.TripInterval.Wednesday,
+            command.TripInterval.Thursday,
+            command.TripInterval.Friday,
+            command.TripInterval.Saturday,
+            command.TripInterval.Sunday);
          
-         List<Schedule> schedules = new();
-         foreach (var schedule in command.Schedules)
-         {
-             var station = await _stationRepository.GetByNameAsync(schedule.StationName);
-                 
-             if (station is null)
-             {
-                 throw new StationNotFoundException(schedule.StationName);
-             }
+        List<Schedule> schedules = new();
+        foreach (var schedule in command.Schedules)
+        {
+            var stationName = new StationName(schedule.StationName);
+            
+            var station = await _stationRepository.GetByNameAsync(stationName);
+                
+            if (station is null)
+            {
+                throw new StationNotFoundException(stationName);
+            }
 
-             if (schedule.DepartureTime < schedule.ArrivalTime)
-             {
-                 throw new InvalidDepartureTimeException(schedule.StationName);
-             }
-
-             schedules.Add(
-                 Schedule.Create(
-                     command.Id,
-                     station,
-                     schedule.ArrivalTime,
-                     schedule.DepartureTime,
-                     schedule.Platform));
-         }
+            schedules.Add(
+                Schedule.Create(
+                    tripId,
+                    station,
+                    schedule.ArrivalTime,
+                    schedule.DepartureTime,
+                    schedule.Platform));
+        }
          
-         var trip = Core.Entities.Trip.Create(command.Id, command.Price, train, tripInterval, schedules);
+        var trip = Core.Entities.Trip.Create(command.Id, command.Price, train, tripInterval, schedules);
 
-         await _tripRepository.AddAsync(trip);
+        await _tripRepository.AddAsync(trip);
     }
 }

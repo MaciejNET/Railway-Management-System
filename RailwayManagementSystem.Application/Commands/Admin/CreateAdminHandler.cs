@@ -2,6 +2,7 @@ using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Security;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Admin;
 
@@ -18,16 +19,20 @@ public class CreateAdminHandler : ICommandHandler<CreateAdmin>
 
     public async Task HandleAsync(CreateAdmin command)
     {
-        var adminAlreadyExists = await _adminRepository.ExistByNameAsync(command.Name);
+        var adminId = new UserId(command.Id);
+        var name = new AdminName(command.Name);
+        var password = new Password(command.Password);
+        
+        var adminAlreadyExists = await _adminRepository.ExistByNameAsync(name);
 
         if (adminAlreadyExists)
         {
-            throw new AdminAlreadyExistsException(command.Name);
+            throw new AdminAlreadyExistsException(name);
         }
 
-        var securedPassword = _passwordManager.Secure(command.Password);
+        var securedPassword = _passwordManager.Secure(password);
 
-        var admin = Core.Entities.Admin.Create(command.Id, command.Name, securedPassword);
+        var admin = Core.Entities.Admin.Create(adminId, name, securedPassword);
 
         await _adminRepository.AddAsync(admin);
     }

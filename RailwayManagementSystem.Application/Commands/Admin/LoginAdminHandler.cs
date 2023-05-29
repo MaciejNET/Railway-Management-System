@@ -2,6 +2,7 @@ using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Security;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Admin;
 
@@ -22,14 +23,17 @@ public class LoginAdminHandler : ICommandHandler<LoginAdmin>
 
     public async Task HandleAsync(LoginAdmin command)
     {
-        var admin = await _adminRepository.GetByNameAsync(command.Name);
+        var name = new AdminName(command.Name);
+        var password = new Password(command.Name);
+        
+        var admin = await _adminRepository.GetByNameAsync(name);
 
         if (admin is null)
         {
             throw new InvalidCredentialsException();
         }
 
-        if (!_passwordManager.Validate(command.Password, admin.Password))
+        if (!_passwordManager.Validate(password, admin.Password))
         {
             throw new InvalidCredentialsException();
         }

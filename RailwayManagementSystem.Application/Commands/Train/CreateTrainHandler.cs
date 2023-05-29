@@ -1,6 +1,7 @@
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Train;
 
@@ -17,21 +18,25 @@ public class CreateTrainHandler : ICommandHandler<CreateTrain>
 
     public async Task HandleAsync(CreateTrain command)
     {
-        var trainAlreadyExists = await _trainRepository.ExistsByNameAsync(command.Name);
+        var trainId = new TrainId(command.Id);
+        var name = new TrainName(command.Name);
+        var carrierName = new CarrierName(command.CarrierName);
+        
+        var trainAlreadyExists = await _trainRepository.ExistsByNameAsync(name);
 
         if (trainAlreadyExists)
         {
-            throw new TrainWithGivenNameAlreadyExistsException(command.Name);
+            throw new TrainWithGivenNameAlreadyExistsException(name);
         }
 
-        var carrier = await _carrierRepository.GetByNameAsync(command.CarrierName);
+        var carrier = await _carrierRepository.GetByNameAsync(carrierName);
 
         if (carrier is null)
         {
-            throw new CarrierNotFoundException(command.CarrierName);
+            throw new CarrierNotFoundException(carrierName);
         }
 
-        var train = Core.Entities.Train.Create(command.Id, command.Name, command.SeatsAmount, carrier);
+        var train = Core.Entities.Train.Create(trainId, name, command.SeatsAmount, carrier);
 
         await _trainRepository.AddAsync(train);
     }

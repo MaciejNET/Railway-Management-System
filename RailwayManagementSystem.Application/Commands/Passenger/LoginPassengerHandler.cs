@@ -2,6 +2,7 @@ using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Security;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
@@ -22,7 +23,9 @@ public class LoginPassengerHandler : ICommandHandler<LoginPassenger>
 
     public async Task HandleAsync(LoginPassenger command)
     {
-        var passenger = await _passengerRepository.GetByEmailAsync(command.Email);
+        var email = new Email(command.Email);
+
+        var passenger = await _passengerRepository.GetByEmailAsync(email);
 
         if (passenger is null)
         {

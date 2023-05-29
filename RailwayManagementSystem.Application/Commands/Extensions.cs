@@ -11,7 +11,7 @@ public static class Extensions
         var applicationAssembly = Assembly.GetCallingAssembly();
 
         services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
-        services.Scan(s => s.FromAssemblies()
+        services.Scan(s => s.FromAssemblies(applicationAssembly)
             .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());

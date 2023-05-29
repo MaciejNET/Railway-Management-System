@@ -1,6 +1,7 @@
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Carrier;
 
@@ -15,14 +16,17 @@ public class CreateCarrierHandler : ICommandHandler<CreateCarrier>
 
     public async Task HandleAsync(CreateCarrier command)
     {
-        var carrierAlreadyExists = await _carrierRepository.ExistsByNameAsync(command.Name);
+        var carrierId = new CarrierId(command.Id);
+        var name = new CarrierName(command.Name);
+        
+        var carrierAlreadyExists = await _carrierRepository.ExistsByNameAsync(name);
 
         if (carrierAlreadyExists)
         {
-            throw new CarrierAlreadyExistsException(command.Name);
+            throw new CarrierAlreadyExistsException(name);
         }
 
-        var carrier = Core.Entities.Carrier.Create(command.Id, command.Name);
+        var carrier = Core.Entities.Carrier.Create(carrierId, name);
         
         await _carrierRepository.AddAsync(carrier);
     }

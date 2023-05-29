@@ -7,13 +7,14 @@ internal static class Extensions
 {
     internal static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<IAdminRepository, PostgresAdminRepository>();
         services.AddScoped<ICarrierRepository, PostgresCarrierRepository>();
         services.AddScoped<IDiscountRepository, PostgresDiscountRepository>();
         services.AddScoped<IPassengerRepository, PostgresPassengerRepository>();
         services.AddScoped<ISeatRepository, PostgresSeatRepository>();
+        services.AddScoped<IStationRepository, PostgresStationRepository>();
         services.AddScoped<ITrainRepository, PostgresTrainRepository>();
         services.AddScoped<ITripRepository, PostgresTripRepository>();
-        services.AddScoped<IAdminRepository, PostgresAdminRepository>();
         
         return services;
     }

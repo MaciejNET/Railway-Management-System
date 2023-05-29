@@ -2,6 +2,7 @@ using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Security;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
@@ -20,14 +21,21 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
 
     public async Task HandleAsync(RegisterPassenger command)
     {
-        var passengerAlreadyExists = await _passengerRepository.ExistsByEmailAsync(command.Email);
+        var passengerId = new UserId(command.Id);
+        var firstName = new FirstName(command.FirstName);
+        var lastName = new LastName(command.LastName);
+        var email = new Email(command.Email);
+        var phoneNumber = new PhoneNumber(command.PhoneNumber);
+        var password = new Password(command.Password);
+        
+        var passengerAlreadyExists = await _passengerRepository.ExistsByEmailAsync(email);
 
         if (passengerAlreadyExists)
         {
             throw new PassengerWithGivenEmailAlreadyExists(command.Email);
         }
 
-        var securedPassword = _passwordManager.Secure(command.Password);
+        var securedPassword = _passwordManager.Secure(password);
 
         Core.Entities.Passenger passenger;
         if (!string.IsNullOrWhiteSpace(command.DiscountName))
@@ -40,11 +48,11 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
             }
 
             passenger = Core.Entities.Passenger.CreateWithDiscount(
-                command.Id,
-                command.FirstName,
-                command.LastName,
-                command.Email,
-                command.PhoneNumber,
+                passengerId,
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
                 command.Age,
                 discount,
                 securedPassword
@@ -53,11 +61,11 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
         else
         {
             passenger = Core.Entities.Passenger.Create(
-                command.Id,
-                command.FirstName,
-                command.LastName,
-                command.Email,
-                command.PhoneNumber,
+                passengerId,
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
                 command.Age,
                 securedPassword
             );

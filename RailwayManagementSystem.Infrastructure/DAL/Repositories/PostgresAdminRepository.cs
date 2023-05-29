@@ -1,4 +1,4 @@
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Repositories;
 

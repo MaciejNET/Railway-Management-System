@@ -1,6 +1,7 @@
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Repositories;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Station;
 
@@ -15,14 +16,18 @@ public class CreateStationHandler : ICommandHandler<CreateStation>
 
     public async Task HandleAsync(CreateStation command)
     {
-        var stationAlreadyExists = await _stationRepository.ExistsByNameAsync(command.Name);
+        var stationId = new StationId(command.Id);
+        var name = new StationName(command.Name);
+        var city = new City(command.City);
+        
+        var stationAlreadyExists = await _stationRepository.ExistsByNameAsync(name);
 
         if (stationAlreadyExists)
         {
-            throw new StationWithGivenNameAlreadyExistsException(command.Name);
+            throw new StationWithGivenNameAlreadyExistsException(name);
         }
 
-        var station = Core.Entities.Station.Create(command.Id, command.Name, command.City, command.NumberOfPlatforms);
+        var station = Core.Entities.Station.Create(stationId, name, city, command.NumberOfPlatforms);
 
         await _stationRepository.AddAsync(station);
     }
