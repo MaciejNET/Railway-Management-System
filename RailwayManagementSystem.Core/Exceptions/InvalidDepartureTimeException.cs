@@ -1,6 +1,4 @@
-using RailwayManagementSystem.Core.Exceptions;
-
-namespace RailwayManagementSystem.Application.Exceptions;
+namespace RailwayManagementSystem.Core.Exceptions;
 
 public sealed class InvalidDepartureTimeException : CustomException
 {

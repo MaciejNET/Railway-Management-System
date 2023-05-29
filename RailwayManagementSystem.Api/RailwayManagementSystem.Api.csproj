@@ -42,8 +42,4 @@
         <ProjectReference Include="..\RailwayManagementSystem.Infrastructure\RailwayManagementSystem.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
 </Project>
