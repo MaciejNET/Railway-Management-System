@@ -9,7 +9,7 @@ public record Password
         
     public Password(string value)
     {
-        if (ValidatePassword(value))
+        if (!ValidatePassword(value))
         {
             throw new InvalidPasswordException();
         }
