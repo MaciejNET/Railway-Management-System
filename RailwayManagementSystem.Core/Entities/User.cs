@@ -7,7 +7,7 @@ public abstract class User
 {
     public UserId Id { get; private set; }
     public Password Password { get; private set; }
-    public Role Role { get; }
+    public Role Role { get; private set; }
 
     protected User(UserId id, Password password, Role role)
     {

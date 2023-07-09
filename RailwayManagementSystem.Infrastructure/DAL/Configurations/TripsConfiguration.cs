@@ -23,11 +23,9 @@ internal sealed class TripsConfiguration : IEntityTypeConfiguration<Trip>
         builder.HasOne(x => x.Train)
             .WithMany(x => x.Trips);
 
-        builder.HasMany(x => x.Schedules)
+        builder.HasOne(x => x.Schedule)
             .WithOne()
-            .HasForeignKey(x => x.TripId);
-
-        builder.OwnsOne(x => x.TripInterval);
+            .HasForeignKey<Schedule>(x => x.TripId);
 
         builder.HasMany(x => x.Tickets)
             .WithOne(x => x.Trip);

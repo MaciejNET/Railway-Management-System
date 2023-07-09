@@ -22,11 +22,6 @@ public sealed class Carrier
         return new Carrier(id, name, null);
     }
 
-    public static Carrier CreateWithTrains(CarrierId id, CarrierName name, List<Train> trains)
-    {
-        return new Carrier(id, name, trains);
-    }
-
     public void AddTrain(Train train)
     {
         _trains.Add(train);

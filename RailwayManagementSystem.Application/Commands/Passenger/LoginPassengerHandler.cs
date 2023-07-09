@@ -6,7 +6,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
-public class LoginPassengerHandler : ICommandHandler<LoginPassenger>
+internal sealed class LoginPassengerHandler : ICommandHandler<LoginPassenger>
 {
     private readonly IPassengerRepository _passengerRepository;
     private readonly IAuthenticator _authenticator;

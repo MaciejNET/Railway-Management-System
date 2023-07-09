@@ -31,15 +31,12 @@ internal sealed class PassengersConfiguration : IEntityTypeConfiguration<Passeng
         builder.HasIndex(x => x.Email)
             .IsUnique();
 
-        builder.Property(x => x.PhoneNumber)
-            .HasConversion(x => x.Value, v => new PhoneNumber(v))
-            .IsRequired();
-        
         builder.Property(x => x.Password)
             .HasConversion(x => x.Value, v => new Password(v))
             .IsRequired();
 
-        builder.Property(x => x.Age)
+        builder.Property(x => x.DateOfBirth)
+            .HasConversion(x => x.Value, v => new DateOfBirth(v))
             .IsRequired();
 
         builder.HasOne(x => x.Discount)
@@ -48,5 +45,8 @@ internal sealed class PassengersConfiguration : IEntityTypeConfiguration<Passeng
         builder.HasMany(x => x.Tickets)
             .WithOne()
             .HasForeignKey(x => x.PassengerId);
+        
+        builder.Property(x => x.Role)
+            .IsRequired();
     }
 }

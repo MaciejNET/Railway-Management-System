@@ -1,6 +1,7 @@
 using RailwayManagementSystem.Application;
 using RailwayManagementSystem.Core;
 using RailwayManagementSystem.Infrastructure;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,14 +17,12 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    loggerConfiguration.WriteTo.Console();
+});
+
+var app = builder.Build();
 
 app.UseInfrastructure();
 

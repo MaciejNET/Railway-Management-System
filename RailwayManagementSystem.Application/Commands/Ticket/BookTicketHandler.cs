@@ -6,7 +6,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Ticket;
 
-public class BookTicketHandler : ICommandHandler<BookTicket>
+internal sealed class BookTicketHandler : ICommandHandler<BookTicket>
 {
     private readonly ITripRepository _tripRepository;
     private readonly IPassengerRepository _passengerRepository;

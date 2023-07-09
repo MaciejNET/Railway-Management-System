@@ -9,7 +9,7 @@ public record Password
         
     public Password(string value)
     {
-        if (!ValidatePassword(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidPasswordException();
         }
@@ -22,8 +22,8 @@ public record Password
     public static implicit operator string(Password value) => value.Value;
 
     public override string ToString() => Value;
-
-    private bool ValidatePassword(string password)
+    
+    public static bool ValidatePassword(string password)
     {
         var hasNumber = new Regex(@"[0-9]+");
         var hasUpperChar = new Regex(@"[A-Z]+");

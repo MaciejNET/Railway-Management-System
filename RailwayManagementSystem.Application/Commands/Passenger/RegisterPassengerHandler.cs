@@ -1,12 +1,13 @@
 using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Security;
+using RailwayManagementSystem.Core.Exceptions;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
-public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
+internal sealed class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
 {
     private readonly IPassengerRepository _passengerRepository;
     private readonly IDiscountRepository _discountRepository;
@@ -25,17 +26,23 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
         var firstName = new FirstName(command.FirstName);
         var lastName = new LastName(command.LastName);
         var email = new Email(command.Email);
-        var phoneNumber = new PhoneNumber(command.PhoneNumber);
-        var password = new Password(command.Password);
-        
+        var dateOfBirth = new DateOfBirth(command.DateOfBirth);
+
         var passengerAlreadyExists = await _passengerRepository.ExistsByEmailAsync(email);
 
         if (passengerAlreadyExists)
         {
-            throw new PassengerWithGivenEmailAlreadyExists(command.Email);
+            throw new PassengerWithGivenEmailAlreadyExistsException(command.Email);
         }
 
-        var securedPassword = _passwordManager.Secure(password);
+        var isPasswordValid = Password.ValidatePassword(command.Password);
+
+        if (!isPasswordValid)
+        {
+            throw new InvalidPasswordException();
+        }
+
+        var securedPassword = _passwordManager.Secure(command.Password);
 
         Core.Entities.Passenger passenger;
         if (!string.IsNullOrWhiteSpace(command.DiscountName))
@@ -52,8 +59,7 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
                 firstName,
                 lastName,
                 email,
-                phoneNumber,
-                command.Age,
+                dateOfBirth,
                 discount,
                 securedPassword
             );
@@ -65,8 +71,7 @@ public class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
                 firstName,
                 lastName,
                 email,
-                phoneNumber,
-                command.Age,
+                dateOfBirth,
                 securedPassword
             );
         }

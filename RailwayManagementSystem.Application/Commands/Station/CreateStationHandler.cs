@@ -5,7 +5,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Station;
 
-public class CreateStationHandler : ICommandHandler<CreateStation>
+internal sealed class CreateStationHandler : ICommandHandler<CreateStation>
 {
     private readonly IStationRepository _stationRepository;
 

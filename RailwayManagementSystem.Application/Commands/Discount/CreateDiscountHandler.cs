@@ -5,7 +5,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Discount;
 
-public class CreateDiscountHandler : ICommandHandler<CreateDiscount>
+internal sealed class CreateDiscountHandler : ICommandHandler<CreateDiscount>
 {
     private readonly IDiscountRepository _discountRepository;
    

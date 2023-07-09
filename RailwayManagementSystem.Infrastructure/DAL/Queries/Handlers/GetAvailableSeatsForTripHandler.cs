@@ -4,6 +4,7 @@ using RailwayManagementSystem.Application.Abstractions;
 using RailwayManagementSystem.Application.DTO;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Application.Queries;
+using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
@@ -18,24 +19,31 @@ internal sealed class GetAvailableSeatsForTripHandler : IQueryHandler<GetAvailab
 
     public async Task<IEnumerable<SeatDto>> HandleAsync(GetAvailableSeatsForTrip query)
     {
-        query.StartStation = query.StartStation.Underscore().Replace("_", " ");
-        query.EndStation = query.EndStation.Underscore().Replace("_", " ");
+        var tripId = new TripId(query.TripId);
+        var startStationName = new StationName(query.StartStation.Replace("_", " "));
+        var endStationName = new StationName(query.EndStation.Replace("_", " "));
         
-        var trip = await _dbContext.Trips.FindAsync(query.TripId);
+        var trip = await _dbContext.Trips
+            .Include(x => x.Train)
+            .ThenInclude(x => x.Seats)
+            .Include(x => x.Schedule)
+            .ThenInclude(x => x.Stations)
+            .ThenInclude(x => x.Station)
+            .SingleOrDefaultAsync(x => x.Id == tripId);
 
         if (trip is null)
         {
-            throw new TripNotFoundException(query.TripId);
+            throw new TripNotFoundException(tripId);
         }
 
-        var startStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name.Value.Underscore() == query.StartStation);
+        var startStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == startStationName);
 
         if (startStation is null)
         {
             throw new StationNotFoundException(query.StartStation);
         }
         
-        var endStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name.Value.Underscore() == query.EndStation);
+        var endStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == endStationName);
 
         if (endStation is null)
         {

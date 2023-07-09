@@ -76,8 +76,8 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<Guid?>("DiscountId")
                         .HasColumnType("uuid");
@@ -98,10 +98,6 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DiscountId");
@@ -117,26 +113,13 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ArrivalTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DepartureTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Platform")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("StationId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TripId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StationId");
-
-                    b.HasIndex("TripId");
+                    b.HasIndex("TripId")
+                        .IsUnique();
 
                     b.ToTable("Schedules", (string)null);
                 });
@@ -178,14 +161,38 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.Property<int>("NumberOfPlatforms")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TicketId")
+                    b.HasKey("Id");
+
+                    b.ToTable("Stations", (string)null);
+                });
+
+            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.StationSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeOnly>("ArrivalTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly>("DepartureTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("Platform")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ScheduleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StationId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TicketId");
+                    b.HasIndex("ScheduleId");
 
-                    b.ToTable("Stations", (string)null);
+                    b.HasIndex("StationId");
+
+                    b.ToTable("StationSchedules", (string)null);
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Ticket", b =>
@@ -204,7 +211,7 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("TripDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("TripId")
                         .HasColumnType("uuid");
@@ -261,6 +268,21 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.ToTable("Trips", (string)null);
                 });
 
+            modelBuilder.Entity("StationTicket", b =>
+                {
+                    b.Property<Guid>("StationsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TicketsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("StationsId", "TicketsId");
+
+                    b.HasIndex("TicketsId");
+
+                    b.ToTable("TicketStation", (string)null);
+                });
+
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Passenger", b =>
                 {
                     b.HasOne("RailwayManagementSystem.Core.Entities.Discount", "Discount")
@@ -272,19 +294,70 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Schedule", b =>
                 {
-                    b.HasOne("RailwayManagementSystem.Core.Entities.Station", "Station")
-                        .WithMany()
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RailwayManagementSystem.Core.Entities.Trip", null)
-                        .WithMany("Schedules")
-                        .HasForeignKey("TripId")
+                        .WithOne("Schedule")
+                        .HasForeignKey("RailwayManagementSystem.Core.Entities.Schedule", "TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Station");
+                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.TripAvailability", "TripAvailability", b1 =>
+                        {
+                            b1.Property<Guid>("ScheduleId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<bool>("Friday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Monday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Saturday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Sunday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Thursday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Tuesday")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("Wednesday")
+                                .HasColumnType("boolean");
+
+                            b1.HasKey("ScheduleId");
+
+                            b1.ToTable("Schedules");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ScheduleId");
+                        });
+
+                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.ValidDate", "ValidDate", b1 =>
+                        {
+                            b1.Property<Guid>("ScheduleId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<DateOnly>("From")
+                                .HasColumnType("date");
+
+                            b1.Property<DateOnly>("To")
+                                .HasColumnType("date");
+
+                            b1.HasKey("ScheduleId");
+
+                            b1.ToTable("Schedules");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ScheduleId");
+                        });
+
+                    b.Navigation("TripAvailability")
+                        .IsRequired();
+
+                    b.Navigation("ValidDate")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Seat", b =>
@@ -296,11 +369,19 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Station", b =>
+            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.StationSchedule", b =>
                 {
-                    b.HasOne("RailwayManagementSystem.Core.Entities.Ticket", null)
+                    b.HasOne("RailwayManagementSystem.Core.Entities.Schedule", null)
                         .WithMany("Stations")
-                        .HasForeignKey("TicketId");
+                        .HasForeignKey("ScheduleId");
+
+                    b.HasOne("RailwayManagementSystem.Core.Entities.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Station");
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Ticket", b =>
@@ -347,43 +428,21 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("RailwayManagementSystem.Core.ValueObjects.TripInterval", "TripInterval", b1 =>
-                        {
-                            b1.Property<Guid>("TripId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<bool>("Friday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Monday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Saturday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Sunday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Thursday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Tuesday")
-                                .HasColumnType("boolean");
-
-                            b1.Property<bool>("Wednesday")
-                                .HasColumnType("boolean");
-
-                            b1.HasKey("TripId");
-
-                            b1.ToTable("Trips");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TripId");
-                        });
-
                     b.Navigation("Train");
+                });
 
-                    b.Navigation("TripInterval")
+            modelBuilder.Entity("StationTicket", b =>
+                {
+                    b.HasOne("RailwayManagementSystem.Core.Entities.Station", null)
+                        .WithMany()
+                        .HasForeignKey("StationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RailwayManagementSystem.Core.Entities.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -397,14 +456,14 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
                     b.Navigation("Tickets");
                 });
 
+            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Schedule", b =>
+                {
+                    b.Navigation("Stations");
+                });
+
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Seat", b =>
                 {
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Ticket", b =>
-                {
-                    b.Navigation("Stations");
                 });
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Train", b =>
@@ -416,7 +475,8 @@ namespace RailwayManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("RailwayManagementSystem.Core.Entities.Trip", b =>
                 {
-                    b.Navigation("Schedules");
+                    b.Navigation("Schedule")
+                        .IsRequired();
 
                     b.Navigation("Tickets");
                 });

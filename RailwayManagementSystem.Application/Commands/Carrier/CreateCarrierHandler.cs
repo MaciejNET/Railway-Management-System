@@ -5,7 +5,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Carrier;
 
-public class CreateCarrierHandler : ICommandHandler<CreateCarrier>
+internal sealed class CreateCarrierHandler : ICommandHandler<CreateCarrier>
 {
     private readonly ICarrierRepository _carrierRepository;
 

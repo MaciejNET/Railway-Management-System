@@ -5,37 +5,39 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Trip
 {
-    private readonly List<Schedule> _schedules = new();
     private readonly List<Ticket> _tickets = new();
     
     public TripId Id { get; private set; }
     public decimal Price { get; private set; }
     public Train Train { get; private set; }
-    public TripInterval TripInterval { get; private set; }
-    public IReadOnlyList<Schedule> Schedules => _schedules.AsReadOnly();
+    public Schedule Schedule { get; private set; }
     public IReadOnlyList<Ticket> Tickets => _tickets.AsReadOnly();
 
-    private Trip(TripId id, decimal price, Train train, TripInterval tripInterval, List<Schedule> schedules)
+    private Trip(TripId id, decimal price, Train train, Schedule schedule)
     {
         Id = id;
         Price = price;
         Train = train;
-        TripInterval = tripInterval;
-        _schedules = schedules;
+        Schedule = schedule;
     }
 
-    public static Trip Create(TripId id, decimal price, Train train, TripInterval tripInterval, List<Schedule> schedules)
+    public static Trip Create(TripId id, decimal price, Train train, Schedule schedule)
     {
-        return new Trip(id, price, train, tripInterval, schedules);
+        return new Trip(id, price, train, schedule);
     }
 
     public void ReserveTicket(Passenger passenger, Station startStation, Station endStation, DateTime tripDate, Seat? seat = null)
     {
-        if (TripInterval.IsTripRunOnGivenDate(tripDate.DayOfWeek) is false)
+        if (Schedule.IsTripRunningOnGivenDate(tripDate) is false)
         {
             throw new TrainDoesNotRunOnGivenDateException(Train.Name, tripDate);
         }
 
+        if (Schedule.Stations.Any(x => x.Station == startStation) is false || Schedule.Stations.Any(x => x.Station == endStation) is false)
+        {
+            throw new StationDoesNotExistOnScheduleException();
+        }
+        
         var availableSeats = GetAvailableSeats(startStation, endStation, tripDate);
 
         if (!availableSeats.Any())
@@ -52,7 +54,7 @@ public sealed class Trip
 
         var discount = passenger.Discount is null ? 1 : passenger.Discount.Percentage / 100;
             
-        var tripStations = _schedules.Select(x => x.Station).ToList();
+        var tripStations = Schedule.Stations.Select(x => x.Station).ToList();
         var stationsToBook = GetStationsToBook(tripStations, startStation, endStation).ToList();
             
         var ticket = new Ticket(
@@ -62,7 +64,7 @@ public sealed class Trip
             seat: seat,
             tripDate: tripDate,
             stations: stationsToBook);
-            
+
         _tickets.Add(ticket);
         seat.AddTicket(ticket);
         passenger.AddTicket(ticket);
@@ -71,7 +73,7 @@ public sealed class Trip
     public List<Seat> GetAvailableSeats(Station startStation, Station endStation, DateTime tripDate)
     {
         var bookedStations = GetBookedStationsForSeat(tripDate);
-        var tripStations = _schedules.Select(x => x.Station).ToList();
+        var tripStations = Schedule.Stations.Select(x => x.Station).ToList();
         var stationsToBook = GetStationsToBook(tripStations, startStation, endStation);
 
         List<Seat> availableSeats = new();

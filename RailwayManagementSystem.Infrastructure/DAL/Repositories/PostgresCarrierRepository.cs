@@ -16,12 +16,18 @@ internal sealed class PostgresCarrierRepository : ICarrierRepository
     public Task<bool> ExistsByNameAsync(string name)
         => _dbContext.Carriers.AnyAsync(x => x.Name == name);
 
-    public Task<Carrier> GetByNameAsync(string name)
-        => _dbContext.Carriers.SingleOrDefaultAsync(x => x.Name == name);
+    public async Task<Carrier?> GetByIdAsync(Guid id)
+        => await _dbContext.Carriers.FindAsync(id);
 
     public async Task AddAsync(Carrier carrier)
     {
         await _dbContext.Carriers.AddAsync(carrier);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Carrier carrier)
+    {
+        _dbContext.Carriers.Remove(carrier);
         await _dbContext.SaveChangesAsync();
     }
 }

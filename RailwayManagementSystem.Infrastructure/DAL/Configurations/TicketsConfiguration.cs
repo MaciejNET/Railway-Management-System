@@ -26,8 +26,10 @@ internal sealed class TicketsConfiguration : IEntityTypeConfiguration<Ticket>
         builder.Property(x => x.TripDate)
             .IsRequired();
 
-        builder.HasMany(x => x.Stations);
-
+        builder.HasMany(x => x.Stations)
+            .WithMany(x => x.Tickets)
+            .UsingEntity(x => x.ToTable("TicketStation"));
+        
         builder.HasOne(x => x.Trip)
             .WithMany(x => x.Tickets);
     }

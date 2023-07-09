@@ -5,7 +5,7 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Train;
 
-public class CreateTrainHandler : ICommandHandler<CreateTrain>
+internal sealed class CreateTrainHandler : ICommandHandler<CreateTrain>
 {
     private readonly ITrainRepository _trainRepository;
     private readonly ICarrierRepository _carrierRepository;
@@ -20,7 +20,7 @@ public class CreateTrainHandler : ICommandHandler<CreateTrain>
     {
         var trainId = new TrainId(command.Id);
         var name = new TrainName(command.Name);
-        var carrierName = new CarrierName(command.CarrierName);
+        var carrierId = new CarrierId(command.CarrierId);
         
         var trainAlreadyExists = await _trainRepository.ExistsByNameAsync(name);
 
@@ -29,14 +29,15 @@ public class CreateTrainHandler : ICommandHandler<CreateTrain>
             throw new TrainWithGivenNameAlreadyExistsException(name);
         }
 
-        var carrier = await _carrierRepository.GetByNameAsync(carrierName);
+        var carrier = await _carrierRepository.GetByIdAsync(carrierId);
 
         if (carrier is null)
         {
-            throw new CarrierNotFoundException(carrierName);
+            throw new CarrierNotFoundException(carrierId);
         }
 
         var train = Core.Entities.Train.Create(trainId, name, command.SeatsAmount, carrier);
+        carrier.AddTrain(train);
 
         await _trainRepository.AddAsync(train);
     }

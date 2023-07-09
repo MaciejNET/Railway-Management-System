@@ -23,5 +23,8 @@ internal sealed class AdminsConfiguration : IEntityTypeConfiguration<Admin>
         builder.Property(x => x.Password)
             .HasConversion(x => x.Value, v => new Password(v))
             .IsRequired();
+
+        builder.Property(x => x.Role)
+            .IsRequired();
     }
 }

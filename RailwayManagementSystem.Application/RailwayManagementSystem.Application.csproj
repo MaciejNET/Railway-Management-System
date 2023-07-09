@@ -11,9 +11,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ErrorOr" Version="1.2.1" />
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.25.0" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="RailwayManagementSystem.UnitTests" />
     </ItemGroup>
 
 </Project>

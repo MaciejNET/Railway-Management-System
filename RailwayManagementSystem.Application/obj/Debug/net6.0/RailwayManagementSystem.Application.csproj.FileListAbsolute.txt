@@ -1,5 +1,4 @@
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.deps.json
-/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.runtimeconfig.json
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.dll
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Application.pdb
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/bin/Debug/net6.0/RailwayManagementSystem.Core.dll
@@ -13,5 +12,4 @@
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.dll
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/refint/RailwayManagementSystem.Application.dll
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.pdb
-/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/RailwayManagementSystem.Application.genruntimeconfig.cache
 /Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Application/obj/Debug/net6.0/ref/RailwayManagementSystem.Application.dll

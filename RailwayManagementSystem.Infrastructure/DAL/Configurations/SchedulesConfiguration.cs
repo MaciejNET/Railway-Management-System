@@ -10,22 +10,17 @@ internal sealed class SchedulesConfiguration : IEntityTypeConfiguration<Schedule
     public void Configure(EntityTypeBuilder<Schedule> builder)
     {
         builder.ToTable("Schedules");
-        
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, v => new ScheduleId(v));
-        
-        builder.HasOne(x => x.Station)
-            .WithMany();
 
-        builder.Property(x => x.ArrivalTime)
-            .IsRequired();
+        builder.OwnsOne(x => x.ValidDate);
 
-        builder.Property(x => x.DepartureTime)
-            .IsRequired();
+        builder.OwnsOne(x => x.TripAvailability);
 
-        builder.Property(x => x.Platform)
-            .IsRequired();
+        builder.HasMany(x => x.Stations)
+            .WithOne();
     }
 }

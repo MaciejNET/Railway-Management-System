@@ -10,42 +10,44 @@ public sealed class Passenger : User
     public FirstName FirstName { get; private set; }
     public LastName LastName { get; private set; }
     public Email Email { get; private set; }
-    public PhoneNumber PhoneNumber { get; private set; }
-    public int Age { get; private set; }
+    public DateOfBirth DateOfBirth { get; private set; }
     public Discount? Discount { get; private set; }
     public IReadOnlyList<Ticket> Tickets => _tickets.AsReadOnly();
 
-    private Passenger(UserId id, FirstName firstName, LastName lastName, Email email, PhoneNumber phoneNumber, int age, Discount? discount, Password password, Role role)
+    private Passenger(UserId id, FirstName firstName, LastName lastName, Email email, DateOfBirth dateOfBirth, Discount? discount, Password password, Role role)
         : base(id, password, role)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        PhoneNumber = phoneNumber;
-        Age = age;
+        DateOfBirth = dateOfBirth;
         Discount = discount;
     }
-
-    public static Passenger Create(UserId id, FirstName firstName, LastName lastName, Email email, PhoneNumber phoneNumber,
-        int age, Password password)
+    
+    private Passenger(UserId id, FirstName firstName, LastName lastName, Email email, DateOfBirth dateOfBirth, Password password, Role role)
+        : base(id, password, role)
     {
-        return new Passenger(id, firstName, lastName, email, phoneNumber, age, null, password, Role.Passenger);
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        DateOfBirth = dateOfBirth;
+    }
+
+    public static Passenger Create(UserId id, FirstName firstName, LastName lastName, Email email,
+        DateOfBirth dateOfBirth, Password password)
+    {
+        return new Passenger(id, firstName, lastName, email, dateOfBirth, password, Role.Passenger);
     }
     
-    public static Passenger CreateWithDiscount(UserId id, FirstName firstName, LastName lastName, Email email, PhoneNumber phoneNumber,
-        int age, Discount discount, Password password)
+    public static Passenger CreateWithDiscount(UserId id, FirstName firstName, LastName lastName, Email email,
+         DateOfBirth dateOfBirth, Discount discount, Password password)
     {
-        return new Passenger(id, firstName, lastName, email, phoneNumber, age, discount, password, Role.Passenger);
+        return new Passenger(id, firstName, lastName, email, dateOfBirth, discount, password, Role.Passenger);
     }
 
     public void UpdateEmail(Email email)
     {
         Email = email;
-    }
-
-    public void UpdatePhoneNumber(PhoneNumber phoneNumber)
-    {
-        PhoneNumber = phoneNumber;
     }
 
     public void UpdateDiscount(Discount discount)

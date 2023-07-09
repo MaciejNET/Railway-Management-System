@@ -6,5 +6,5 @@ public class TripDto
     public string TrainName { get; set; }
     public string CarrierName { get; set; }
     public decimal Price { get; set; }
-    public IEnumerable<ScheduleDto> Schedules { get; set; }
+    public IEnumerable<StationScheduleDto> Stations { get; set; }
 }

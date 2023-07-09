@@ -20,6 +20,8 @@ internal static class Extensions
         services.AddRepositories();
         
         services.AddHostedService<DatabaseInitializer>();
+        
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         return services;
     }
 

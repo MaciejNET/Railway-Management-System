@@ -42,10 +42,6 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
-            "ErrorOr": {
-              "target": "Package",
-              "version": "[1.2.1, )"
-            },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
               "version": "[6.25.0, )"
@@ -119,33 +115,9 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
-            "AutoMapper": {
-              "target": "Package",
-              "version": "[12.0.0, )"
-            },
-            "AutoMapper.EF6": {
-              "target": "Package",
-              "version": "[2.1.1, )"
-            },
-            "AutoMapper.Extensions.EnumMapping": {
-              "target": "Package",
-              "version": "[3.0.1, )"
-            },
-            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[12.0.0, )"
-            },
             "DateOnlyTimeOnly.AspNet": {
               "target": "Package",
               "version": "[1.0.3, )"
-            },
-            "ErrorOr": {
-              "target": "Package",
-              "version": "[1.2.1, )"
-            },
-            "GemBox.Pdf": {
-              "target": "Package",
-              "version": "[17.0.1224, )"
             },
             "IronSoftware.System.Drawing": {
               "target": "Package",
@@ -182,14 +154,6 @@
             "QRCoder": {
               "target": "Package",
               "version": "[1.4.3, )"
-            },
-            "SkiaSharp": {
-              "target": "Package",
-              "version": "[2.88.3, )"
-            },
-            "SkiaSharp.NativeAssets.macOS": {
-              "target": "Package",
-              "version": "[2.88.3, )"
             },
             "Swashbuckle.AspNetCore.Filters": {
               "target": "Package",

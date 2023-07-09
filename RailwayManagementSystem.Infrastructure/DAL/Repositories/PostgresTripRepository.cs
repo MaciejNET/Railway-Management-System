@@ -19,13 +19,20 @@ internal sealed class PostgresTripRepository : ITripRepository
     public async Task AddAsync(Trip trip)
     {
         await _dbContext.Trips.AddAsync(trip);
-        await _dbContext.Schedules.AddRangeAsync(trip.Schedules);
+        await _dbContext.Schedules.AddAsync(trip.Schedule);
+        await _dbContext.StationSchedules.AddRangeAsync(trip.Schedule.Stations);
         await _dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Trip trip)
     {
         _dbContext.Trips.Update(trip);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Trip trip)
+    {
+        _dbContext.Trips.Remove(trip);
         await _dbContext.SaveChangesAsync();
     }
 }
