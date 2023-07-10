@@ -5,6 +5,7 @@ using RailwayManagementSystem.Application.Commands.Ticket;
 using RailwayManagementSystem.Application.Commands.Trip;
 using RailwayManagementSystem.Application.DTO;
 using RailwayManagementSystem.Application.Queries;
+using RailwayManagementSystem.Application.Responses;
 
 namespace RailwayManagementSystem.Api.Controllers;
 
@@ -33,7 +34,28 @@ public class TripController : ControllerBase
         return Ok(trip);
     }
     
-    //TODO: Get Connection
+    [HttpGet("get-connections")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<Connection>>> Get([FromQuery] GetConnections query)
+    {
+        List<Connection> connections = new();
+
+        var directQuery = new GetDirectConnections
+            {StartStation = query.StartStation, EndStation = query.EndStation, DepartureTime = query.DepartureTime};
+        
+        connections.AddRange(await _queryDispatcher.QueryAsync(directQuery));
+
+        if (query.SearchIndirect)
+        {
+            var indirectQuery = new GetIndirectConnections
+                {StartStation = query.StartStation, EndStation = query.EndStation, DepartureTime = query.DepartureTime};
+        
+            connections.AddRange(await _queryDispatcher.QueryAsync(indirectQuery));
+        }
+
+        return Ok(connections);
+    }
 
     [HttpGet("get-available-seats")]
     [ProducesResponseType(StatusCodes.Status200OK)]

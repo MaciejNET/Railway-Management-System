@@ -48,8 +48,11 @@ internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
             command.Schedule.TripAvailability.Saturday,
             command.Schedule.TripAvailability.Sunday);
          
-        List<StationSchedule> stationSchedules = new();
-        foreach (var scheduleStation in command.Schedule.Stations)
+        var schedule = Schedule.Create(tripId, validDate, tripAvailability);
+        
+        var sortedStations = command.Schedule.Stations.OrderBy(x => x.DepartureTime).ToList();
+        
+        foreach (var scheduleStation in sortedStations)
         {
             var stationName = new StationName(scheduleStation.StationName);
             
@@ -60,10 +63,9 @@ internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
                 throw new StationNotFoundException(stationName);
             }
 
-            stationSchedules.Add(StationSchedule.Create(station, scheduleStation.ArrivalTime, scheduleStation.DepartureTime, scheduleStation.Platform));
+            schedule.AddStationSchedule(StationSchedule.Create(station, scheduleStation.ArrivalTime, scheduleStation.DepartureTime, scheduleStation.Platform));
         }
 
-        var schedule = Schedule.Create(tripId, validDate, tripAvailability, stationSchedules);
          
         var trip = Core.Entities.Trip.Create(tripId, command.Price, train, schedule);
         

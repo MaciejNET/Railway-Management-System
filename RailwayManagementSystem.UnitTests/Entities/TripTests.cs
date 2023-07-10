@@ -182,6 +182,7 @@ public class TripTests
             StationSchedule.Create(_station3, new TimeOnly(12, 15), new TimeOnly(12, 15), 1),
         };
 
+        var tripStationSchedules = _stationSchedules.OrderBy(x => x.DepartureTime);
         
         _schedule = Schedule.Create(
             tripId: TripId,
@@ -193,8 +194,12 @@ public class TripTests
                 Thursday: true,
                 Friday: true,
                 Saturday: false,
-                Sunday: false),
-            stations: _stationSchedules);
+                Sunday: false));
+
+        foreach (var schedule in tripStationSchedules)
+        {
+            _schedule.AddStationSchedule(schedule);
+        }
 
         _trip = InitTrip();
     }

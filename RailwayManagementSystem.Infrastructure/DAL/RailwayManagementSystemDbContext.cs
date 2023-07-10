@@ -1,5 +1,6 @@
 using System.Collections;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Infrastructure.DAL;
@@ -26,7 +27,12 @@ internal sealed class RailwayManagementSystemDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
-    
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+    }
+
     public bool AreAllTablesEmpty()
     {
         var dbSetProperties = GetType().GetProperties()

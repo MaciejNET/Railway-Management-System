@@ -152,6 +152,10 @@ internal sealed class DatabaseInitializer : IHostedService
             StationSchedule.Create(zakopane, new TimeOnly(14, 45), new TimeOnly(14, 45), 1)
         };
 
+        var firstTripStationSchedules = firstTripStations.OrderBy(x => x.DepartureTime).ToList();
+        var secondTripStationSchedules = secondTripStations.OrderBy(x => x.DepartureTime).ToList();
+        var thirdTripStationSchedules = thirdTripStations.OrderBy(x => x.DepartureTime).ToList();
+
         var firstTripSchedule = Schedule.Create(
             tripId: firstTripId,
             validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
@@ -162,8 +166,12 @@ internal sealed class DatabaseInitializer : IHostedService
                 Thursday: true,
                 Friday: true,
                 Saturday: false,
-                Sunday: false),
-            firstTripStations);
+                Sunday: false));
+
+        foreach (var station in firstTripStationSchedules)
+        {
+            firstTripSchedule.AddStationSchedule(station);
+        }
 
         var secondTripSchedule = Schedule.Create(
             tripId: secondTripId,
@@ -175,8 +183,12 @@ internal sealed class DatabaseInitializer : IHostedService
                 Thursday: true,
                 Friday: true,
                 Saturday: true,
-                Sunday: true),
-            secondTripStations);
+                Sunday: true));
+
+        foreach (var station in secondTripStationSchedules)
+        {
+            secondTripSchedule.AddStationSchedule(station);
+        }
 
         var thirdTripSchedule = Schedule.Create(
             tripId: thirdTripId,
@@ -188,8 +200,12 @@ internal sealed class DatabaseInitializer : IHostedService
                 Thursday: true,
                 Friday: true,
                 Saturday: true,
-                Sunday: false),
-            thirdTripStations);
+                Sunday: false));
+        
+        foreach (var station in thirdTripStationSchedules)
+        {
+            thirdTripSchedule.AddStationSchedule(station);
+        }
 
         var firstTrip = Trip.Create(
             id: firstTripId,

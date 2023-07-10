@@ -56,11 +56,16 @@ public sealed class Trip
             
         var tripStations = Schedule.Stations.Select(x => x.Station).ToList();
         var stationsToBook = GetStationsToBook(tripStations, startStation, endStation).ToList();
+        
+        var startStationSchedule = Schedule.Stations.First(x => x.Station == startStation);
+        var endStationSchedule = Schedule.Stations.First(x => x.Station == endStation);
+
+        var price = CalculateConnectionTripPrice(startStationSchedule, endStationSchedule) * discount;
             
         var ticket = new Ticket(
             trip: this,
             passengerId: passenger.Id,
-            price: Price * discount,
+            price: price,
             seat: seat,
             tripDate: tripDate,
             stations: stationsToBook);
@@ -88,6 +93,27 @@ public sealed class Trip
         return availableSeats;
     }
 
+    public int GetTripStationsCount(StationSchedule startStationSchedule, StationSchedule endStationSchedule)
+    {
+        var startStationIndex = Schedule.GetStationIndex(startStationSchedule);
+        var endStationIndex = Schedule.GetStationIndex(endStationSchedule);
+
+        if (startStationIndex > endStationIndex)
+        {
+            throw new InvalidStationOrderException();
+        }
+
+        return endStationIndex - startStationIndex + 1;
+    }
+
+    public decimal CalculateConnectionTripPrice(StationSchedule startStationSchedule, StationSchedule endStationSchedule)
+    {
+        var tripStationsCount = Schedule.Stations.Count;
+        var connectionTripStationsCount = GetTripStationsCount(startStationSchedule, endStationSchedule);
+
+        return (decimal) connectionTripStationsCount / tripStationsCount * Price;
+    }
+    
     private Dictionary<Seat, List<Station>> GetBookedStationsForSeat(DateTime tripDate)
     {
         Dictionary<Seat, List<Station>> bookedStationsForSeat = new();
