@@ -2,12 +2,8 @@ using RailwayManagementSystem.Core.Exceptions;
 
 namespace RailwayManagementSystem.Application.Exceptions;
 
-public sealed class CarrierAlreadyExistsException : CustomException
+public sealed class CarrierAlreadyExistsException(string carrierName)
+    : CustomException(message: $"Carrier with name: {carrierName} already exists.", httpStatusCode: 400)
 {
-    public string CarrierName { get; }
-
-    public CarrierAlreadyExistsException(string carrierName) : base(message: $"Carrier with name: {carrierName} already exists.", httpStatusCode: 400)
-    {
-        CarrierName = carrierName;
-    }
+    public string CarrierName { get; } = carrierName;
 }

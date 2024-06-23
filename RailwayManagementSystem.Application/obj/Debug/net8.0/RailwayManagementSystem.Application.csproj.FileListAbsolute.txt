@@ -1,0 +1,16 @@
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/bin/Debug/net8.0/RailwayManagementSystem.Application.deps.json
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/bin/Debug/net8.0/RailwayManagementSystem.Application.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/bin/Debug/net8.0/RailwayManagementSystem.Application.pdb
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/bin/Debug/net8.0/RailwayManagementSystem.Core.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/bin/Debug/net8.0/RailwayManagementSystem.Core.pdb
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.csproj.AssemblyReference.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.AssemblyInfoInputs.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.AssemblyInfo.cs
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.csproj.CoreCompileInputs.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.sourcelink.json
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayM.0790D561.Up2Date
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/refint/RailwayManagementSystem.Application.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/RailwayManagementSystem.Application.pdb
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Application/obj/Debug/net8.0/ref/RailwayManagementSystem.Application.dll

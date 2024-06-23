@@ -5,8 +5,8 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Train
 {
-    private readonly List<Seat> _seats = new();
-    private readonly List<Trip> _trips = new();
+    private readonly List<Seat> _seats = [];
+    private readonly List<Trip> _trips = [];
     
     public TrainId Id { get; private set; }
     public TrainName Name { get; private set; }
@@ -36,7 +36,7 @@ public sealed class Train
 
     private List<Seat> GenerateSeats(int seatsAmount)
     {
-        List<Seat> seats = new();
+        List<Seat> seats = [];
         for (var i = 1; i <= seatsAmount; i++)
         {
             var seat = new Seat(i, i % 2 == 0 ? Place.Middle : Place.Window, Id);

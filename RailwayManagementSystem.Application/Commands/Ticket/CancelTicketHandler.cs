@@ -4,18 +4,11 @@ using RailwayManagementSystem.Core.Repositories;
 
 namespace RailwayManagementSystem.Application.Commands.Ticket;
 
-internal sealed class CancelTicketHandler : ICommandHandler<CancelTicket>
+internal sealed class CancelTicketHandler(ITicketRepository ticketRepository) : ICommandHandler<CancelTicket>
 {
-    private readonly ITicketRepository _ticketRepository;
-
-    public CancelTicketHandler(ITicketRepository ticketRepository)
-    {
-        _ticketRepository = ticketRepository;
-    }
-
     public async Task HandleAsync(CancelTicket command)
     {
-        var ticket = await _ticketRepository.GetByIdAsync(command.Id);
+        var ticket = await ticketRepository.GetByIdAsync(command.Id);
 
         if (ticket is null)
         {
@@ -29,6 +22,6 @@ internal sealed class CancelTicketHandler : ICommandHandler<CancelTicket>
             throw new TicketNotAssignToThePassengerException(command.Id, command.PassengerId);
         }
 
-        await _ticketRepository.DeleteAsync(ticket);
+        await ticketRepository.DeleteAsync(ticket);
     }
 }

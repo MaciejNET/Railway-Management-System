@@ -1,12 +1,11 @@
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using RailwayManagementSystem.Application.Commands.Trip;
 using RailwayManagementSystem.Application.Exceptions;
-using RailwayManagementSystem.Core.Abstractions;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Core.ValueObjects;
-using RailwayManagementSystem.UnitTests.Shared;
 
 namespace RailwayManagementSystem.UnitTests.Commands;
 
@@ -20,15 +19,15 @@ public class CreateTripTests
             Price: 12.33M,
             TrainName: "Test",
             Schedule: new ScheduleWriteModel(
-                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_clock.Current()),
-                    DateOnly.FromDateTime(_clock.Current().AddMonths(1))),
+                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime),
+                    DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(1))),
                 TripAvailability: new TripAvailabilityWriteModel(true, true, true, true, true, false, false),
-                Stations: new List<StationScheduleWriteModel>
-                {
+                Stations:
+                [
                     new("Station A", new TimeOnly(10, 00, 00), new TimeOnly(10, 10, 00), 1),
                     new("Station B", new TimeOnly(11, 00, 00), new TimeOnly(11, 10, 00), 1),
                     new("Station C", new TimeOnly(12, 00, 00), new TimeOnly(12, 10, 00), 1)
-                }));
+                ]));
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var stationRepositoryMock = new Mock<IStationRepository>();
@@ -81,10 +80,10 @@ public class CreateTripTests
             Price: 12.33M,
             TrainName: "Test",
             Schedule: new ScheduleWriteModel(
-                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_clock.Current()),
-                    DateOnly.FromDateTime(_clock.Current().AddMonths(1))),
+                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime),
+                    DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(1))),
                 TripAvailability: new TripAvailabilityWriteModel(true, true, true, true, true, false, false),
-                Stations: new List<StationScheduleWriteModel>()));
+                Stations: []));
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var stationRepositoryMock = new Mock<IStationRepository>();
@@ -108,15 +107,15 @@ public class CreateTripTests
             Price: 12.33M,
             TrainName: "Test",
             Schedule: new ScheduleWriteModel(
-                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_clock.Current()),
-                    DateOnly.FromDateTime(_clock.Current().AddMonths(1))),
+                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime),
+                    DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(1))),
                 TripAvailability: new TripAvailabilityWriteModel(true, true, true, true, true, false, false),
-                Stations: new List<StationScheduleWriteModel>
-                {
+                Stations:
+                [
                     new("Station A", new TimeOnly(10, 00, 00), new TimeOnly(10, 10, 00), 1),
                     new("Station B", new TimeOnly(11, 00, 00), new TimeOnly(11, 10, 00), 1),
                     new("Station C", new TimeOnly(12, 00, 00), new TimeOnly(12, 10, 00), 1)
-                }));
+                ]));
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var stationRepositoryMock = new Mock<IStationRepository>();
@@ -144,15 +143,15 @@ public class CreateTripTests
             Price: 12.33M,
             TrainName: "Test",
             Schedule: new ScheduleWriteModel(
-                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_clock.Current()),
-                    DateOnly.FromDateTime(_clock.Current().AddMonths(1))),
+                ValidDate: new ValidDateWriteModel(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime),
+                    DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(1))),
                 TripAvailability: new TripAvailabilityWriteModel(true, true, true, true, true, false, false),
-                Stations: new List<StationScheduleWriteModel>
-                {
+                Stations:
+                [
                     new("Station A", new TimeOnly(10, 00, 00), new TimeOnly(10, 10, 00), 1),
                     new("Station B", new TimeOnly(11, 00, 00), new TimeOnly(11, 10, 00), 1),
                     new("Station C", new TimeOnly(12, 00, 00), new TimeOnly(12, 10, 00), 1)
-                }));
+                ]));
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var stationRepositoryMock = new Mock<IStationRepository>();
@@ -192,11 +191,12 @@ public class CreateTripTests
 
     #region ARRANGE
 
-    private readonly IClock _clock;
+    private readonly FakeTimeProvider _timeProvider;
 
     public CreateTripTests()
     {
-        _clock = new TestClock();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(new DateTime(2023, 7, 10, 12, 0, 0));
     }
 
     #endregion

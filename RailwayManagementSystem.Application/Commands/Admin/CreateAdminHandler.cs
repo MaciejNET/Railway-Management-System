@@ -7,17 +7,9 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Admin;
 
-internal sealed class CreateAdminHandler : ICommandHandler<CreateAdmin>
+internal sealed class CreateAdminHandler(IAdminRepository adminRepository, IPasswordManager passwordManager)
+    : ICommandHandler<CreateAdmin>
 {
-    private readonly IAdminRepository _adminRepository;
-    private readonly IPasswordManager _passwordManager;
-
-    public CreateAdminHandler(IAdminRepository adminRepository, IPasswordManager passwordManager)
-    {
-        _adminRepository = adminRepository;
-        _passwordManager = passwordManager;
-    }
-
     public async Task HandleAsync(CreateAdmin command)
     {
         var adminId = new UserId(command.Id);
@@ -30,17 +22,17 @@ internal sealed class CreateAdminHandler : ICommandHandler<CreateAdmin>
             throw new InvalidPasswordException();
         }
         
-        var adminAlreadyExists = await _adminRepository.ExistByNameAsync(name);
+        var adminAlreadyExists = await adminRepository.ExistByNameAsync(name);
 
         if (adminAlreadyExists)
         {
             throw new AdminAlreadyExistsException(name);
         }
 
-        var securedPassword = _passwordManager.Secure(command.Password);
+        var securedPassword = passwordManager.Secure(command.Password);
 
         var admin = Core.Entities.Admin.Create(adminId, name, securedPassword);
 
-        await _adminRepository.AddAsync(admin);
+        await adminRepository.AddAsync(admin);
     }
 }

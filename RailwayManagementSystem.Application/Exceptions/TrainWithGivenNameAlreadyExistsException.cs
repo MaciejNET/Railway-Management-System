@@ -2,12 +2,8 @@ using RailwayManagementSystem.Core.Exceptions;
 
 namespace RailwayManagementSystem.Application.Exceptions;
 
-public sealed class TrainWithGivenNameAlreadyExistsException : CustomException
+public sealed class TrainWithGivenNameAlreadyExistsException(string name)
+    : CustomException(message: $"Train with name: {name} already exists.", httpStatusCode: 400)
 {
-    public string Name { get; }
-
-    public TrainWithGivenNameAlreadyExistsException(string name) : base(message: $"Train with name: {name} already exists.", httpStatusCode: 400)
-    {
-        Name = name;
-    }
+    public string Name { get; } = name;
 }

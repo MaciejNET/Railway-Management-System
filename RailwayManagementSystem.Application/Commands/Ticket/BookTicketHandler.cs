@@ -6,21 +6,13 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Ticket;
 
-internal sealed class BookTicketHandler : ICommandHandler<BookTicket>
+internal sealed class BookTicketHandler(
+    ITripRepository tripRepository,
+    IPassengerRepository passengerRepository,
+    IStationRepository stationRepository,
+    ISeatRepository seatRepository)
+    : ICommandHandler<BookTicket>
 {
-    private readonly ITripRepository _tripRepository;
-    private readonly IPassengerRepository _passengerRepository;
-    private readonly IStationRepository _stationRepository;
-    private readonly ISeatRepository _seatRepository;
-
-    public BookTicketHandler(ITripRepository tripRepository, IPassengerRepository passengerRepository, IStationRepository stationRepository, ISeatRepository seatRepository)
-    {
-        _tripRepository = tripRepository;
-        _passengerRepository = passengerRepository;
-        _stationRepository = stationRepository;
-        _seatRepository = seatRepository;
-    }
-
     public async Task HandleAsync(BookTicket command)
     {
         var tripId = new TripId(command.TripId);
@@ -28,28 +20,28 @@ internal sealed class BookTicketHandler : ICommandHandler<BookTicket>
         var startStationName = new StationName(command.StartStation);
         var endStationName = new StationName(command.EndStation);
         
-        var trip = await _tripRepository.GetByIdAsync(tripId);
+        var trip = await tripRepository.GetByIdAsync(tripId);
 
         if (trip is null)
         {
             throw new TripNotFoundException(tripId);
         }
 
-        var passenger = await _passengerRepository.GetByIdAsync(passengerId);
+        var passenger = await passengerRepository.GetByIdAsync(passengerId);
 
         if (passenger is null)
         {
             throw new PassengerNotFoundException(passengerId);
         }
 
-        var startStation = await _stationRepository.GetByNameAsync(startStationName);
+        var startStation = await stationRepository.GetByNameAsync(startStationName);
 
         if (startStation is null)
         {
             throw new StationNotFoundException(startStationName);
         }
         
-        var endStation = await _stationRepository.GetByNameAsync(endStationName);
+        var endStation = await stationRepository.GetByNameAsync(endStationName);
 
         if (endStation is null)
         {
@@ -60,7 +52,7 @@ internal sealed class BookTicketHandler : ICommandHandler<BookTicket>
         
         if (command.SeatId is not null)
         {
-            seat = await _seatRepository.GetByIdAsync(command.SeatId);
+            seat = await seatRepository.GetByIdAsync(command.SeatId);
 
             if (seat is null)
             {
@@ -70,6 +62,6 @@ internal sealed class BookTicketHandler : ICommandHandler<BookTicket>
 
 
         trip.ReserveTicket(passenger, startStation, endStation, command.TripDate, seat);
-        await _tripRepository.UpdateAsync(trip);
+        await tripRepository.UpdateAsync(trip);
     }
 }

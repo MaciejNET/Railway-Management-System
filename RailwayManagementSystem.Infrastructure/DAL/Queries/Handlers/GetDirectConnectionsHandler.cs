@@ -8,22 +8,16 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetDirectConnectionsHandler : IQueryHandler<GetDirectConnections, IEnumerable<Connection>>
+internal sealed class GetDirectConnectionsHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetDirectConnections, IEnumerable<Connection>>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetDirectConnectionsHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<IEnumerable<Connection>> HandleAsync(GetDirectConnections query)
     {
         var startStationName = new StationName(query.StartStation);
         var endStationName = new StationName(query.EndStation);
 
-        var startStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == startStationName);
-        var endStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == endStationName);
+        var startStation = await dbContext.Stations.FirstOrDefaultAsync(x => x.Name == startStationName);
+        var endStation = await dbContext.Stations.FirstOrDefaultAsync(x => x.Name == endStationName);
         
         if (startStation is null)
         {
@@ -35,13 +29,14 @@ internal sealed class GetDirectConnectionsHandler : IQueryHandler<GetDirectConne
             throw new StationNotFoundException(endStationName);
         }
         
-        var schedules = await _dbContext.Schedules
+        var schedules = await dbContext.Schedules
             .Include(x => x.Stations)
+            .ThenInclude(stationSchedule => stationSchedule.Station)
             .Where(x => x.ValidDate.From <= DateOnly.FromDateTime(query.DepartureTime.Date) &&
                         x.ValidDate.To >= DateOnly.FromDateTime(query.DepartureTime.Date))
             .ToListAsync();
 
-        var directConnections = new List<Connection>();
+        List<Connection> directConnections = [];
 
         foreach (var schedule in schedules)
         {
@@ -52,7 +47,7 @@ internal sealed class GetDirectConnectionsHandler : IQueryHandler<GetDirectConne
                 startStationSchedule.DepartureTime >= TimeOnly.FromTimeSpan(query.DepartureTime.TimeOfDay) &&
                 endStationSchedule.ArrivalTime > TimeOnly.FromTimeSpan(query.DepartureTime.TimeOfDay))
             {
-                var trip = await _dbContext.Trips.FirstOrDefaultAsync(x => x.Id == schedule.TripId);
+                var trip = await dbContext.Trips.FirstOrDefaultAsync(x => x.Id == schedule.TripId);
 
                 if (trip is not null &&
                     trip.Schedule.TripAvailability.IsTripRunningOnGivenDate(query.DepartureTime.DayOfWeek))

@@ -5,7 +5,7 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Schedule
 {
-    private readonly List<StationSchedule> _stations = new();
+    private readonly List<StationSchedule> _stations = [];
 
     public ScheduleId Id { get; private set; }
     public TripId TripId { get; private set; }  

@@ -7,20 +7,14 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal class GetPassengerHandler : IQueryHandler<GetPassenger, PassengerDto>
+internal class GetPassengerHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetPassenger, PassengerDto>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetPassengerHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<PassengerDto> HandleAsync(GetPassenger query)
     {
         var passengerId = new UserId(query.Id);
         
-        var passenger = await _dbContext.Passengers
+        var passenger = await dbContext.Passengers
             .Include(x => x.Discount)
             .SingleOrDefaultAsync(x => x.Id == passengerId);
 

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "mma0B4tDYbUIRDtXvxXNofttlH8R1wFz0GyuQNU1Mns=",
+  "Source": "RailwayManagementSystem.Api",
+  "BasePath": "_content/RailwayManagementSystem.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

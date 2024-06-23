@@ -3,28 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RailwayManagementSystem.Application.Security;
-using RailwayManagementSystem.Core.Abstractions;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL;
 
-internal sealed class DatabaseInitializer : IHostedService
+internal sealed class DatabaseInitializer(
+    IServiceProvider serviceProvider,
+    TimeProvider timeProvider,
+    IPasswordManager passwordManager)
+    : IHostedService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IClock _clock;
-    private readonly IPasswordManager _passwordManager;
-
-    public DatabaseInitializer(IServiceProvider serviceProvider, IClock clock, IPasswordManager passwordManager)
-    {
-        _serviceProvider = serviceProvider;
-        _clock = clock;
-        _passwordManager = passwordManager;
-    }
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<RailwayManagementSystemDbContext>();
         await dbContext.Database.MigrateAsync(cancellationToken);
 
@@ -36,7 +28,7 @@ internal sealed class DatabaseInitializer : IHostedService
 
     private async Task InitData(RailwayManagementSystemDbContext dbContext)
     {
-        var adminPassword = _passwordManager.Secure("Password123!");
+        var adminPassword = passwordManager.Secure("Password123!");
         var admin = Admin.Create(
             id: Guid.NewGuid(),
             name: "Admin",
@@ -80,7 +72,7 @@ internal sealed class DatabaseInitializer : IHostedService
         await dbContext.Seats.AddRangeAsync(firstTrain.Seats);
         await dbContext.Seats.AddRangeAsync(secondTrain.Seats);
 
-        var firstPassengerPassword = _passwordManager.Secure("Password123!");
+        var firstPassengerPassword = passwordManager.Secure("Password123!");
         var firstPassenger = Passenger.Create(
             id: Guid.NewGuid(),
             firstName: "John",
@@ -89,7 +81,7 @@ internal sealed class DatabaseInitializer : IHostedService
             dateOfBirth: new DateOnly(1990, 5, 24),
             password: firstPassengerPassword);
 
-        var secondPassengerPassword = _passwordManager.Secure("Password123!");
+        var secondPassengerPassword = passwordManager.Secure("Password123!");
         var secondPassenger = Passenger.CreateWithDiscount(
             id: Guid.NewGuid(),
             firstName: "Jack",
@@ -158,7 +150,7 @@ internal sealed class DatabaseInitializer : IHostedService
 
         var firstTripSchedule = Schedule.Create(
             tripId: firstTripId,
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: true,
                 Tuesday: true,
@@ -175,7 +167,7 @@ internal sealed class DatabaseInitializer : IHostedService
 
         var secondTripSchedule = Schedule.Create(
             tripId: secondTripId,
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: true,
                 Tuesday: true,
@@ -192,7 +184,7 @@ internal sealed class DatabaseInitializer : IHostedService
 
         var thirdTripSchedule = Schedule.Create(
             tripId: thirdTripId,
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: false,
                 Tuesday: false,
@@ -231,7 +223,7 @@ internal sealed class DatabaseInitializer : IHostedService
         await dbContext.StationSchedules.AddRangeAsync(secondTripStations);
         await dbContext.StationSchedules.AddRangeAsync(thirdTripStations);
         
-        secondTrip.ReserveTicket(firstPassenger, starachowice, kielce, _clock.Current().AddDays(1));
+        secondTrip.ReserveTicket(firstPassenger, starachowice, kielce, timeProvider.GetUtcNow().DateTime.AddDays(1));
 
         await dbContext.Tickets.AddRangeAsync(secondTrip.Tickets);
 

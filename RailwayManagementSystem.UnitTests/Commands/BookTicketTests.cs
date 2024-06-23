@@ -1,13 +1,12 @@
 using FluentAssertions;
-using FluentAssertions.Common;
 using Humanizer;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using RailwayManagementSystem.Application.Commands.Ticket;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Core.ValueObjects;
-using RailwayManagementSystem.UnitTests.Shared;
 
 namespace RailwayManagementSystem.UnitTests.Commands;
 
@@ -17,7 +16,7 @@ public class BookTicketTests
     public async Task HandleAsync_ValidCommand_TicketBookedSuccessfully()
     {
         //Arrange
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -70,7 +69,7 @@ public class BookTicketTests
     [Fact]
     public async Task HandleAsync_TripNotFound_ThrowsTripNotFoundException()
     {
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -99,7 +98,7 @@ public class BookTicketTests
     public async Task HandleAsync_PassengerNotFound_ThrowsPassengerNotFoundException()
     {
         //Arrange
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -134,7 +133,7 @@ public class BookTicketTests
     public async Task HandleAsync_StartStationNotFound_ThrowsStationNotFoundException()
     {
         //Arrange
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -174,7 +173,7 @@ public class BookTicketTests
     public async Task HandleAsync_EndStationNotFound_ThrowsStationNotFoundException()
     {
         //Arrange
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -218,7 +217,7 @@ public class BookTicketTests
     public async Task HandleAsync_SeatNotFound_ThrowsSeatNotFoundException()
     {
         //Arrange
-        var command = new BookTicket(TripId, PassengerId, _clock.Current(), "Starachowice", "Krakow Glowny", _seat.Id);
+        var command = new BookTicket(TripId, PassengerId, _timeProvider.GetUtcNow().DateTime, "Starachowice", "Krakow Glowny", _seat.Id);
         
         var tripRepositoryMock = new Mock<ITripRepository>();
         var passengerRepositoryMock = new Mock<IPassengerRepository>();
@@ -266,7 +265,7 @@ public class BookTicketTests
 
     private static readonly TripId TripId = TripId.Create();
     private static readonly UserId PassengerId = UserId.Create();
-    private readonly Core.Abstractions.IClock _clock;
+    private readonly FakeTimeProvider _timeProvider;
     private readonly Passenger _passenger;
     private readonly Carrier _carrier;
     private readonly Train _train;
@@ -280,7 +279,8 @@ public class BookTicketTests
 
     public BookTicketTests()
     {
-        _clock = new TestClock();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(new DateTime(2023, 7, 10, 12, 0, 0));
 
         _passenger = InitPassenger();
              
@@ -314,18 +314,18 @@ public class BookTicketTests
             city: "Krakow",
             numberOfPlatforms: 12);
         
-        _stationSchedules = new List<StationSchedule>
-        {
+        _stationSchedules = 
+        [
             StationSchedule.Create(_station1, new TimeOnly(9, 00), new TimeOnly(9, 00), 2),
             StationSchedule.Create(_station2, new TimeOnly(10, 00), new TimeOnly(10, 05), 1),
             StationSchedule.Create(_station3, new TimeOnly(12, 15), new TimeOnly(12, 15), 1),
-        };
+        ];
 
         var tripStationSchedules = _stationSchedules.OrderBy(x => x.DepartureTime);
         
         _schedule = Schedule.Create(
             tripId: TripId,
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: true,
                 Tuesday: true,

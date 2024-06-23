@@ -4,34 +4,27 @@ using RailwayManagementSystem.Core.Repositories;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresStationRepository : IStationRepository
+internal sealed class PostgresStationRepository(RailwayManagementSystemDbContext dbContext) : IStationRepository
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public PostgresStationRepository(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public Task<bool> ExistsByNameAsync(string name)
-        => _dbContext.Stations.AnyAsync(x => x.Name == name);
+        => dbContext.Stations.AnyAsync(x => x.Name == name);
 
     public async Task<Station?> GetByIdAsync(Guid id)
-        => await _dbContext.Stations.FindAsync(id);
+        => await dbContext.Stations.FindAsync(id);
 
 
     public Task<Station?> GetByNameAsync(string name)
-        => _dbContext.Stations.SingleOrDefaultAsync(x => x.Name == name);
+        => dbContext.Stations.SingleOrDefaultAsync(x => x.Name == name);
 
     public async Task AddAsync(Station station)
     {
-        await _dbContext.Stations.AddAsync(station);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Stations.AddAsync(station);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Station station)
     {
-        _dbContext.Stations.Remove(station);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Stations.Remove(station);
+        await dbContext.SaveChangesAsync();
     }
 }

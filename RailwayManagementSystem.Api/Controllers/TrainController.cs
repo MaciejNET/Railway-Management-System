@@ -7,15 +7,8 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("train")]
-public class TrainController : ControllerBase
+public class TrainController(ICommandDispatcher commandDispatcher) : ControllerBase
 {
-    private readonly ICommandDispatcher _commandDispatcher;
-
-    public TrainController(ICommandDispatcher commandDispatcher)
-    {
-        _commandDispatcher = commandDispatcher;
-    }
-
     [HttpDelete("{trainId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -26,7 +19,7 @@ public class TrainController : ControllerBase
     {
         var command = new DeleteTrain(trainId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }

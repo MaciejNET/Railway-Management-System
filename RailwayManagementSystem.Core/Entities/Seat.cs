@@ -5,7 +5,7 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Seat
 {
-    private readonly List<Ticket> _tickets = new();
+    private readonly List<Ticket> _tickets = [];
     
     public SeatId Id { get; private set; }
     public int SeatNumber { get; private set; }

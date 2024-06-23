@@ -6,38 +6,30 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Admin;
 
-internal sealed class LoginAdminHandler : ICommandHandler<LoginAdmin>
+internal sealed class LoginAdminHandler(
+    IAdminRepository adminRepository,
+    IPasswordManager passwordManager,
+    IAuthenticator authenticator,
+    ITokenStorage tokenStorage)
+    : ICommandHandler<LoginAdmin>
 {
-    private readonly IAdminRepository _adminRepository;
-    private readonly IPasswordManager _passwordManager;
-    private readonly IAuthenticator _authenticator;
-    private readonly ITokenStorage _tokenStorage;
-
-    public LoginAdminHandler(IAdminRepository adminRepository, IPasswordManager passwordManager, IAuthenticator authenticator, ITokenStorage tokenStorage)
-    {
-        _adminRepository = adminRepository;
-        _passwordManager = passwordManager;
-        _authenticator = authenticator;
-        _tokenStorage = tokenStorage;
-    }
-
     public async Task HandleAsync(LoginAdmin command)
     {
         var name = new AdminName(command.Name);
         
-        var admin = await _adminRepository.GetByNameAsync(name);
+        var admin = await adminRepository.GetByNameAsync(name);
 
         if (admin is null)
         {
             throw new InvalidCredentialsException();
         }
 
-        if (!_passwordManager.Validate(command.Password, admin.Password))
+        if (!passwordManager.Validate(command.Password, admin.Password))
         {
             throw new InvalidCredentialsException();
         }
 
-        var jwt = _authenticator.CreateToken(admin.Id, admin.Role.ToString().ToLowerInvariant());
-        _tokenStorage.Set(jwt);
+        var jwt = authenticator.CreateToken(admin.Id, admin.Role.ToString().ToLowerInvariant());
+        tokenStorage.Set(jwt);
     }
 }

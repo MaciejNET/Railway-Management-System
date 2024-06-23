@@ -5,26 +5,19 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Discount;
 
-internal sealed class DeleteDiscountHandler : ICommandHandler<DeleteDiscount>
+internal sealed class DeleteDiscountHandler(IDiscountRepository discountRepository) : ICommandHandler<DeleteDiscount>
 {
-    private readonly IDiscountRepository _discountRepository;
-
-    public DeleteDiscountHandler(IDiscountRepository discountRepository)
-    {
-        _discountRepository = discountRepository;
-    }
-
     public async Task HandleAsync(DeleteDiscount command)
     {
         var discountId = new DiscountId(command.Id);
 
-        var discount = await _discountRepository.GetByIdAsync(discountId);
+        var discount = await discountRepository.GetByIdAsync(discountId);
 
         if (discount is null)
         {
             throw new DiscountNotFoundException(discountId);
         }
 
-        await _discountRepository.DeleteAsync(discount);
+        await discountRepository.DeleteAsync(discount);
     }
 }

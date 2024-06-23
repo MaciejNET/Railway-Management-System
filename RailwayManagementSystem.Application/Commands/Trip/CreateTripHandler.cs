@@ -7,19 +7,12 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Trip;
 
-internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
+internal sealed class CreateTripHandler(
+    ITripRepository tripRepository,
+    IStationRepository stationRepository,
+    ITrainRepository trainRepository)
+    : ICommandHandler<CreateTrip>
 {
-    private readonly IStationRepository _stationRepository;
-    private readonly ITrainRepository _trainRepository;
-    private readonly ITripRepository _tripRepository;
-    
-    public CreateTripHandler(ITripRepository tripRepository, IStationRepository stationRepository, ITrainRepository trainRepository)
-    {
-        _tripRepository = tripRepository;
-        _stationRepository = stationRepository;
-        _trainRepository = trainRepository;
-    }
-
     public async Task HandleAsync(CreateTrip command)
     {
         var tripId = new TripId(command.Id);
@@ -30,7 +23,7 @@ internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
             throw new TripStationsCountException();
         }
         
-        var train = await _trainRepository.GetByNameAsync(trainName);
+        var train = await trainRepository.GetByNameAsync(trainName);
 
         if (train is null)
         {
@@ -56,7 +49,7 @@ internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
         {
             var stationName = new StationName(scheduleStation.StationName);
             
-            var station = await _stationRepository.GetByNameAsync(stationName);
+            var station = await stationRepository.GetByNameAsync(stationName);
                 
             if (station is null)
             {
@@ -71,6 +64,6 @@ internal sealed class CreateTripHandler : ICommandHandler<CreateTrip>
         
         train.AddTrip(trip);
 
-        await _tripRepository.AddAsync(trip);
+        await tripRepository.AddAsync(trip);
     }
 }

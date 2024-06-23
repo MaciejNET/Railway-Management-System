@@ -1,8 +1,4 @@
 namespace RailwayManagementSystem.Core.Exceptions;
 
-public sealed class InvalidTrainNameException : CustomException
-{
-    public InvalidTrainNameException() : base(message: "Train name is invalid.", httpStatusCode: 400)
-    {
-    }
-}
+public sealed class InvalidTrainNameException()
+    : CustomException(message: "Train name is invalid.", httpStatusCode: 400);

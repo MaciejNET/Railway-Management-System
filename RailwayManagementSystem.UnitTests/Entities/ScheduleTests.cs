@@ -1,9 +1,8 @@
 using FluentAssertions;
-using RailwayManagementSystem.Core.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Exceptions;
 using RailwayManagementSystem.Core.ValueObjects;
-using RailwayManagementSystem.UnitTests.Shared;
 
 namespace RailwayManagementSystem.UnitTests.Entities;
 
@@ -44,8 +43,8 @@ public class ScheduleTests
     public void ValidDate_CreateValidDate_ShouldReturnValidDate()
     {
         //Arrange
-        var from = DateOnly.FromDateTime(_clock.Current());
-        var to = DateOnly.FromDateTime(_clock.Current().AddMonths(3));
+        var from = DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime);
+        var to = DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(3));
         
         //Act
         var result = new ValidDate(from, to);
@@ -59,8 +58,8 @@ public class ScheduleTests
     public void ValidDate_CreateInvalidDate_ShouldThrowInvalidDateRangeException()
     {
         //Arrange
-        var from = DateOnly.FromDateTime(_clock.Current().AddMonths(3));
-        var to = DateOnly.FromDateTime(_clock.Current());
+        var from = DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(3));
+        var to = DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime);
         
         //Act
         var exception = Record.Exception(() => new ValidDate(from, to));
@@ -71,8 +70,8 @@ public class ScheduleTests
     }
     
     #region ARRANGE
-    
-    private readonly IClock _clock;
+
+    private readonly FakeTimeProvider _timeProvider;
     private readonly Station _station1;
     private readonly Station _station2;
     private readonly Station _station3;
@@ -81,7 +80,8 @@ public class ScheduleTests
 
     public ScheduleTests()
     {
-        _clock = new TestClock();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(new DateTime(2023, 7, 10, 12, 0, 0));
         
         _station1 = Station.Create(
             id: Guid.NewGuid(),
@@ -101,18 +101,18 @@ public class ScheduleTests
             city: "Krakow",
             numberOfPlatforms: 12);
         
-        _stationSchedules = new List<StationSchedule>
-        {
+        _stationSchedules = 
+        [
             StationSchedule.Create(_station1, new TimeOnly(9, 00), new TimeOnly(9, 00), 2),
             StationSchedule.Create(_station2, new TimeOnly(10, 00), new TimeOnly(10, 05), 1),
             StationSchedule.Create(_station3, new TimeOnly(12, 15), new TimeOnly(12, 15), 1),
-        };
+        ];
         
         var tripStationSchedules = _stationSchedules.OrderBy(x => x.DepartureTime);
         
         _schedule = Schedule.Create(
             tripId: TripId.Create(),
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: true,
                 Tuesday: true,

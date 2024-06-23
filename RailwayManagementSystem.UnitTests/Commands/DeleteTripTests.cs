@@ -1,12 +1,12 @@
 using FluentAssertions;
 using Humanizer;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using RailwayManagementSystem.Application.Commands.Trip;
 using RailwayManagementSystem.Application.Exceptions;
 using RailwayManagementSystem.Core.Entities;
 using RailwayManagementSystem.Core.Repositories;
 using RailwayManagementSystem.Core.ValueObjects;
-using RailwayManagementSystem.UnitTests.Shared;
 
 namespace RailwayManagementSystem.UnitTests.Commands;
 
@@ -35,7 +35,7 @@ public class DeleteTripTests
     }
     
     [Fact]
-    public async Task HandleAsync_NonExistingTrip_hrowsTripNotFoundException()
+    public async Task HandleAsync_NonExistingTrip_ThrowsTripNotFoundException()
     {
         //Arrange
         var tripId = TripId.Value;
@@ -61,7 +61,7 @@ public class DeleteTripTests
 
     private static readonly TripId TripId = TripId.Create();
     private static readonly UserId PassengerId = UserId.Create();
-    private readonly Core.Abstractions.IClock _clock;
+    private readonly FakeTimeProvider _timeProvider;
     private readonly Passenger _passenger;
     private readonly Carrier _carrier;
     private readonly Train _train;
@@ -75,7 +75,8 @@ public class DeleteTripTests
 
     public DeleteTripTests()
     {
-        _clock = new TestClock();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(new DateTime(2023, 7, 10, 12, 0, 0));
 
         _passenger = InitPassenger();
              
@@ -109,18 +110,18 @@ public class DeleteTripTests
             city: "Krakow",
             numberOfPlatforms: 12);
         
-        _stationSchedules = new List<StationSchedule>
-        {
+        _stationSchedules = 
+        [
             StationSchedule.Create(_station1, new TimeOnly(9, 00), new TimeOnly(9, 00), 2),
             StationSchedule.Create(_station2, new TimeOnly(10, 00), new TimeOnly(10, 05), 1),
             StationSchedule.Create(_station3, new TimeOnly(12, 15), new TimeOnly(12, 15), 1),
-        };
+        ];
 
         var tripStationSchedules = _stationSchedules.OrderBy(x => x.DepartureTime);
         
         _schedule = Schedule.Create(
             tripId: TripId,
-            validDate: new ValidDate(DateOnly.FromDateTime(_clock.Current()), DateOnly.FromDateTime(_clock.Current().AddMonths(3))),
+            validDate: new ValidDate(DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime), DateOnly.FromDateTime(_timeProvider.GetUtcNow().DateTime.AddMonths(3))),
             tripAvailability: new TripAvailability(
                 Monday: true,
                 Tuesday: true,

@@ -4,39 +4,32 @@ using RailwayManagementSystem.Core.Repositories;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresPassengerRepository : IPassengerRepository
+internal sealed class PostgresPassengerRepository(RailwayManagementSystemDbContext dbContext) : IPassengerRepository
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public PostgresPassengerRepository(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public Task<bool> ExistsByEmailAsync(string email)
-        => _dbContext.Passengers.AnyAsync(x => x.Email == email);
+        => dbContext.Passengers.AnyAsync(x => x.Email == email);
 
     public async Task<Passenger?> GetByIdAsync(Guid id)
-        => await _dbContext.Passengers.FindAsync(id);
+        => await dbContext.Passengers.FindAsync(id);
 
     public Task<Passenger?> GetByEmailAsync(string email)
-        => _dbContext.Passengers.SingleOrDefaultAsync(x => x.Email == email);
+        => dbContext.Passengers.SingleOrDefaultAsync(x => x.Email == email);
 
     public async Task AddAsync(Passenger passenger)
     {
-        await _dbContext.Passengers.AddAsync(passenger);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Passengers.AddAsync(passenger);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Passenger passenger)
     {
-        _dbContext.Passengers.Update(passenger);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Passengers.Update(passenger);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Passenger passenger)
     {
-        _dbContext.Passengers.Remove(passenger);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Passengers.Remove(passenger);
+        await dbContext.SaveChangesAsync();
     }
 }

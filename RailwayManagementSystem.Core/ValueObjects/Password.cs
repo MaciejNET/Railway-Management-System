@@ -25,16 +25,14 @@ public record Password
     
     public static bool ValidatePassword(string password)
     {
-        var hasNumber = new Regex(@"[0-9]+");
-        var hasUpperChar = new Regex(@"[A-Z]+");
-        var hasLowerChar = new Regex(@"[a-z]+");
         var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
-
+        
         return !string.IsNullOrWhiteSpace(password) &&
                password.Length is < 200 and > 6 &&
-               hasNumber.IsMatch(password) &&
-               hasUpperChar.IsMatch(password) &&
-               hasLowerChar.IsMatch(password) &&
+               password.Any(char.IsLetter) &&
+               password.Any(char.IsDigit) &&
+               password.Any(char.IsUpper) &&
+               password.Any(char.IsLower) &&
                hasSymbols.IsMatch(password);
     }
 }

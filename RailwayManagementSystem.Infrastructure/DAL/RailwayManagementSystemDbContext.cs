@@ -5,12 +5,8 @@ using RailwayManagementSystem.Core.Entities;
 
 namespace RailwayManagementSystem.Infrastructure.DAL;
 
-internal sealed class RailwayManagementSystemDbContext : DbContext
+internal sealed class RailwayManagementSystemDbContext(DbContextOptions opt) : DbContext(opt)
 {
-    public RailwayManagementSystemDbContext(DbContextOptions opt) : base(opt)
-    {
-    }
-
     public DbSet<Carrier> Carriers { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Passenger> Passengers { get; set; }
@@ -41,7 +37,7 @@ internal sealed class RailwayManagementSystemDbContext : DbContext
 
         foreach (var property in dbSetProperties)
         {
-            var dbSet = (IEnumerable)property.GetValue(this);
+            var dbSet = (IEnumerable)property.GetValue(this)!;
             if (dbSet.Cast<object>().Any())
             {
                 return false;

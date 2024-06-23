@@ -11,17 +11,9 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("api/carriers")]
-public class CarrierController : ControllerBase
+public class CarrierController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
+    : ControllerBase
 {
-    private readonly ICommandDispatcher _commandDispatcher;
-    private readonly IQueryDispatcher _queryDispatcher;
-
-    public CarrierController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
-    {
-        _commandDispatcher = commandDispatcher;
-        _queryDispatcher = queryDispatcher;
-    }
-
     [HttpGet("{carrierId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,7 +21,7 @@ public class CarrierController : ControllerBase
     {
         var query = new GetCarrier {Id = carrierId};
 
-        var carrier = await _queryDispatcher.QueryAsync(query);
+        var carrier = await queryDispatcher.QueryAsync(query);
 
         return Ok(carrier);
     }
@@ -40,7 +32,7 @@ public class CarrierController : ControllerBase
     {
         var query = new GetCarriers();
 
-        var carriers = await _queryDispatcher.QueryAsync(query);
+        var carriers = await queryDispatcher.QueryAsync(query);
 
         return Ok(carriers);
     }
@@ -51,7 +43,7 @@ public class CarrierController : ControllerBase
     {
         var query = new GetCarrierTrains {Id = carrierId};
 
-        var trains = await _queryDispatcher.QueryAsync(query);
+        var trains = await queryDispatcher.QueryAsync(query);
 
         return Ok(trains);
     }
@@ -66,7 +58,7 @@ public class CarrierController : ControllerBase
     {
         command = command with {Id = Guid.NewGuid()};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return CreatedAtAction(nameof(Get), command.Id, null);
     }
@@ -81,7 +73,7 @@ public class CarrierController : ControllerBase
     {
         command = command with {Id = Guid.NewGuid(), CarrierId = carrierId};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return CreatedAtAction(nameof(GetTrains), null, null);
     }
@@ -96,7 +88,7 @@ public class CarrierController : ControllerBase
     {
         var command = new DeleteCarrier(carrierId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }

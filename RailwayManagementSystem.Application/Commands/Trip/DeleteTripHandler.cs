@@ -5,26 +5,19 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Trip;
 
-internal sealed class DeleteTripHandler : ICommandHandler<DeleteTrip>
+internal sealed class DeleteTripHandler(ITripRepository tripRepository) : ICommandHandler<DeleteTrip>
 {
-    private readonly ITripRepository _tripRepository;
-
-    public DeleteTripHandler(ITripRepository tripRepository)
-    {
-        _tripRepository = tripRepository;
-    }
-
     public async Task HandleAsync(DeleteTrip command)
     {
         var tripId = new TripId(command.Id);
 
-        var trip = await _tripRepository.GetByIdAsync(tripId);
+        var trip = await tripRepository.GetByIdAsync(tripId);
 
         if (trip is null)
         {
             throw new TripNotFoundException(tripId);
         }
 
-        await _tripRepository.DeleteAsync(trip);
+        await tripRepository.DeleteAsync(trip);
     }
 }

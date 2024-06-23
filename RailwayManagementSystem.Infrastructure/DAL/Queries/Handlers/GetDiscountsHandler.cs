@@ -5,18 +5,12 @@ using RailwayManagementSystem.Application.Queries;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetDiscountsHandler : IQueryHandler<GetDiscounts, IEnumerable<DiscountDto>>
+internal sealed class GetDiscountsHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetDiscounts, IEnumerable<DiscountDto>>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetDiscountsHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<IEnumerable<DiscountDto>> HandleAsync(GetDiscounts query)
     {
-        var discounts = await _dbContext.Discounts.AsNoTracking().ToListAsync();
+        var discounts = await dbContext.Discounts.AsNoTracking().ToListAsync();
 
         return discounts.Select(x => x.AsDto());
     }

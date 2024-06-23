@@ -5,18 +5,12 @@ using RailwayManagementSystem.Application.Queries;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetStationsHandler : IQueryHandler<GetStations, IEnumerable<StationDto>>
+internal sealed class GetStationsHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetStations, IEnumerable<StationDto>>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetStationsHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<IEnumerable<StationDto>> HandleAsync(GetStations query)
     {
-        var stations = await _dbContext.Stations.AsNoTracking().ToListAsync();
+        var stations = await dbContext.Stations.AsNoTracking().ToListAsync();
 
         return stations.Select(x => x.AsDto());
     }

@@ -7,19 +7,12 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
-internal sealed class RegisterPassengerHandler : ICommandHandler<RegisterPassenger>
+internal sealed class RegisterPassengerHandler(
+    IPassengerRepository passengerRepository,
+    IDiscountRepository discountRepository,
+    IPasswordManager passwordManager)
+    : ICommandHandler<RegisterPassenger>
 {
-    private readonly IPassengerRepository _passengerRepository;
-    private readonly IDiscountRepository _discountRepository;
-    private readonly IPasswordManager _passwordManager;
-
-    public RegisterPassengerHandler(IPassengerRepository passengerRepository, IDiscountRepository discountRepository, IPasswordManager passwordManager)
-    {
-        _passengerRepository = passengerRepository;
-        _discountRepository = discountRepository;
-        _passwordManager = passwordManager;
-    }
-
     public async Task HandleAsync(RegisterPassenger command)
     {
         var passengerId = new UserId(command.Id);
@@ -28,7 +21,7 @@ internal sealed class RegisterPassengerHandler : ICommandHandler<RegisterPasseng
         var email = new Email(command.Email);
         var dateOfBirth = new DateOfBirth(command.DateOfBirth);
 
-        var passengerAlreadyExists = await _passengerRepository.ExistsByEmailAsync(email);
+        var passengerAlreadyExists = await passengerRepository.ExistsByEmailAsync(email);
 
         if (passengerAlreadyExists)
         {
@@ -42,12 +35,12 @@ internal sealed class RegisterPassengerHandler : ICommandHandler<RegisterPasseng
             throw new InvalidPasswordException();
         }
 
-        var securedPassword = _passwordManager.Secure(command.Password);
+        var securedPassword = passwordManager.Secure(command.Password);
 
         Core.Entities.Passenger passenger;
         if (!string.IsNullOrWhiteSpace(command.DiscountName))
         {
-            var discount = await _discountRepository.GetByNameAsync(command.DiscountName);
+            var discount = await discountRepository.GetByNameAsync(command.DiscountName);
 
             if (discount is null)
             {
@@ -76,6 +69,6 @@ internal sealed class RegisterPassengerHandler : ICommandHandler<RegisterPasseng
             );
         }
 
-        await _passengerRepository.AddAsync(passenger);
+        await passengerRepository.AddAsync(passenger);
     }
 }

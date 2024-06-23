@@ -11,17 +11,9 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("trips")]
-public class TripController : ControllerBase
+public class TripController(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
+    : ControllerBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-    private readonly ICommandDispatcher _commandDispatcher;
-
-    public TripController(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
-    {
-        _queryDispatcher = queryDispatcher;
-        _commandDispatcher = commandDispatcher;
-    }
-
     [HttpGet("{tripId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,7 +21,7 @@ public class TripController : ControllerBase
     {
         var query = new GetTrip {Id = tripId};
 
-        var trip = await _queryDispatcher.QueryAsync(query);
+        var trip = await queryDispatcher.QueryAsync(query);
 
         return Ok(trip);
     }
@@ -44,14 +36,14 @@ public class TripController : ControllerBase
         var directQuery = new GetDirectConnections
             {StartStation = query.StartStation, EndStation = query.EndStation, DepartureTime = query.DepartureTime};
         
-        connections.AddRange(await _queryDispatcher.QueryAsync(directQuery));
+        connections.AddRange(await queryDispatcher.QueryAsync(directQuery));
 
         if (query.SearchIndirect)
         {
             var indirectQuery = new GetIndirectConnections
                 {StartStation = query.StartStation, EndStation = query.EndStation, DepartureTime = query.DepartureTime};
         
-            connections.AddRange(await _queryDispatcher.QueryAsync(indirectQuery));
+            connections.AddRange(await queryDispatcher.QueryAsync(indirectQuery));
         }
 
         return Ok(connections);
@@ -62,7 +54,7 @@ public class TripController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<SeatDto>>> Get([FromQuery] GetAvailableSeatsForTrip query)
     {
-        var seats = await _queryDispatcher.QueryAsync(query);
+        var seats = await queryDispatcher.QueryAsync(query);
 
         return Ok(seats);
     }
@@ -77,7 +69,7 @@ public class TripController : ControllerBase
     {
         command = command with {Id = Guid.NewGuid()};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return CreatedAtAction(nameof(Get), command.Id, null);
     }
@@ -94,7 +86,7 @@ public class TripController : ControllerBase
         
         command = command with {TripId = id, PassengerId = passengerId};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return Ok();
     }
@@ -109,7 +101,7 @@ public class TripController : ControllerBase
     {
         var command = new DeleteTrip(tripId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }

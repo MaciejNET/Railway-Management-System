@@ -5,7 +5,7 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Trip
 {
-    private readonly List<Ticket> _tickets = new();
+    private readonly List<Ticket> _tickets = [];
     
     public TripId Id { get; private set; }
     public decimal Price { get; private set; }

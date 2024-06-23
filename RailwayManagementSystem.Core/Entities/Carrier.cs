@@ -4,7 +4,7 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Carrier
 {
-    private readonly List<Train> _trains = new();
+    private readonly List<Train> _trains = [];
     
     public CarrierId Id { get; private set; }
     public CarrierName Name { get; private set; }
@@ -14,7 +14,7 @@ public sealed class Carrier
     {
         Id = id;
         Name = name;
-        _trains = trains ?? new();
+        _trains = trains ?? [];
     }
 
     public static Carrier Create(CarrierId id, CarrierName name)

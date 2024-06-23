@@ -5,7 +5,7 @@ namespace RailwayManagementSystem.Core.Entities;
 
 public sealed class Passenger : User
 {
-    private readonly List<Ticket> _tickets = new();
+    private readonly List<Ticket> _tickets = [];
     
     public FirstName FirstName { get; private set; }
     public LastName LastName { get; private set; }

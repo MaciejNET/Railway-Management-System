@@ -10,19 +10,12 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("admins")]
-public class AdminController : ControllerBase
+public class AdminController(
+    IQueryDispatcher queryDispatcher,
+    ICommandDispatcher commandDispatcher,
+    ITokenStorage tokenStorage)
+    : ControllerBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-    private readonly ICommandDispatcher _commandDispatcher;
-    private readonly ITokenStorage _tokenStorage;
-
-    public AdminController(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher, ITokenStorage tokenStorage)
-    {
-        _queryDispatcher = queryDispatcher;
-        _commandDispatcher = commandDispatcher;
-        _tokenStorage = tokenStorage;
-    }
-
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -32,7 +25,7 @@ public class AdminController : ControllerBase
     {
         var query = new GetAdmins();
 
-        var admins = await _queryDispatcher.QueryAsync(query);
+        var admins = await queryDispatcher.QueryAsync(query);
 
         return Ok(admins);
     }
@@ -47,7 +40,7 @@ public class AdminController : ControllerBase
     {
         command = command with {Id = Guid.NewGuid()};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return CreatedAtAction(nameof(Get), null, null);
     }
@@ -57,9 +50,9 @@ public class AdminController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<JwtDto>> Post(LoginAdmin command)
     {
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
         
-        var jwt = _tokenStorage.Get();
+        var jwt = tokenStorage.Get();
         
         return jwt;
     }
@@ -74,7 +67,7 @@ public class AdminController : ControllerBase
     {
         var command = new DeleteAdmin(adminId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }

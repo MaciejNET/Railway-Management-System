@@ -11,19 +11,12 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("api/passengers")]
-public class PassengerController : ControllerBase
+public class PassengerController(
+    ICommandDispatcher commandDispatcher,
+    ITokenStorage tokenStorage,
+    IQueryDispatcher queryDispatcher)
+    : ControllerBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-    private readonly ICommandDispatcher _commandDispatcher;
-    private readonly ITokenStorage _tokenStorage;
-
-    public PassengerController(ICommandDispatcher commandDispatcher, ITokenStorage tokenStorage, IQueryDispatcher queryDispatcher)
-    {
-        _commandDispatcher = commandDispatcher;
-        _tokenStorage = tokenStorage;
-        _queryDispatcher = queryDispatcher;
-    }
-
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -35,7 +28,7 @@ public class PassengerController : ControllerBase
 
         var query = new GetPassenger {Id = passengerId};
 
-        var passenger = await _queryDispatcher.QueryAsync(query);
+        var passenger = await queryDispatcher.QueryAsync(query);
 
         return Ok(passenger);
     }
@@ -49,7 +42,7 @@ public class PassengerController : ControllerBase
     {
         var query = new GetPassenger {Id = passengerId};
 
-        var passenger = await _queryDispatcher.QueryAsync(query);
+        var passenger = await queryDispatcher.QueryAsync(query);
 
         return Ok(passenger);
     }
@@ -63,7 +56,7 @@ public class PassengerController : ControllerBase
     {
         var query = new GetPassengers();
 
-        var passengers = await _queryDispatcher.QueryAsync(query);
+        var passengers = await queryDispatcher.QueryAsync(query);
 
         return Ok(passengers);
     }
@@ -76,7 +69,7 @@ public class PassengerController : ControllerBase
 
         var query = new GetPassengersTickets {PassengerId = passengerId};
 
-        var tickets = await _queryDispatcher.QueryAsync(query);
+        var tickets = await queryDispatcher.QueryAsync(query);
         
         return Ok(tickets);
     }
@@ -88,7 +81,7 @@ public class PassengerController : ControllerBase
     {
         var query = new GetTicket {TicketId = ticketId};
 
-        var ticket = await _queryDispatcher.QueryAsync(query);
+        var ticket = await queryDispatcher.QueryAsync(query);
 
         return Ok(ticket);
     }
@@ -99,7 +92,7 @@ public class PassengerController : ControllerBase
     public async Task<ActionResult> Post(RegisterPassenger command)
     {
         command = command with {Id = Guid.NewGuid()};
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
         return CreatedAtAction(nameof(Get), command.Id, null);
     }
 
@@ -108,8 +101,8 @@ public class PassengerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<JwtDto>> Post(LoginPassenger command)
     {
-        await _commandDispatcher.DispatchAsync(command);
-        var jwt = _tokenStorage.Get();
+        await commandDispatcher.DispatchAsync(command);
+        var jwt = tokenStorage.Get();
         return jwt;
     }
 
@@ -125,7 +118,7 @@ public class PassengerController : ControllerBase
 
         command = command with {Id = passengerId};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }
@@ -142,7 +135,7 @@ public class PassengerController : ControllerBase
 
         command = command with {PassengerId = passengerId};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }
@@ -159,7 +152,7 @@ public class PassengerController : ControllerBase
 
         var command = new RemovePassenger(Id: passengerId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }
@@ -176,7 +169,7 @@ public class PassengerController : ControllerBase
 
         var command = new CancelTicket(ticketId, passengerId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }

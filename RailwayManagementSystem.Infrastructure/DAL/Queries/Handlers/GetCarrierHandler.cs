@@ -5,20 +5,14 @@ using RailwayManagementSystem.Application.Queries;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetCarrierHandler : IQueryHandler<GetCarrier, CarrierDto>
+internal sealed class GetCarrierHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetCarrier, CarrierDto>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetCarrierHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<CarrierDto> HandleAsync(GetCarrier query)
     {
         var carrierId = query.Id;
 
-        var carrier = await _dbContext.Carriers.FindAsync(carrierId);
+        var carrier = await dbContext.Carriers.FindAsync(carrierId);
 
         if (carrier is null)
         {

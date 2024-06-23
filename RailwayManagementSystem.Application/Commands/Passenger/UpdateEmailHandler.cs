@@ -5,27 +5,20 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Application.Commands.Passenger;
 
-internal sealed class UpdateEmailHandler : ICommandHandler<UpdateEmail>
+internal sealed class UpdateEmailHandler(IPassengerRepository passengerRepository) : ICommandHandler<UpdateEmail>
 {
-    private readonly IPassengerRepository _passengerRepository;
-
-    public UpdateEmailHandler(IPassengerRepository passengerRepository)
-    {
-        _passengerRepository = passengerRepository;
-    }
-
     public async Task HandleAsync(UpdateEmail command)
     {
         var email = new Email(command.Email);
         
-        var passenger = await _passengerRepository.GetByIdAsync(command.Id);
+        var passenger = await passengerRepository.GetByIdAsync(command.Id);
 
         if (passenger is null)
         {
             throw new PassengerNotFoundException(command.Id);
         }
 
-        var isEmailAlreadyUsed = await _passengerRepository.ExistsByEmailAsync(command.Email);
+        var isEmailAlreadyUsed = await passengerRepository.ExistsByEmailAsync(command.Email);
 
         if (isEmailAlreadyUsed)
         {
@@ -33,6 +26,6 @@ internal sealed class UpdateEmailHandler : ICommandHandler<UpdateEmail>
         }
         
         passenger.UpdateEmail(email);
-        await _passengerRepository.UpdateAsync(passenger);
+        await passengerRepository.UpdateAsync(passenger);
     }
 }

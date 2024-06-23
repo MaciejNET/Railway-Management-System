@@ -7,20 +7,13 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetTripHandler : IQueryHandler<GetTrip, TripDto>
+internal sealed class GetTripHandler(RailwayManagementSystemDbContext dbContext) : IQueryHandler<GetTrip, TripDto>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetTripHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<TripDto> HandleAsync(GetTrip query)
     {
         var tripId = new TripId(query.Id);
 
-        var trip = await _dbContext.Trips
+        var trip = await dbContext.Trips
             .Include(x => x.Train)
             .ThenInclude(x => x.Carrier)
             .Include(x => x.Schedule)

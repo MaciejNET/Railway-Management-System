@@ -3,18 +3,11 @@ using RailwayManagementSystem.Application.Abstractions;
 
 namespace RailwayManagementSystem.Application.Commands;
 
-internal sealed class CommandDispatcher : ICommandDispatcher
+internal sealed class CommandDispatcher(IServiceProvider serviceProvider) : ICommandDispatcher
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public CommandDispatcher(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public async Task DispatchAsync<TCommand>(TCommand command) where TCommand : class, ICommand
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
 
         await handler.HandleAsync(command);

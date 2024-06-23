@@ -1,13 +1,8 @@
 namespace RailwayManagementSystem.Core.Exceptions;
 
-public class TrainDoesNotRunOnGivenDateException : CustomException
+public class TrainDoesNotRunOnGivenDateException(string trainName, DateTime date)
+    : CustomException(message: $"Train with name: {trainName} does not run on {date:d}", httpStatusCode: 400)
 {
-    public string TrainName { get; }
-    public DateTime Date { get; }
-
-    public TrainDoesNotRunOnGivenDateException(string trainName, DateTime date) : base(message: $"Train with name: {trainName} does not run on {date:d}", httpStatusCode: 400)
-    {
-        TrainName = trainName;
-        Date = date;
-    }
+    public string TrainName { get; } = trainName;
+    public DateTime Date { get; } = date;
 }

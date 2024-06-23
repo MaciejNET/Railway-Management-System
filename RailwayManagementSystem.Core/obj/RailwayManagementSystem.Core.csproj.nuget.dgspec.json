@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj": {}
+    "/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj": {}
   },
   "projects": {
-    "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj": {
+    "/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
+        "projectUniqueName": "/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
         "projectName": "RailwayManagementSystem.Core",
-        "projectPath": "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
-        "packagesPath": "/Users/maciejnet/.nuget/packages/",
-        "outputPath": "/Users/maciejnet/RiderProjects/RMS/Railway-Management-System-master/RailwayManagementSystem.Core/obj/",
+        "projectPath": "/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/RailwayManagementSystem.Core.csproj",
+        "packagesPath": "/Users/maciejderon/.nuget/packages/",
+        "outputPath": "/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/maciejnet/.nuget/NuGet/NuGet.Config"
+          "/Users/maciejderon/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net8.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -35,36 +35,36 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "DateOnlyTimeOnly.AspNet": {
               "target": "Package",
-              "version": "[1.0.3, )"
+              "version": "[2.1.1, )"
             },
             "IronSoftware.System.Drawing": {
               "target": "Package",
-              "version": "[2022.11.10457, )"
+              "version": "[2024.7.2, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[6.0.10, )"
+              "version": "[8.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[6.0.10, )"
+              "version": "[8.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[6.0.10, )"
+              "version": "[8.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[6.0.10, )"
+              "version": "[8.0.6, )"
             },
             "Microsoft.Net.Http.Server": {
               "target": "Package",
@@ -72,19 +72,19 @@
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[8.0.4, )"
             },
             "QRCoder": {
               "target": "Package",
-              "version": "[1.4.3, )"
+              "version": "[1.5.1, )"
             },
             "Swashbuckle.AspNetCore.Filters": {
               "target": "Package",
-              "version": "[7.0.5, )"
+              "version": "[8.0.2, )"
             },
             "System.Drawing.Common": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[8.0.6, )"
             },
             "System.IO.FileSystem": {
               "target": "Package",
@@ -110,22 +110,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.12, 6.0.12]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.12, 6.0.12]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.101/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/Users/maciejderon/.dotnet/sdk/8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

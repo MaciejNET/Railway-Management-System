@@ -8,22 +8,16 @@ using RailwayManagementSystem.Core.ValueObjects;
 
 namespace RailwayManagementSystem.Infrastructure.DAL.Queries.Handlers;
 
-internal sealed class GetAvailableSeatsForTripHandler : IQueryHandler<GetAvailableSeatsForTrip, IEnumerable<SeatDto>>
+internal sealed class GetAvailableSeatsForTripHandler(RailwayManagementSystemDbContext dbContext)
+    : IQueryHandler<GetAvailableSeatsForTrip, IEnumerable<SeatDto>>
 {
-    private readonly RailwayManagementSystemDbContext _dbContext;
-
-    public GetAvailableSeatsForTripHandler(RailwayManagementSystemDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<IEnumerable<SeatDto>> HandleAsync(GetAvailableSeatsForTrip query)
     {
         var tripId = new TripId(query.TripId);
         var startStationName = new StationName(query.StartStation.Replace("_", " "));
         var endStationName = new StationName(query.EndStation.Replace("_", " "));
         
-        var trip = await _dbContext.Trips
+        var trip = await dbContext.Trips
             .Include(x => x.Train)
             .ThenInclude(x => x.Seats)
             .Include(x => x.Schedule)
@@ -36,14 +30,14 @@ internal sealed class GetAvailableSeatsForTripHandler : IQueryHandler<GetAvailab
             throw new TripNotFoundException(tripId);
         }
 
-        var startStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == startStationName);
+        var startStation = await dbContext.Stations.FirstOrDefaultAsync(x => x.Name == startStationName);
 
         if (startStation is null)
         {
             throw new StationNotFoundException(query.StartStation);
         }
         
-        var endStation = await _dbContext.Stations.FirstOrDefaultAsync(x => x.Name == endStationName);
+        var endStation = await dbContext.Stations.FirstOrDefaultAsync(x => x.Name == endStationName);
 
         if (endStation is null)
         {

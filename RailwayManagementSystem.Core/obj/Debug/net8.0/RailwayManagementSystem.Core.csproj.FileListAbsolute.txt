@@ -1,0 +1,15 @@
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/bin/Debug/net8.0/RailwayManagementSystem.Core.deps.json
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/bin/Debug/net8.0/RailwayManagementSystem.Core.runtimeconfig.json
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/bin/Debug/net8.0/RailwayManagementSystem.Core.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/bin/Debug/net8.0/RailwayManagementSystem.Core.pdb
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.csproj.AssemblyReference.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.AssemblyInfoInputs.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.AssemblyInfo.cs
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.csproj.CoreCompileInputs.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.sourcelink.json
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/refint/RailwayManagementSystem.Core.dll
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.pdb
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/RailwayManagementSystem.Core.genruntimeconfig.cache
+/Users/maciejderon/Repos/Railway-Management-System/RailwayManagementSystem.Core/obj/Debug/net8.0/ref/RailwayManagementSystem.Core.dll

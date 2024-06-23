@@ -9,24 +9,16 @@ namespace RailwayManagementSystem.Api.Controllers;
 
 [ApiController]
 [Route("api/discounts")]
-public class DiscountController : ControllerBase
+public class DiscountController(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
+    : ControllerBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-    private readonly ICommandDispatcher _commandDispatcher;
-
-    public DiscountController(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
-    {
-        _queryDispatcher = queryDispatcher;
-        _commandDispatcher = commandDispatcher;
-    }
-
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<DiscountDto>>> Get()
     {
         var query = new GetDiscounts();
 
-        var discounts = await _queryDispatcher.QueryAsync(query);
+        var discounts = await queryDispatcher.QueryAsync(query);
 
         return Ok(discounts);
     }
@@ -41,7 +33,7 @@ public class DiscountController : ControllerBase
     {
         command = command with {Id = Guid.NewGuid()};
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return CreatedAtAction(nameof(Get), null, null);
     }
@@ -56,7 +48,7 @@ public class DiscountController : ControllerBase
     {
         var command = new DeleteDiscount(discountId);
 
-        await _commandDispatcher.DispatchAsync(command);
+        await commandDispatcher.DispatchAsync(command);
 
         return NoContent();
     }
