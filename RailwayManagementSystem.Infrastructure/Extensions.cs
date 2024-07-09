@@ -59,6 +59,7 @@ public static class Extensions
         });
         
         services.AddQueries();
+        services.AddProblemDetails();
         services.AddExceptionHandler<CustomExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         

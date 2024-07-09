@@ -1,7 +1,7 @@
 # Railway-Management-System
 
 ## Description
-This is a railway management system that allows users to book tickets, view their bookings, and cancel their bookings and get connections between two stations. The system also allows the admin to menage the trains, stations, and trips. The system is implmented using .NET 6, ASP.NET, Entity Framework Core, PostgreSQL.
+This is a railway management system that allows users to book tickets, view their bookings, and cancel their bookings and get connections between two stations. The system also allows the admin to menage the trains, stations, and trips. The system is implmented using .NET 8, ASP.NET, Entity Framework Core, PostgreSQL.
 
 To run the application you need to first typie in console:
 
